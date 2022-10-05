@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block after_head %}
+  <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+  <script>try{Typekit.load({ async: true });}catch(e){}</script>
+{% endblock %}
+
+{% block banner %}
+{% endblock %}
+
+{% block page_header %}
+{% endblock %}
+
+{% block full_width_header %}
+
+<div class="full_width_header">
+  <div class="container">
+    <div class="page-header">
+      <div class="row border-bottom">
+        <div class="col-xs-10">
+          <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/">
+            <h1>Open Fibre Data Standard (OFDS)</h1>
+          </a>
+        </div>
+      </div><!--row-->
+      <div class="row">
+        <div class="col-xs-7">
+          {% block h1 %}<h1 class="application-name"><a href="{% url 'index' %}">{% blocktrans %} CoVE{% endblocktrans %} </a></h1> <h2 class="beta"><small>beta</small></h2>{% endblock %}
+        </div><!--col-md-8-->
+        <div class="col-xs-5">
+          <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/"><h3 class="docs-link pull-right">{% blocktrans %} OFDS Documentation {% endblocktrans %}</h3></a>
+        </div><!--col-md-8-->
+      </div><!--row-->
+    </div><!--page-header-->
+  </div><!--container-->
+</div>
+
+<div class="container">
+   <div class="row">
+      <div class="col-xs-12 ofds-header-button">
+        {% block header_button %}{% endblock header_button %}
+      </div>
+   </div>
+</div>
+
+{% endblock %}
+
+{% block bootstrap_css %}
+  <link rel="stylesheet" type="text/css" href="{% static 'dataexplore/fonts/tick/tick.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'dataexplore/css/bootstrap-ofds.css' %}">
+{% endblock %}
+
+{% block link %}
+<li><a href="https://open-fibre-data-standard.readthedocs.io/en/latest/">{% trans "Open Fibre Data Standard" %}</a></li>
+{% endblock %}
+
+{% block bottomcontent1 %}
+{% endblock %}
+
+{% block topcontent1 %}
+{% endblock %}
+
+{% block bottomcontent3 %}
+{% endblock %}
+
+{% block about %}
+<li>{% trans "Built by" %} <a href="http://opendataservices.coop/">{% trans "Open Data Services" %}</a></li>
+<li>{% trans "The code for this site is available on" %}<br>{% trans "GitHub" %}: <a href="https://github.com/Open-Telecoms-Data/cove-ofds">cove-ofds</a><br>{% trans "Licence" %}: <a href="https://www.gnu.org/licenses/agpl-3.0.html">{% trans "AGPLv3" %}</a><br>{% trans "Report/View issues" %}: <a href="https://github.com/Open-Telecoms-Data/cove-ofds/issues">{% trans "cove-ofds issues" %}</a>
+</li>
+{% endblock %}
+
+{% block version_link %}
+<p class="text-muted">{% blocktrans %}Running version {% endblocktrans %}<a href="https://github.com/Open-Telecoms-Data/cove-ofds/tree/{{request.tag}}">{{request.tag}}</a></p>
+{% endblock %}

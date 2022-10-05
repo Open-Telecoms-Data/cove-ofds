@@ -1,0 +1,11 @@
+-r requirements.txt
+pytest
+pytest-django
+flake8
+pytest-localserver
+# Selenium 4 introduces breaking changes
+selenium==3.141.0
+transifex-client
+pip-tools
+black==22.8.0
+isort
