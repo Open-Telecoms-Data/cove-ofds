@@ -1,0 +1,39 @@
+name: Branch Deploy
+on: [push]
+
+jobs:
+  branch-deploy:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/live'
+    steps:
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.DOKKUSD_BRANCH_SSH_PRIVATE_KEY }}
+        name: id_rsa # optional
+        known_hosts: ${{ secrets.DOKKUSD_BRANCH_SSH_KEYSCAN }}
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+        architecture: x64
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}-${{ matrix.python-version }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - run: pip install dokkusd
+    - run: python -m dokkusd.cli deploy --appname ${{ secrets.DOKKUSD_BRANCH_APP_NAME_PREFIX }}-${GITHUB_REF##*/}
+      env:
+        DOKKUSD_REMOTE_HOST: ${{ secrets.DOKKUSD_BRANCH_REMOTE_HOST }}
+        DOKKUSD_REMOTE_PORT: ${{ secrets.DOKKUSD_BRANCH_REMOTE_PORT }}
+        DOKKUSD_REMOTE_USER: ${{ secrets.DOKKUSD_BRANCH_REMOTE_USER }}
+        DOKKUSD_HTTP_AUTH_USER: ${{ secrets.DOKKUSD_BRANCH_HTTP_AUTH_USER }}
+        DOKKUSD_HTTP_AUTH_PASSWORD: ${{ secrets.DOKKUSD_BRANCH_HTTP_AUTH_PASSWORD }}
+        DOKKUSD_LETS_ENCRYPT: ${{ secrets.DOKKUSD_BRANCH_LETS_ENCRYPT }}
+        DOKKUSD_ENVIRONMENT_VARIABLES_JSON: ${{ secrets.DOKKUSD_BRANCH_ENVIRONMENT_VARIABLES_JSON }}

@@ -9,5 +9,15 @@
       "command": "python manage.py expire_files",
       "schedule": "@daily"
     }
-  ]
+  ],
+  "dokkusd": {
+    "volumes": [
+      {"host_subdir": "database", "container_path": "/app/database"},
+      {"host_subdir": "media", "container_path": "/app/media"}
+    ],
+    "environment_variables": {
+      "DB_NAME": "/app/database/db.sqlite",
+      "DEBUG": "False"
+    }
+  }
 }

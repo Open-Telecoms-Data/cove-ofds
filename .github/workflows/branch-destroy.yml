@@ -1,0 +1,31 @@
+name: Branch Destroy
+on: delete
+
+jobs:
+  branch-destroy:
+    if: github.event.ref_type == 'branch' && github.event.ref != 'live'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.DOKKUSD_BRANCH_SSH_PRIVATE_KEY }}
+        name: id_rsa # optional
+        known_hosts: ${{ secrets.DOKKUSD_BRANCH_SSH_KEYSCAN }}
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+        architecture: x64
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}-${{ matrix.python-version }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - run: pip install dokkusd
+    - run: python -m dokkusd.cli destroy --appname ${{ secrets.DOKKUSD_BRANCH_APP_NAME_PREFIX }}-${{ github.event.ref }}
+      env:
+        DOKKUSD_REMOTE_HOST: ${{ secrets.DOKKUSD_BRANCH_REMOTE_HOST }}
+        DOKKUSD_REMOTE_PORT: ${{ secrets.DOKKUSD_BRANCH_REMOTE_PORT }}
+        DOKKUSD_REMOTE_USER: ${{ secrets.DOKKUSD_BRANCH_REMOTE_USER }}
