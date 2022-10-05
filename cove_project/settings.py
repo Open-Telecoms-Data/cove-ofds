@@ -75,7 +75,7 @@ MIDDLEWARE = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "dealer.contrib.django.Middleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "cove.middleware.CoveConfigCurrentApp",
 )
 

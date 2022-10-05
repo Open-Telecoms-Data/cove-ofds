@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dokku": {
+      "predeploy": "python manage.py migrate"
+    }
+  },
+  "cron": [
+    {
+      "command": "python manage.py expire_files",
+      "schedule": "@daily"
+    }
+  ]
+}
