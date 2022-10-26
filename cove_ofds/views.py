@@ -1,6 +1,7 @@
 import functools
 import json
 import logging
+import os
 from decimal import Decimal
 
 from cove.views import explore_data_context
@@ -12,10 +13,18 @@ from libcove.lib.exceptions import CoveInputDataError
 from libcoveofds.common_checks import common_checks_ofds
 from libcoveofds.config import LibCoveOFDSConfig
 from libcoveofds.schema import SchemaOFDS
+from ofdskit.lib.geojson import JSONToGeoJSONConverter
 
 from cove_project import settings
 
 logger = logging.getLogger(__name__)
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        return json.JSONEncoder.default(self, obj)
 
 
 def cove_web_input_error(func):
@@ -134,6 +143,35 @@ def explore_ofds(request, pk):
     if not db_data.rendered:
         db_data.rendered = True
     db_data.save()
+
+    # Make GeoJSON
+    context["can_download_geojson"] = False
+    geojson_nodes_path = os.path.join(upload_dir, "nodes.geojson.json")
+    geojson_spans_path = os.path.join(upload_dir, "spans.geojson.json")
+    context["download_geojson_nodes_url"] = "{}{}nodes.geojson.json".format(
+        upload_url, "" if upload_url.endswith("/") else "/"
+    )
+    context["download_geojson_spans_url"] = "{}{}spans.geojson.json".format(
+        upload_url, "" if upload_url.endswith("/") else "/"
+    )
+    if not os.path.exists(geojson_nodes_path) or not os.path.exists(geojson_spans_path):
+        try:
+            converter = JSONToGeoJSONConverter()
+            converter.process_package(json_data)
+            with open(geojson_nodes_path, "w") as fp:
+                json.dump(
+                    converter.get_nodes_geojson(), fp, indent=2, cls=DecimalEncoder
+                )
+            with open(geojson_spans_path, "w") as fp:
+                json.dump(
+                    converter.get_spans_geojson(), fp, indent=2, cls=DecimalEncoder
+                )
+
+            context["can_download_geojson"] = True
+        except Exception as err:
+            print(err)
+    else:
+        context["can_download_geojson"] = True
 
     # Some extra info from the Schema
     context["schema_version_used"] = schema_ofds.schema_version
