@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "bootstrap3",
     "cove",
     "cove.input",
+    "libcoveweb2",
     "cove_ofds",
 ]
 

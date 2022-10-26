@@ -35,9 +35,9 @@ cd cove_ofds/sass && ./build_ofds.sh
 Run 
 
 ```
-isort cove_project/ cove_ofds/
-black cove_project/ cove_ofds/
-flake8 cove_project/ cove_ofds/
+isort cove_project/ cove_ofds/ libcoveweb2/
+black cove_project/ cove_ofds/ libcoveweb2/
+flake8 cove_project/ cove_ofds/ libcoveweb2/
 ```
 
 ## Test
