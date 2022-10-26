@@ -83,6 +83,17 @@
                     {% endif %}
 
 
+                    {% if can_download_geojson %}
+                        <ul class="list-unstyled">
+                          <li>
+                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_geojson_nodes_url}}">Nodes GeoJSON</a>
+                          </li>
+                          <li>
+                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_geojson_spans_url}}">Spans GeoJSON</a>
+                          </li>
+                        </ul>
+                    {% endif %}
+
                 </div>
               </div>
     </div>
