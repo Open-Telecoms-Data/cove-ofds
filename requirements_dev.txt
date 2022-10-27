@@ -117,6 +117,8 @@ libcoveweb==0.25.0
     # via
     #   -r requirements.txt
     #   libcoveofds
+libsass==0.21.0
+    # via -r requirements_dev.in
 lxml==4.9.1
     # via
     #   -r requirements.txt
@@ -211,6 +213,7 @@ six==1.16.0
     # via
     #   -r requirements.txt
     #   jsonschema
+    #   libsass
     #   rfc3339-validator
     #   transifex-client
     #   zodb
