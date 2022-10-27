@@ -9,3 +9,4 @@ transifex-client
 pip-tools
 black==22.8.0
 isort
+libsass

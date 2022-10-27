@@ -206,8 +206,89 @@
         </div>
     </div>
 
+    <div class="row">
+      <div class="panel panel-success">
+          <div id="statistics-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+               aria-controls="validationTable" data-toggle="collapse" data-target="#mapVisualisation">
+              <h4 class="panel-title">
+                  <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Map' %}
+              </h4>
+          </div>
+          <div id="mapVisualisation" class="collapse in panel-body">
+            {% if can_download_geojson %}
+              <div id="map" class="map" style="width: 100%; height: 600px;"></div>
+            {% else %}
+              <div>
+                <p>{% trans 'There are no GeoJSON files to visualise!' %}</p>
+              </div>
+            {% endif %}
+          </div>
+      </div>
+  </div>
+
 
 {% endblock explore_content %}
+
+{% block extrafooterscript %}
+  {{ block.super }}
+  <script>
+    if ('{{can_download_geojson}}' == 'True') {
+      var map = L.map('map').setView([9.072973, 7.481621], 6);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      var geojsonMarkerOptions = {
+        radius: 6,
+        fillColor: "#0000FF",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      };
+
+      var generatePopup = function (layer) {
+        return `<p><strong>Name:</strong> ${layer.feature.properties.name || 'Unknown'}</p>
+        <p><strong>Network:</strong> ${layer.feature.properties.network.name || 'Unknown'}</p>
+        <p><strong>Phase:</strong> ${layer.feature.properties.phase.name || 'Unknown'}</p>`;
+      } 
+
+      var customOptions = {
+        'maxWidth': '400',
+        'width': '200',
+        'className' : 'popupCustom'
+      }
+
+      function addLayer(jsonData) {
+        return L.geoJSON(jsonData, {
+          pointToLayer: function (feature, latlng) {
+              return L.circleMarker(latlng, geojsonMarkerOptions);
+          },
+          style: {color: '#000000'}
+        }).bindPopup(layer => generatePopup(layer), customOptions)
+        .addTo(map);
+      }
+
+      function getGeoJSON(url) {
+        fetch(url, {
+          method: 'get'
+        })
+        .then(response => response.json())
+        .then(jsonData => addLayer(jsonData))
+        .then(layer => map.fitBounds(layer.getBounds()))
+        .catch(err => {
+          console.error(`Could not download data or create layer: `, err);
+          var mapElement = document.getElementById('mapVisualisation')
+          mapElement.innerHTML = `<p>{% trans 'There was an error loading: ${url.substring(url.lastIndexOf("/") + 1, url.length)}' %}</p>` + mapElement.innerHTML
+        });
+      }
+
+      var geoJsonFiles = ['{{download_geojson_spans_url}}', '{{download_geojson_nodes_url}}']
+      geoJsonFiles.forEach(geoJsonFile => getGeoJSON(geoJsonFile))
+    };
+
+  </script>
+{% endblock %}
 
 
 {% block topcontent1 %}
