@@ -111,7 +111,7 @@ libcove==0.27.0
     #   -r requirements.txt
     #   libcoveofds
     #   libcoveweb
-libcoveofds==0.0.0
+libcoveofds==0.1.0
     # via -r requirements.txt
 libcoveweb==0.25.0
     # via
@@ -129,7 +129,7 @@ odfpy==1.4.1
     # via
     #   -r requirements.txt
     #   flattentool
-ofdskit==0.0.0
+ofdskit==0.1.0
     # via -r requirements.txt
 openpyxl==3.0.10
     # via
