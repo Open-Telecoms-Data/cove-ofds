@@ -34,6 +34,8 @@
                             {% trans 'You uploaded data in JSON format.' %}
                         {% elif original_format == 'spreadsheet' %}
                             {% trans 'You uploaded data in a spreadshet format.' %}
+                        {% elif original_format == 'geojson' %}
+                            {% trans 'You uploaded data in a GeoJSON format.' %}
                         {% endif %}
                     </p>
 
@@ -50,9 +52,15 @@
                         {% endfor %}
                     </ul>
 
-                    {% if can_download_geojson or can_download_xlsx or can_download_ods %}
+                    {% if can_download_geojson or can_download_xlsx or can_download_ods or can_download_json %}
                         <p>{% trans 'We converted this to the following formats for you:' %}</p>
                         <ul class="list-unstyled">
+                            {% if can_download_json %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_json_url}}">{% trans 'JSON' %} ({{   download_json_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
                             {% if can_download_geojson %}
                               <li>
                                   <span class="glyphicon glyphicon-download" aria-hidden="true"></span>

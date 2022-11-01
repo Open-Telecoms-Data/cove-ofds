@@ -6,7 +6,7 @@ from libcove.lib.tools import get_file_type as _get_file_type
 from libcoveofds.common_checks import common_checks_ofds
 from libcoveofds.config import LibCoveOFDSConfig
 from libcoveofds.schema import SchemaOFDS
-from ofdskit.lib.geojson import JSONToGeoJSONConverter
+from ofdskit.lib.geojson import GeoJSONToJSONConverter, JSONToGeoJSONConverter
 
 from libcoveweb2.models import SuppliedDataFile
 from libcoveweb2.process import ProcessDataTask
@@ -75,7 +75,94 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         return process_data
 
     def get_context(self):
-        return {"original_format": "spreadsheet"}
+        context = {}
+        # original format
+        if self.supplied_data.format == "spreadsheet":
+            context["original_format"] = "spreadsheet"
+            # Download data
+            filename = os.path.join(
+                self.supplied_data.data_dir(), "unflatten", "unflattened.json"
+            )
+            if os.path.exists(filename):
+                context["can_download_json"] = True
+                context["download_json_url"] = os.path.join(
+                    self.supplied_data.data_url(), "unflatten", "unflattened.json"
+                )
+                context["download_json_size"] = os.stat(filename).st_size
+            else:
+                context["can_download_json"] = False
+        # Return
+        return context
+
+
+class ConvertGeoJSONIntoJSON(ProcessDataTask):
+    """If User uploaded GeoJSON, convert to our primary format, JSON."""
+
+    def __init__(self, supplied_data):
+        super().__init__(supplied_data)
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(), "data_from_geojson.json"
+        )
+
+    def process(self, process_data: dict) -> dict:
+        if self.supplied_data.format != "geojson":
+            return process_data
+        if os.path.exists(self.data_filename):
+            return process_data
+
+        # Get files
+        supplied_data_json_files = SuppliedDataFile.objects.filter(
+            supplied_data=self.supplied_data
+        )
+        nodes_data_json_files = [
+            f for f in supplied_data_json_files if f.meta.get("geojson") == "nodes"
+        ]
+        spans_data_json_files = [
+            f for f in supplied_data_json_files if f.meta.get("geojson") == "spans"
+        ]
+
+        if len(nodes_data_json_files) != 1 or len(spans_data_json_files) != 1:
+            raise Exception("Can't find JSON original data!")
+
+        # Get data from files
+        nodes_data_json_file = nodes_data_json_files[0]
+        spans_data_json_file = spans_data_json_files[0]
+
+        with open(nodes_data_json_file.upload_dir_and_filename()) as fp:
+            nodes_data = json.load(fp)
+
+        with open(spans_data_json_file.upload_dir_and_filename()) as fp:
+            spans_data = json.load(fp)
+
+        # Convert
+        converter = GeoJSONToJSONConverter()
+        converter.process_data(nodes_data, spans_data)
+
+        # Save
+        with open(self.data_filename, "w") as fp:
+            json.dump(converter.get_json(), fp, indent=4)
+
+        # Info
+        process_data["json_data_filename"] = self.data_filename
+        return process_data
+
+    def get_context(self):
+        # Info
+        context = {}
+        # original format
+        if self.supplied_data.format == "geojson":
+            context["original_format"] = "geojson"
+            # Download data
+            if os.path.exists(self.data_filename):
+                context["can_download_json"] = True
+                context["download_json_url"] = os.path.join(
+                    self.supplied_data.data_url(), "data_from_geojson.json"
+                )
+                context["download_json_size"] = os.stat(self.data_filename).st_size
+            else:
+                context["can_download_json"] = False
+        # Return
+        return context
 
 
 class ConvertJSONIntoGeoJSON(ProcessDataTask):
@@ -94,7 +181,7 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
         # TODO if original format this, don't bother
 
         if os.path.exists(self.nodes_file_name):
-            return
+            return process_data
 
         with open(process_data["json_data_filename"]) as fp:
             data = json.load(fp)
@@ -200,7 +287,7 @@ class ChecksAndStatistics(ProcessDataTask):
 
     def process(self, process_data: dict) -> dict:
         if os.path.exists(self.checks_and_stats_filename):
-            return
+            return process_data
 
         with open(process_data["json_data_filename"]) as fp:
             data = json.load(fp)

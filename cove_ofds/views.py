@@ -3,16 +3,21 @@ import json
 import logging
 from decimal import Decimal
 
+from django.conf import settings
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from libcove.lib.exceptions import CoveInputDataError
 
+from cove_ofds.forms import NewGeoJSONUploadForm
 from cove_ofds.process import (
     ChecksAndStatistics,
+    ConvertGeoJSONIntoJSON,
     ConvertJSONIntoGeoJSON,
     ConvertJSONIntoSpreadsheets,
     ConvertSpreadsheetIntoJSON,
     WasJSONUploaded,
 )
+from libcoveweb2.models import SuppliedData
 from libcoveweb2.views import explore_data_context
 
 logger = logging.getLogger(__name__)
@@ -36,6 +41,52 @@ def cove_web_input_error(func):
     return wrapper
 
 
+def index(request):
+
+    return render(request, "cove_ofds/index.html", {})
+
+
+def new_geojson(request):
+
+    forms = {
+        "upload_form": NewGeoJSONUploadForm(request.POST, request.FILES)
+        if request.POST
+        else NewGeoJSONUploadForm()
+    }
+    form = forms["upload_form"]
+    if form.is_valid():
+        # Extra Validation
+        for field in ["nodes_file_upload", "spans_file_upload"]:
+            if (
+                not request.FILES[field].content_type
+                in settings.ALLOWED_GEOJSON_CONTENT_TYPES
+            ):
+                form.add_error("file_upload", "This does not appear to be a JSON file")
+            if not [
+                e
+                for e in settings.ALLOWED_GEOJSON_EXTENSIONS
+                if str(request.FILES[field].name).lower().endswith(e)
+            ]:
+                form.add_error("file_upload", "This does not appear to be a JSON file")
+
+        # Process
+        if form.is_valid():
+            supplied_data = SuppliedData()
+            supplied_data.format = "geojson"
+            supplied_data.save()
+
+            supplied_data.save_file(
+                request.FILES["nodes_file_upload"], meta={"geojson": "nodes"}
+            )
+            supplied_data.save_file(
+                request.FILES["spans_file_upload"], meta={"geojson": "spans"}
+            )
+
+            return HttpResponseRedirect(supplied_data.get_absolute_url())
+
+    return render(request, "cove_ofds/new_geojson.html", {"forms": forms})
+
+
 @cove_web_input_error
 def explore_ofds(request, pk):
     context, db_data, error = explore_data_context(request, pk)
@@ -43,10 +94,14 @@ def explore_ofds(request, pk):
         return error
 
     PROCESS_TASKS = [
+        # Make sure uploads are in primary format
         WasJSONUploaded(db_data),
         ConvertSpreadsheetIntoJSON(db_data),
+        ConvertGeoJSONIntoJSON(db_data),
+        # Convert into output formats
         ConvertJSONIntoGeoJSON(db_data),
         ConvertJSONIntoSpreadsheets(db_data),
+        # Checks and stats
         ChecksAndStatistics(db_data),
     ]
 

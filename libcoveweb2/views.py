@@ -13,11 +13,6 @@ from libcoveweb2.settings import (
 )
 
 
-def index(request):
-
-    return render(request, "libcoveweb2/index.html", {})
-
-
 def new_json(request):
 
     forms = {

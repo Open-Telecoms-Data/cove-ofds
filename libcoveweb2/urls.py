@@ -5,7 +5,6 @@ from django.views.generic import TemplateView
 import libcoveweb2.views
 
 urlpatterns = [
-    re_path(r"^$", libcoveweb2.views.index, name="index"),
     re_path(r"^new_json$", libcoveweb2.views.new_json, name="new_json"),
     re_path(
         r"^new_spreadsheet$", libcoveweb2.views.new_spreadsheet, name="new_spreadsheet"
