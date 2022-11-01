@@ -226,13 +226,12 @@
       </div>
   </div>
 
-
 {% endblock explore_content %}
 
 {% block extrafooterscript %}
   {{ block.super }}
-  <script>
-    if ('{{can_download_geojson}}' == 'True') {
+  {% if can_download_geojson %}
+    <script>
       var map = L.map('map').setView([9.072973, 7.481621], 6);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -285,9 +284,8 @@
 
       var geoJsonFiles = ['{{download_geojson_spans_url}}', '{{download_geojson_nodes_url}}']
       geoJsonFiles.forEach(geoJsonFile => getGeoJSON(geoJsonFile))
-    };
-
-  </script>
+    </script>
+  {% endif %}
 {% endblock %}
 
 
