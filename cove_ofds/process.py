@@ -33,7 +33,7 @@ class WasJSONUploaded(ProcessDataTask):
         return process_data
 
     def get_context(self):
-        return {}
+        return {"original_format": "json"}
 
 
 class ConvertSpreadsheetIntoJSON(ProcessDataTask):
@@ -75,7 +75,7 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         return process_data
 
     def get_context(self):
-        return {}
+        return {"original_format": "spreadsheet"}
 
 
 class ConvertJSONIntoGeoJSON(ProcessDataTask):
@@ -123,6 +123,12 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
             context["download_geojson_spans_url"] = os.path.join(
                 self.supplied_data.data_url(), "spans.geo.json"
             )
+            context["download_geojson_nodes_size"] = os.stat(
+                self.nodes_file_name
+            ).st_size
+            context["download_geojson_spans_size"] = os.stat(
+                self.spans_file_name
+            ).st_size
         else:
             context["can_download_geojson"] = False
         # done!
@@ -156,23 +162,27 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
     def get_context(self):
         context = {}
         # XLSX
-        if os.path.exists(
-            os.path.join(self.supplied_data.data_dir(), "flatten", "flattened.xlsx")
-        ):
+        xlsx_filename = os.path.join(
+            self.supplied_data.data_dir(), "flatten", "flattened.xlsx"
+        )
+        if os.path.exists(xlsx_filename):
             context["can_download_xlsx"] = True
             context["download_xlsx_url"] = os.path.join(
                 self.supplied_data.data_url(), "flatten", "flattened.xlsx"
             )
+            context["download_xlsx_size"] = os.stat(xlsx_filename).st_size
         else:
             context["can_download_xlsx"] = False
         # ODS
-        if os.path.exists(
-            os.path.join(self.supplied_data.data_dir(), "flatten", "flattened.ods")
-        ):
+        ods_filename = os.path.join(
+            self.supplied_data.data_dir(), "flatten", "flattened.ods"
+        )
+        if os.path.exists(ods_filename):
             context["can_download_ods"] = True
             context["download_ods_url"] = os.path.join(
                 self.supplied_data.data_url(), "flatten", "flattened.ods"
             )
+            context["download_ods_size"] = os.stat(ods_filename).st_size
         else:
             context["can_download_ods"] = False
         # done!

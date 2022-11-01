@@ -57,6 +57,14 @@ class SuppliedDataFile(models.Model):
             self.supplied_data.upload_dir(), str(self.id) + "-" + self.filename
         )
 
+    def upload_url(self):
+        return os.path.join(
+            settings.MEDIA_URL,
+            str(self.supplied_data.id),
+            "supplied_data",
+            self.upload_filename(),
+        )
+
     def upload_filename(self):
         return str(self.id) + "-" + self.filename
 

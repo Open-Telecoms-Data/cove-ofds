@@ -105,6 +105,7 @@ def explore_data_context(request, pk):
             )
 
     context = {
+        "supplied_data_files": supplied_data_files,
         "created_datetime": data.created.strftime("%A, %d %B %Y %I:%M%p %Z"),
         "created_date": data.created.strftime("%A, %d %B %Y"),
         "created_time": data.created.strftime("%I:%M%p %Z"),

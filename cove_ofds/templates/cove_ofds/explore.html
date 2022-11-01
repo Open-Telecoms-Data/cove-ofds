@@ -29,28 +29,56 @@
                 </div>
                 <div id="downloadData" class="collapse in panel-body">
 
+                    <p>
+                        {% if original_format == 'json' %}
+                            {% trans 'You uploaded data in JSON format.' %}
+                        {% elif original_format == 'spreadsheet' %}
+                            {% trans 'You uploaded data in a spreadshet format.' %}
+                        {% endif %}
+                    </p>
+
+                    <p>
+                        {% trans 'You can download your original data:' %}
+                    </p>
+
                     <ul class="list-unstyled">
-                        {% if can_download_geojson %}
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_geojson_nodes_url}}">Nodes GeoJSON</a>
-                          </li>
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_geojson_spans_url}}">Spans GeoJSON</a>
-                          </li>
-                        {% endif %}
-                        {% if can_download_xlsx %}
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_xlsx_url}}">Spreadsheet (XLSX)</a>
-                          </li>
-                        {% endif %}
-                        {% if can_download_ods %}
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_ods_url}}">Spreadsheet (ODS)</a>
-                          </li>
-                        {% endif %}
+                        {% for supplied_data_file in supplied_data_files %}
+                            <li>
+                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{   supplied_data_file.size|filesizeformat }})</a>
+                            </li>
+                        {% endfor %}
                     </ul>
+
+                    {% if can_download_geojson or can_download_xlsx or can_download_ods %}
+                        <p>{% trans 'We converted this to the following formats for you:' %}</p>
+                        <ul class="list-unstyled">
+                            {% if can_download_geojson %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_geojson_nodes_url}}">{% trans 'Nodes GeoJSON' %} ({{   download_geojson_nodes_size|filesizeformat }})</a>
+                              </li>
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_geojson_spans_url}}">{% trans 'Spans GeoJSON' %} ({{   download_geojson_spans_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
+                            {% if can_download_xlsx %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_xlsx_url}}">{% trans 'Spreadsheet (XLSX)' %} ({{   download_xlsx_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
+                            {% if can_download_ods %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_ods_url}}">{% trans 'Spreadsheet (ODS)' %} ({{   download_ods_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
                 </div>
-              </div>
+            </div>
     </div>
 
     <div class="row">
