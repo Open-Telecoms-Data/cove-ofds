@@ -3,8 +3,14 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
-from libcoveweb2.forms import NewJSONUploadForm
+from libcoveweb2.forms import NewJSONUploadForm, NewSpreadsheetUploadForm
 from libcoveweb2.models import SuppliedData, SuppliedDataFile
+from libcoveweb2.settings import (
+    ALLOWED_JSON_CONTENT_TYPES,
+    ALLOWED_JSON_EXTENSIONS,
+    ALLOWED_SPREADSHEET_CONTENT_TYPES,
+    ALLOWED_SPREADSHEET_EXTENSIONS,
+)
 
 
 def index(request):
@@ -21,13 +27,25 @@ def new_json(request):
     }
     form = forms["upload_form"]
     if form.is_valid():
-        supplied_data = SuppliedData()
-        supplied_data.format = "json"
-        supplied_data.save()
+        # Extra Validation
+        if not request.FILES["file_upload"].content_type in ALLOWED_JSON_CONTENT_TYPES:
+            form.add_error("file_upload", "This does not appear to be a JSON file")
+        if not [
+            e
+            for e in ALLOWED_JSON_EXTENSIONS
+            if str(request.FILES["file_upload"].name).lower().endswith(e)
+        ]:
+            form.add_error("file_upload", "This does not appear to be a JSON file")
 
-        supplied_data.save_file(request.FILES["file_upload"])
+        # Process
+        if form.is_valid():
+            supplied_data = SuppliedData()
+            supplied_data.format = "json"
+            supplied_data.save()
 
-        return HttpResponseRedirect(supplied_data.get_absolute_url())
+            supplied_data.save_file(request.FILES["file_upload"])
+
+            return HttpResponseRedirect(supplied_data.get_absolute_url())
 
     return render(request, "libcoveweb2/new_json.html", {"forms": forms})
 
@@ -35,19 +53,34 @@ def new_json(request):
 def new_spreadsheet(request):
 
     forms = {
-        "upload_form": NewJSONUploadForm(request.POST, request.FILES)
+        "upload_form": NewSpreadsheetUploadForm(request.POST, request.FILES)
         if request.POST
-        else NewJSONUploadForm()
+        else NewSpreadsheetUploadForm()
     }
     form = forms["upload_form"]
     if form.is_valid():
-        supplied_data = SuppliedData()
-        supplied_data.format = "spreadsheet"
-        supplied_data.save()
+        # Extra Validation
+        if (
+            not request.FILES["file_upload"].content_type
+            in ALLOWED_SPREADSHEET_CONTENT_TYPES
+        ):
+            form.add_error("file_upload", "This does not appear to be a spreadsheet")
+        if not [
+            e
+            for e in ALLOWED_SPREADSHEET_EXTENSIONS
+            if str(request.FILES["file_upload"].name).lower().endswith(e)
+        ]:
+            form.add_error("file_upload", "This does not appear to be a spreadsheet")
 
-        supplied_data.save_file(request.FILES["file_upload"])
+        # Process
+        if form.is_valid():
+            supplied_data = SuppliedData()
+            supplied_data.format = "spreadsheet"
+            supplied_data.save()
 
-        return HttpResponseRedirect(supplied_data.get_absolute_url())
+            supplied_data.save_file(request.FILES["file_upload"])
+
+            return HttpResponseRedirect(supplied_data.get_absolute_url())
 
     return render(request, "libcoveweb2/new_spreadsheet.html", {"forms": forms})
 
