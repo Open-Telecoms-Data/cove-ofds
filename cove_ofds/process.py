@@ -43,6 +43,9 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         if self.supplied_data.format != "spreadsheet":
             return process_data
 
+        # check already done
+        # TODO
+
         supplied_data_json_files = SuppliedDataFile.objects.filter(
             supplied_data=self.supplied_data
         )
@@ -107,7 +110,10 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
     def process(self, process_data: dict) -> dict:
         if self.supplied_data.format != "geojson":
             return process_data
+
+        # check already done
         if os.path.exists(self.data_filename):
+            process_data["json_data_filename"] = self.data_filename
             return process_data
 
         # Get files
