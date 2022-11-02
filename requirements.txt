@@ -115,8 +115,6 @@ urllib3==1.26.12
     #   sentry-sdk
 werkzeug==1.0.1
     # via uc-rfc6266-parser
-whitenoise==6.2.0
-    # via -r requirements.in
 xmltodict==0.13.0
     # via flattentool
 zc-lockfile==2.0

@@ -257,8 +257,6 @@ werkzeug==1.0.1
     #   uc-rfc6266-parser
 wheel==0.37.1
     # via pip-tools
-whitenoise==6.2.0
-    # via -r requirements.txt
 xmltodict==0.13.0
     # via
     #   -r requirements.txt
