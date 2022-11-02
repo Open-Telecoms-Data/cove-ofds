@@ -29,73 +29,64 @@
                 </div>
                 <div id="downloadData" class="collapse in panel-body">
 
-                     {% if conversion == 'flatten' %}
-                        <p>We have tried to convert your JSON into a spreadsheet format.</p><p>The results can be seen below.</p>
-                        <ul class="list-unstyled left-space">
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{original_file.url}}">{{JSON}} <small>({{original}})</small></a> <small>{{original_file.size|filesizeformat }}</small>
-                          </li>
-                          {% if not conversion_error %}
-                            <li>
-                              <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{converted_url}}.xlsx">{{xlsx}} <small>({{converted}})</small></a> <small>{{converted_file_size|filesizeformat }}</small>
-                            </li>
-                          {% endif %}
-                        </ul>
-                        {% if conversion_error %}
-                            <p>{% blocktrans %}The JSON could not be converted to Spreadsheet due to the error:{% endblocktrans %} {{ conversion_error }}</p>
-
-                            {% include 'error_extra.html' %}
+                    <p>
+                        {% if original_format == 'json' %}
+                            {% trans 'You uploaded data in JSON format.' %}
+                        {% elif original_format == 'spreadsheet' %}
+                            {% trans 'You uploaded data in a spreadsheet format.' %}
+                        {% elif original_format == 'geojson' %}
+                            {% trans 'You uploaded data in a GeoJSON format.' %}
                         {% endif %}
+                    </p>
 
-                    {% elif conversion == 'unflatten' %}
-                        <p>We have tried to convert your data into JSON format.</p><p>The results can be seen below.</p>
-                        <ul class="list-unstyled">
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                            <a href="{{original_file.url}}">
-                              {% if file_type == 'xlsx' %}
-                                {{xlsx}} <small>({{original}})</small>
-                              {% elif file_type == 'csv' %}
-                                {{csv}} <small>({{original}})</small>
-                              {% endif %}
-                              </a>
-                              <small>{{original_file.size|filesizeformat }}</small>
-                            </li>
+                    <p>
+                        {% trans 'You can download your original data:' %}
+                    </p>
+
+                    <ul class="list-unstyled">
+                        {% for supplied_data_file in supplied_data_files %}
                             <li>
-                              <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{converted_url}}">{{JSON}} <small>({{converted}})</small></a> <small>{{converted_file_size|filesizeformat }}</small>
+                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{   supplied_data_file.size|filesizeformat }})</a>
                             </li>
-                        </ul>
+                        {% endfor %}
+                    </ul>
 
-                    {% else %}
+                    {% if can_download_geojson or can_download_xlsx or can_download_ods or can_download_json %}
+                        <p>{% trans 'We converted this to the following formats for you:' %}</p>
                         <ul class="list-unstyled">
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{original_file.url}}">{{JSON}} <small>({{original}})</small></a> <small>{{original_file.size|filesizeformat }}</small>
-                            {% if conversion == 'flattenable' %}
-                              <br/>
-                              <br/>
-                              <form method="post">
-                                <button name="flatten" value="true" type="submit" class="btn btn-success btn-sm">{% blocktrans %}Convert to Spreadsheet{% endblocktrans %}</button>
-                                {% csrf_token %}
-                              </form>
+                            {% if can_download_json %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_json_url}}">{% trans 'JSON' %} ({{   download_json_size|filesizeformat }})</a>
+                              </li>
                             {% endif %}
-                          </li>
+                            {% if can_download_geojson %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_geojson_nodes_url}}">{% trans 'Nodes GeoJSON' %} ({{   download_geojson_nodes_size|filesizeformat }})</a>
+                              </li>
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_geojson_spans_url}}">{% trans 'Spans GeoJSON' %} ({{   download_geojson_spans_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
+                            {% if can_download_xlsx %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_xlsx_url}}">{% trans 'Spreadsheet (XLSX)' %} ({{   download_xlsx_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
+                            {% if can_download_ods %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_ods_url}}">{% trans 'Spreadsheet (ODS)' %} ({{   download_ods_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
                         </ul>
                     {% endif %}
-
-
-                    {% if can_download_geojson %}
-                        <ul class="list-unstyled">
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_geojson_nodes_url}}">Nodes GeoJSON</a>
-                          </li>
-                          <li>
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{download_geojson_spans_url}}">Spans GeoJSON</a>
-                          </li>
-                        </ul>
-                    {% endif %}
-
                 </div>
-              </div>
+            </div>
     </div>
 
     <div class="row">

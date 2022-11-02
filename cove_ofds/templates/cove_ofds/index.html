@@ -1,0 +1,17 @@
+{% extends request.current_app_base_template %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block content %}
+
+    <div>
+        <a href="{% url 'new_json' %}">Upload JSON</a>
+    </div>
+    <div>
+        <a href="{% url 'new_spreadsheet' %}">Upload Spreadsheet</a>
+    </div>
+    <div>
+        <a href="{% url 'new_geojson' %}">Upload GeoJSON</a>
+    </div>
+
+{% endblock %}

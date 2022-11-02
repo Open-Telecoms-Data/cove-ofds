@@ -1,21 +1,24 @@
 import functools
 import json
 import logging
-import os
 from decimal import Decimal
 
-from cove.views import explore_data_context
+from django.conf import settings
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
-from libcove.lib.converters import convert_json, convert_spreadsheet
 from libcove.lib.exceptions import CoveInputDataError
-from libcoveofds.common_checks import common_checks_ofds
-from libcoveofds.config import LibCoveOFDSConfig
-from libcoveofds.schema import SchemaOFDS
-from ofdskit.lib.geojson import JSONToGeoJSONConverter
 
-from cove_project import settings
+from cove_ofds.forms import NewGeoJSONUploadForm
+from cove_ofds.process import (
+    ChecksAndStatistics,
+    ConvertGeoJSONIntoJSON,
+    ConvertJSONIntoGeoJSON,
+    ConvertJSONIntoSpreadsheets,
+    ConvertSpreadsheetIntoJSON,
+    WasJSONUploaded,
+)
+from libcoveweb2.models import SuppliedData
+from libcoveweb2.views import explore_data_context
 
 logger = logging.getLogger(__name__)
 
@@ -38,143 +41,84 @@ def cove_web_input_error(func):
     return wrapper
 
 
+def index(request):
+
+    return render(request, "cove_ofds/index.html", {})
+
+
+def new_geojson(request):
+
+    forms = {
+        "upload_form": NewGeoJSONUploadForm(request.POST, request.FILES)
+        if request.POST
+        else NewGeoJSONUploadForm()
+    }
+    form = forms["upload_form"]
+    if form.is_valid():
+        # Extra Validation
+        for field in ["nodes_file_upload", "spans_file_upload"]:
+            if (
+                not request.FILES[field].content_type
+                in settings.ALLOWED_GEOJSON_CONTENT_TYPES
+            ):
+                form.add_error("file_upload", "This does not appear to be a JSON file")
+            if not [
+                e
+                for e in settings.ALLOWED_GEOJSON_EXTENSIONS
+                if str(request.FILES[field].name).lower().endswith(e)
+            ]:
+                form.add_error("file_upload", "This does not appear to be a JSON file")
+
+        # Process
+        if form.is_valid():
+            supplied_data = SuppliedData()
+            supplied_data.format = "geojson"
+            supplied_data.save()
+
+            supplied_data.save_file(
+                request.FILES["nodes_file_upload"], meta={"geojson": "nodes"}
+            )
+            supplied_data.save_file(
+                request.FILES["spans_file_upload"], meta={"geojson": "spans"}
+            )
+
+            return HttpResponseRedirect(supplied_data.get_absolute_url())
+
+    return render(request, "cove_ofds/new_geojson.html", {"forms": forms})
+
+
 @cove_web_input_error
 def explore_ofds(request, pk):
     context, db_data, error = explore_data_context(request, pk)
     if error:
         return error
 
-    lib_cove_ofds_config = LibCoveOFDSConfig()
-    lib_cove_ofds_config.config["root_list_path"] = settings.COVE_CONFIG[
-        "root_list_path"
+    PROCESS_TASKS = [
+        # Make sure uploads are in primary format
+        WasJSONUploaded(db_data),
+        ConvertSpreadsheetIntoJSON(db_data),
+        ConvertGeoJSONIntoJSON(db_data),
+        # Convert into output formats
+        ConvertJSONIntoGeoJSON(db_data),
+        ConvertJSONIntoSpreadsheets(db_data),
+        # Checks and stats
+        ChecksAndStatistics(db_data),
     ]
-    lib_cove_ofds_config.config["root_id"] = settings.COVE_CONFIG["root_id"]
-    lib_cove_ofds_config.config["id_name"] = settings.COVE_CONFIG["id_name"]
 
-    upload_dir = db_data.upload_dir()
-    upload_url = db_data.upload_url()
-    file_name = db_data.original_file.file.name
-    file_type = context["file_type"]
-
-    if file_type == "json":
-        # open the data first so we can inspect for record package
-        with open(file_name, encoding="utf-8") as fp:
-            try:
-                json_data = json.load(fp, parse_float=Decimal)
-            except ValueError as err:
-                raise CoveInputDataError(
-                    context={
-                        "sub_title": _("Sorry, we can't process that data"),
-                        "link": "index",
-                        "link_text": _("Try Again"),
-                        "msg": _(
-                            format_html(
-                                "We think you tried to upload a JSON file, but it is not well formed JSON."
-                                '\n\n<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">'
-                                "</span> <strong>Error message:</strong> {}",
-                                err,
-                            )
-                        ),
-                        "error": format(err),
-                    }
-                )
-
-        schema_ofds = SchemaOFDS(
-            json_data=json_data, lib_cove_ofds_config=lib_cove_ofds_config
-        )
-
-        context.update(
-            convert_json(
-                upload_dir,
-                upload_url,
-                file_name,
-                lib_cove_ofds_config,
-                schema_url=schema_ofds.pkg_schema_url,
-                replace=True,
-                request=request,
-                flatten=True,
-            )
-        )
-
-    else:
-
-        schema_ofds = SchemaOFDS(lib_cove_ofds_config=lib_cove_ofds_config)
-        context.update(
-            convert_spreadsheet(
-                upload_dir,
-                upload_url,
-                file_name,
-                file_type,
-                lib_cove_ofds_config,
-                schema_url=schema_ofds.pkg_schema_url,
-            )
-        )
-        with open(context["converted_path"], encoding="utf-8") as fp:
-            json_data = json.load(fp, parse_float=Decimal)
-        # Create schema_ofds again now that we have json_data (this will pick
-        # up the appropriate schema)
-        schema_ofds = SchemaOFDS(
-            json_data=json_data, lib_cove_ofds_config=lib_cove_ofds_config
-        )
-        # Run the conversion again now that we have the correct schema
-        context.update(
-            convert_spreadsheet(
-                upload_dir,
-                upload_url,
-                file_name,
-                file_type,
-                lib_cove_ofds_config,
-                schema_url=schema_ofds.pkg_schema_url,
-                cache=False,
-                replace=True,
-            )
-        )
-        with open(context["converted_path"], encoding="utf-8") as fp:
-            json_data = json.load(fp, parse_float=Decimal)
-
-    context = common_checks_ofds(
-        context,
-        upload_dir,
-        json_data,
-        schema_ofds,
-        lib_cove_ofds_config=lib_cove_ofds_config,
-    )
-
-    if not db_data.rendered:
-        db_data.rendered = True
-    db_data.save()
-
-    # Make GeoJSON
-    context["can_download_geojson"] = False
-    geojson_nodes_path = os.path.join(upload_dir, "nodes.geojson.json")
-    geojson_spans_path = os.path.join(upload_dir, "spans.geojson.json")
-    context["download_geojson_nodes_url"] = "{}{}nodes.geojson.json".format(
-        upload_url, "" if upload_url.endswith("/") else "/"
-    )
-    context["download_geojson_spans_url"] = "{}{}spans.geojson.json".format(
-        upload_url, "" if upload_url.endswith("/") else "/"
-    )
-    if not os.path.exists(geojson_nodes_path) or not os.path.exists(geojson_spans_path):
+    # Process bit that should be a task in a worker
+    process_data = {}
+    for task in PROCESS_TASKS:
         try:
-            converter = JSONToGeoJSONConverter()
-            converter.process_package(json_data)
-            with open(geojson_nodes_path, "w") as fp:
-                json.dump(
-                    converter.get_nodes_geojson(), fp, indent=2, cls=DecimalEncoder
-                )
-            with open(geojson_spans_path, "w") as fp:
-                json.dump(
-                    converter.get_spans_geojson(), fp, indent=2, cls=DecimalEncoder
-                )
-
-            context["can_download_geojson"] = True
+            process_data = task.process(process_data)
         except Exception as err:
             print(err)
-    else:
-        context["can_download_geojson"] = True
 
-    # Some extra info from the Schema
-    context["schema_version_used"] = schema_ofds.schema_version
+    # read results
+    for task in PROCESS_TASKS:
+        try:
+            context.update(task.get_context())
+        except Exception as err:
+            print(err)
 
     template = "cove_ofds/explore.html"
 

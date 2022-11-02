@@ -7,7 +7,7 @@ RUN mkdir -p /app/static
 
 RUN pip install -r requirements.txt
 
-RUN python manage.py collectstatic
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 80
 
