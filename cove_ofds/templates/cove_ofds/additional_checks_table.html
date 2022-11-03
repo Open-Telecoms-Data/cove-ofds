@@ -1,409 +1,687 @@
 {% load i18n %}
 
-<table class="table">
-    <thead>
-    <tr>
-        <th class="">{% trans 'Check' %}</th>
-        <th class="">{% trans 'Information' %}</th>
-        <th class="">{% trans 'Where problem occurs' %}</th>
-        <th class="">{% trans 'Network ID' %}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for additional_check in additional_checks %}
-        {% if additional_check.type == 'span_start_node_not_found' %}
+
+{% if 'span_start_node_not_found' in additional_checks or 'span_end_node_not_found' in additional_checks  %}
+    <h3>{% trans 'Node references'  %}</h3>
+    <p>{% trans 'Your data contains spans with node references that cannot be resolved. `Span.start` and `Span.end` must match the `.id` of exactly one node in the `/nodes` array.'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'span_start_node_not_found'  %}
-                </td>
-                <td>
-                    Node Id we can't find: {{ additional_check.missing_node_id }}
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Node Id we can\'t find' %}</th>
+                <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'span_end_node_not_found' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.span_start_node_not_found %}
+                <tr>
+                    <td>
+                        {{ additional_check.missing_node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for additional_check in additional_checks.span_end_node_not_found %}
+                <tr>
+                    <td>
+                        {{ additional_check.missing_node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'node_location_type_incorrect' in additional_checks %}
+    <h3>{% trans 'Node location type'  %}</h3>
+    <p>{% trans 'Your data contains nodes with incorrect location types. `/nodes/location/type` must be `Point`.'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'span_end_node_not_found'  %}
-                </td>
-                <td>
-                    Node Id we can't find: {{ additional_check.missing_node_id }}
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'node_location_type_incorrect' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.node_location_type_incorrect %}
+                <tr>
+                    <td>
+                        {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'node_location_coordinates_incorrect' in additional_checks %}
+    <h3>{% trans 'Node location coordinates'  %}</h3>
+    <p>{% trans 'Your data contains nodes with incorrectly formatted location coordinates. `/nodes/location/coordinates` must be a single position, i.e. an array of numbers.'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'node_location_type_incorrect'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'node_location_coordinates_incorrect' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.node_location_coordinates_incorrect %}
+                <tr>
+                    <td>
+                        {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'span_route_type_incorrect' in additional_checks %}
+    <h3>{% trans 'Span route geometry'  %}</h3>
+    <p>{% trans 'Your data contains spans with incorrect route types. `/spans/route/type` must be `LineString`.'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'node_location_coordinates_incorrect'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'span_route_type_incorrect' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.span_route_type_incorrect %}
+                <tr>
+                    <td>
+                        {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'span_route_coordinates_incorrect' in additional_checks %}
+    <h3>{% trans 'Span route coordinates'  %}</h3>
+    <p>{% trans 'Your data contains spans with incorrectly formatted route coordinates. `/spans/route/coordinates` must be an array of positions, i.e. an array of arrays of numbers.'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'span_route_type_incorrect'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'span_route_coordinates_incorrect' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.span_route_coordinates_incorrect %}
+                <tr>
+                    <td>
+                        {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'node_phase_reference_id_not_found' in additional_checks or 'span_phase_reference_id_not_found' in additional_checks or 'contract_related_phase_reference_id_not_found' in additional_checks  %}
+    <h3>{% trans 'Phase references'  %}</h3>
+    <p>{% trans 'Your data contains phase references that cannot be resolved. The `.id` of each phase reference must match the `.id` of exactly one phase in the `/phases` array.'  %}</p>
+    {% if 'node_phase_reference_id_not_found' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Node Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.node_phase_reference_id_not_found %}
+                    <tr>
+                        <td>
+                            {{ additional_check.node_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'span_phase_reference_id_not_found' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Span Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.span_phase_reference_id_not_found %}
+                    <tr>
+                        <td>
+                            {{ additional_check.span_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'contract_related_phase_reference_id_not_found' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Contract Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.contract_related_phase_reference_id_not_found %}
+                    <tr>
+                        <td>
+                            {{ additional_check.contract_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endif %}
+
+
+
+
+{% if 'node_phase_reference_name_does_not_match' in additional_checks or 'span_phase_reference_name_does_not_match' in additional_checks or 'contract_related_phase_reference_name_does_not_match' in additional_checks %}
+    <h3>{% trans 'Phase names'  %}</h3>
+    <p>{% trans 'Your data contains phase references with inconsistent names. The `.name` of each phase reference must match the `.name` of the phase it references.'  %}</p>
+    {% if 'node_phase_reference_name_does_not_match' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Node Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.node_phase_reference_name_does_not_match %}
+                    <tr>
+                        <td>
+                            {{ additional_check.node_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'span_phase_reference_name_does_not_match' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Span Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.span_phase_reference_name_does_not_match %}
+                    <tr>
+                        <td>
+                            {{ additional_check.span_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'contract_related_phase_reference_name_does_not_match' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Contract Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.contract_related_phase_reference_name_does_not_match %}
+                    <tr>
+                        <td>
+                            {{ additional_check.contract_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endif %}
+
+{% if 'node_phase_reference_name_set_but_not_in_original' in additional_checks %}
+    <h3>{% trans 'TODO node_phase_reference_name_set_but_not_in_original'  %}</h3>
+    <p>{% trans 'TODO'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'span_route_coordinates_incorrect'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'node_phase_reference_id_not_found' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.node_phase_reference_name_set_but_not_in_original %}
+                <tr>
+                    <td>
+                        {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+
+
+{% if 'span_phase_reference_name_set_but_not_in_original' in additional_checks %}
+    <h3>{% trans 'TODO span_phase_reference_name_set_but_not_in_original'  %}</h3>
+    <p>{% trans 'TODO'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'node_phase_reference_id_not_found'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'node_phase_reference_name_does_not_match' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.span_phase_reference_name_set_but_not_in_original %}
+                <tr>
+                    <td>
+                        {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'contract_related_phase_reference_name_set_but_not_in_original' in additional_checks %}
+    <h3>{% trans 'TODO span_phase_reference_name_set_but_not_in_original'  %}</h3>
+    <p>{% trans 'TODO'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'node_phase_reference_name_does_not_match'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Contract Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'node_phase_reference_name_set_but_not_in_original' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.contract_related_phase_reference_name_set_but_not_in_original %}
+                <tr>
+                    <td>
+                        {{ additional_check.contract_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'node_organisation_reference_id_not_found' in additional_checks or 'node_organisation_reference_id_not_found' in additional_checks or 'phase_organisation_reference_id_not_found' in additional_checks %}
+    <h3>{% trans 'Organisation references'  %}</h3>
+    <p>{% trans 'Your data contains organisation references that cannot be resolved. The `.id` of each organisation reference must match the `.id` of exactly one organisation in the `/organisations` array.'  %}</p>
+    {% if 'node_organisation_reference_id_not_found' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Field' %}</th>
+                    <th class="">{% trans 'Node Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.node_organisation_reference_id_not_found %}
+                    <tr>
+                        <td>
+                            {{ additional_check.field }}
+                        </td>
+                        <td>
+                            {{ additional_check.node_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'span_organisation_reference_id_not_found' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Field' %}</th>
+                    <th class="">{% trans 'Span Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.span_organisation_reference_id_not_found %}
+                    <tr>
+                        <td>
+                            {{ additional_check.field }}
+                        </td>
+                        <td>
+                            {{ additional_check.span_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'phase_organisation_reference_id_not_found' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Phase Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.phase_organisation_reference_id_not_found %}
+                    <tr>
+                        <td>
+                            {{ additional_check.phase_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endif %}
+
+
+
+{% if 'node_organisation_reference_name_does_not_match' in additional_checks %}
+    <h3>{% trans 'Organisation names'  %}</h3>
+    <p>{% trans 'Your data contains organisation references with inconsistent names. The `.name` of each organisation reference must match the `.name` of the organisation it references.'  %}</p>
+    {% if 'node_organisation_reference_name_does_not_match' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Field' %}</th>
+                    <th class="">{% trans 'Node Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.node_organisation_reference_name_does_not_match %}
+                    <tr>
+                        <td>
+                            {{ additional_check.field }}
+                        </td>
+                        <td>
+                            {{ additional_check.node_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'span_organisation_reference_name_does_not_match' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Field' %}</th>
+                    <th class="">{% trans 'Span Id' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.span_organisation_reference_name_does_not_match %}
+                    <tr>
+                        <td>
+                            {{ additional_check.field }}
+                        </td>
+                        <td>
+                            {{ additional_check.span_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'phase_organisation_reference_name_does_not_match' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Phase ID' %}</th>
+                    <th class="">{% trans 'Network ID' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.phase_organisation_reference_name_does_not_match %}
+                    <tr>
+                        <td>
+                            {{ additional_check.phase_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endif %}
+
+
+{% if 'node_organisation_reference_name_set_but_not_in_original' in additional_checks %}
+    <h3>{% trans 'TODO node_organisation_reference_name_set_but_not_in_original'  %}</h3>
+    <p>{% trans 'TODO '  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'node_phase_reference_name_set_but_not_in_original'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Field' %}</th>
+                <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'span_phase_reference_id_not_found' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.node_organisation_reference_name_set_but_not_in_original %}
+                <tr>
+                    <td>
+                        {{ additional_check.field }}
+                    </td>
+                    <td>
+                        {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'span_organisation_reference_name_set_but_not_in_original' in additional_checks %}
+    <h3>{% trans 'TODO span_organisation_reference_name_set_but_not_in_original'  %}</h3>
+    <p>{% trans 'TODO '  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'span_phase_reference_id_not_found'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Field' %}</th>
+                <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'span_phase_reference_name_does_not_match' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.span_organisation_reference_name_set_but_not_in_original %}
+                <tr>
+                    <td>
+                        {{ additional_check.field }}
+                    </td>
+                    <td>
+                        {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+
+
+{% if 'phase_organisation_reference_name_set_but_not_in_original' in additional_checks %}
+    <h3>{% trans 'TODO phase_organisation_reference_name_set_but_not_in_original'  %}</h3>
+    <p>{% trans 'TODO '  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'span_phase_reference_name_does_not_match'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Phase Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'span_phase_reference_name_set_but_not_in_original' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.phase_organisation_reference_name_set_but_not_in_original %}
+                <tr>
+                    <td>
+                        {{ additional_check.phase_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'node_international_connections_country_not_set' in additional_checks %}
+    <h3>{% trans 'International connection countries'  %}</h3>
+    <p>{% trans 'Your data contains nodes with international connections that do not specify a country. `.country` must be set for each international connection in `/nodes/internationalConnections`.'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'span_phase_reference_name_set_but_not_in_original'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'contract_related_phase_reference_id_not_found' %}
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.node_international_connections_country_not_set %}
+                <tr>
+                    <td>
+                        {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if 'has_links_with_external_node_data' in additional_checks %}
+    <h3>{% trans 'Links to nodes data'  %}</h3>
+    <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
+{% endif %}
+
+
+{% if 'has_links_with_external_span_data' in additional_checks %}
+    <h3>{% trans 'Links to spans data'  %}</h3>
+    <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
+{% endif %}
+
+
+{% if 'node_not_used_in_any_spans' in additional_checks %}
+    <h3>{% trans 'Orphaned nodes'  %}</h3>
+    <p>{% trans 'Your data contains nodes that are not referenced by any spans.'  %}</p>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    {% trans 'contract_related_phase_reference_id_not_found'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Contract Id: {{ additional_check.contract_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
+                <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Network ID' %}</th>
             </tr>
-        {% elif additional_check.type == 'contract_related_phase_reference_name_does_not_match' %}
-            <tr>
-                <td>
-                    {% trans 'contract_related_phase_reference_name_does_not_match'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Contract Id: {{ additional_check.contract_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'contract_related_phase_reference_name_set_but_not_in_original' %}
-            <tr>
-                <td>
-                    {% trans 'contract_related_phase_reference_name_set_but_not_in_original'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Contract Id: {{ additional_check.contract_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'node_organisation_reference_id_not_found' %}
-            <tr>
-                <td>
-                    {% trans 'node_organisation_reference_id_not_found'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }} Field: {{ additional_check.field }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'node_organisation_reference_name_does_not_match' %}
-            <tr>
-                <td>
-                    {% trans 'node_organisation_reference_name_does_not_match'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }} Field: {{ additional_check.field }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'node_organisation_reference_name_set_but_not_in_original' %}
-            <tr>
-                <td>
-                    {% trans 'node_organisation_reference_name_set_but_not_in_original'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }} Field: {{ additional_check.field }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'span_organisation_reference_id_not_found' %}
-            <tr>
-                <td>
-                    {% trans 'span_organisation_reference_id_not_found'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}  Field: {{ additional_check.field }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'span_organisation_reference_name_does_not_match' %}
-            <tr>
-                <td>
-                    {% trans 'span_organisation_reference_name_does_not_match'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}  Field: {{ additional_check.field }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'span_organisation_reference_name_set_but_not_in_original' %}
-            <tr>
-                <td>
-                    {% trans 'span_organisation_reference_name_set_but_not_in_original'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Span Id: {{ additional_check.span_id }}  Field: {{ additional_check.field }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'phase_organisation_reference_id_not_found' %}
-            <tr>
-                <td>
-                    {% trans 'phase_organisation_reference_id_not_found'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Phase Id: {{ additional_check.phase_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'phase_organisation_reference_name_does_not_match' %}
-            <tr>
-                <td>
-                    {% trans 'phase_organisation_reference_name_does_not_match'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Phase Id: {{ additional_check.phase_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'phase_organisation_reference_name_set_but_not_in_original' %}
-            <tr>
-                <td>
-                    {% trans 'phase_organisation_reference_name_set_but_not_in_original'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Phase Id: {{ additional_check.phase_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'node_international_connections_country_not_set' %}
-            <tr>
-                <td>
-                    {% trans 'node_international_connections_country_not_set'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }}
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'has_links_with_external_node_data' %}
-            <tr>
-                <td>
-                    {% trans 'has_links_with_external_node_data'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'has_links_with_external_span_data' %}
-            <tr>
-                <td>
-                    {% trans 'has_links_with_external_span_data'  %}
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% elif additional_check.type == 'node_not_used_in_any_spans' %}
-            <tr>
-                <td>
-                    {% trans 'node_not_used_in_any_spans'  %}
-                </td>
-                <td>
-                    Node Id: {{ additional_check.node_id }}
-                </td>
-                <td>
-                </td>
-                <td>
-                    {{ additional_check.network_id }}
-                </td>
-            </tr>
-        {% endif %}
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for additional_check in additional_checks.node_not_used_in_any_spans %}
+                <tr>
+                    <td>
+                        {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.network_id }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+

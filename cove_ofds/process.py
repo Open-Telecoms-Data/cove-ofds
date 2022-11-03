@@ -10,6 +10,7 @@ from ofdskit.lib.geojson import GeoJSONToJSONConverter, JSONToGeoJSONConverter
 
 from libcoveweb2.models import SuppliedDataFile
 from libcoveweb2.process import ProcessDataTask
+from libcoveweb2.utils import group_data_list_by
 
 
 class WasJSONUploaded(ProcessDataTask):
@@ -317,5 +318,9 @@ class ChecksAndStatistics(ProcessDataTask):
             with open(self.checks_and_stats_filename) as fp:
                 context.update(json.load(fp))
             context["additional_checks_count"] = len(context["additional_checks"])
+            context["additional_checks"] = group_data_list_by(
+                context["additional_checks"], lambda i: i["type"]
+            )
+            print(context["additional_checks"])
         # done!
         return context
