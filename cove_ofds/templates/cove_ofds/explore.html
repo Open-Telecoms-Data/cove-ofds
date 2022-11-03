@@ -1,4 +1,4 @@
-{% extends 'explore.html' %}
+{% extends 'libcoveweb2/explore.html' %}
 {% load i18n %}
 {% load cove_tags %}
 {% block header_button %}
@@ -95,14 +95,6 @@
         {% endblock %}
 
         {% if validation_errors %}
-              {% for error_json, values in validation_errors %}
-                {% with error=error_json|json_decode %}
-                  {% cove_modal_errors className="validation-errors-"|concat:forloop.counter modalTitle=error.message errorList=values file_type=file_type full_table=True %}
-                {% endwith %}
-              {% endfor %}
-
-
-              <a name="validation-errors" class="anchor"></a>
               <div class="panel panel-danger">
                 <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="validationTable" data-toggle="collapse" data-target="#validationTable">
                   <h4 class="panel-title">
@@ -110,7 +102,7 @@
                   </h4>
                 </div>
                 <div id="validationTable" class="collapse in panel-body">
-                  {% include "validation_table.html" %}
+                  {% include "cove_ofds/validation_table.html" %}
                 </div>
               </div>
         {% else %}
@@ -142,7 +134,7 @@
                   </h4>
                 </div>
                 <div id="additionalFieldsTable" class="collapse in panel-body">
-                  {% include "additional_fields_table.html" %}
+                  {% include "libcoveweb2/additional_fields_table.html" %}
                 </div>
               </div>
         {% else %}

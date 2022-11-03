@@ -1,15 +1,18 @@
 import json
 import os.path
 
-from libcove.lib.converters import convert_json, convert_spreadsheet
-from libcove.lib.tools import get_file_type as _get_file_type
-from libcoveofds.common_checks import common_checks_ofds
-from libcoveofds.config import LibCoveOFDSConfig
-from libcoveofds.schema import SchemaOFDS
+import flattentool
+from libcoveofds.additionalfields import AdditionalFields
+from libcoveofds.jsonschemavalidate import JSONSchemaValidator
+from libcoveofds.python_validate import PythonValidate
+from libcoveofds.schema import OFDSSchema
 from ofdskit.lib.geojson import GeoJSONToJSONConverter, JSONToGeoJSONConverter
 
 from libcoveweb2.models import SuppliedDataFile
 from libcoveweb2.process import ProcessDataTask
+
+# from libcove.lib.converters import convert_json, convert_spreadsheet
+from libcoveweb2.utils import get_file_type as _get_file_type
 from libcoveweb2.utils import group_data_list_by
 
 
@@ -55,22 +58,17 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         else:
             raise Exception("Can't find Spreadsheet original data!")
 
-        config = LibCoveOFDSConfig()
-        schema = SchemaOFDS()
-
         output_dir = os.path.join(self.supplied_data.data_dir(), "unflatten")
 
         os.makedirs(output_dir, exist_ok=True)
 
-        convert_spreadsheet(
-            output_dir,
-            os.path.join(self.supplied_data.data_url(), "unflatten"),
-            input_filename,
-            _get_file_type(input_filename),
-            config,
-            schema_url=schema.pkg_schema_url,
-            replace=True,
-        )
+        unflatten_kwargs = {
+            "output_name": os.path.join(output_dir, "unflattened.json"),
+            "root_list_path": "networks",
+            "input_format": _get_file_type(input_filename),
+        }
+
+        flattentool.unflatten(input_filename, **unflatten_kwargs)
 
         process_data["json_data_filename"] = os.path.join(
             self.supplied_data.data_dir(), "unflatten", "unflattened.json"
@@ -234,22 +232,16 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
 
     def process(self, process_data: dict) -> dict:
 
-        config = LibCoveOFDSConfig()
-        schema = SchemaOFDS()
-
-        output_dir = os.path.join(self.supplied_data.data_dir(), "flatten")
-
+        # TODO don't run if already done
+        output_dir = os.path.join(self.supplied_data.data_dir(), "flatten", "flattened")
         os.makedirs(output_dir, exist_ok=True)
 
-        convert_json(
-            output_dir,
-            os.path.join(self.supplied_data.data_url(), "flatten"),
-            process_data["json_data_filename"],
-            config,
-            schema_url=schema.pkg_schema_url,
-            replace=True,
-            flatten=True,
-        )
+        flatten_kwargs = {
+            "output_name": output_dir,
+            "root_list_path": "networks",
+        }
+
+        flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
 
         return process_data
 
@@ -283,44 +275,114 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         return context
 
 
-class ChecksAndStatistics(ProcessDataTask):
-    """With primary format (JSON), run all the checks and statistics."""
-
+class PythonValidateTask(ProcessDataTask):
     def __init__(self, supplied_data):
         super().__init__(supplied_data)
-        self.checks_and_stats_filename = os.path.join(
-            self.supplied_data.data_dir(), "checks_and_stats.json"
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(), "python_validate.json"
         )
 
     def process(self, process_data: dict) -> dict:
-        if os.path.exists(self.checks_and_stats_filename):
+        if os.path.exists(self.data_filename):
             return process_data
 
         with open(process_data["json_data_filename"]) as fp:
             data = json.load(fp)
 
-        config = LibCoveOFDSConfig()
-        schema = SchemaOFDS()
+        schema = OFDSSchema()
+        worker = PythonValidate(schema)
 
-        context = common_checks_ofds(
-            {"file_type": "json"}, self.supplied_data.data_dir(), data, schema, config
+        context = {"additional_checks": worker.validate(data)}
+        context["additional_checks_count"] = len(context["additional_checks"])
+        context["additional_checks"] = group_data_list_by(
+            context["additional_checks"], lambda i: i["type"]
         )
 
-        with open(self.checks_and_stats_filename, "w") as fp:
+        with open(self.data_filename, "w") as fp:
             json.dump(context, fp, indent=4)
 
         return process_data
 
     def get_context(self):
         context = {}
-        # checks and stats
-        if os.path.exists(self.checks_and_stats_filename):
-            with open(self.checks_and_stats_filename) as fp:
+        # data
+        if os.path.exists(self.data_filename):
+            with open(self.data_filename) as fp:
                 context.update(json.load(fp))
-            context["additional_checks_count"] = len(context["additional_checks"])
-            context["additional_checks"] = group_data_list_by(
-                context["additional_checks"], lambda i: i["type"]
-            )
-            print(context["additional_checks"])
+        # done!
+        return context
+
+
+class JsonSchemaValidateTask(ProcessDataTask):
+    def __init__(self, supplied_data):
+        super().__init__(supplied_data)
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(), "jsonschema_validate.json"
+        )
+
+    def process(self, process_data: dict) -> dict:
+        if os.path.exists(self.data_filename):
+            return process_data
+
+        with open(process_data["json_data_filename"]) as fp:
+            data = json.load(fp)
+
+        schema = OFDSSchema()
+        worker = JSONSchemaValidator(schema)
+
+        context = {"validation_errors": worker.validate(data)}
+        context["validation_errors"] = [i.json() for i in context["validation_errors"]]
+        context["validation_errors_count"] = len(context["validation_errors"])
+        context["validation_errors"] = group_data_list_by(
+            context["validation_errors"],
+            lambda i: str(i["path"]) + i["validator"] + i["message"],
+        )
+
+        with open(self.data_filename, "w") as fp:
+            json.dump(context, fp, indent=4)
+
+        return process_data
+
+    def get_context(self):
+        context = {}
+        # data
+        if os.path.exists(self.data_filename):
+            with open(self.data_filename) as fp:
+                context.update(json.load(fp))
+        # done!
+        return context
+
+
+class AdditionalFieldsChecksTask(ProcessDataTask):
+    def __init__(self, supplied_data):
+        super().__init__(supplied_data)
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(), "additional_fields.json"
+        )
+
+    def process(self, process_data: dict) -> dict:
+        if os.path.exists(self.data_filename):
+            return process_data
+
+        with open(process_data["json_data_filename"]) as fp:
+            data = json.load(fp)
+
+        schema = OFDSSchema()
+        worker = AdditionalFields(schema)
+
+        context = {"additional_fields": worker.process(data)}
+        context["additional_fields_count"] = len(context["additional_fields"])
+
+        with open(self.data_filename, "w") as fp:
+            json.dump(context, fp, indent=4)
+
+        return process_data
+
+    def get_context(self):
+        context = {}
+        # data
+        if os.path.exists(self.data_filename):
+            with open(self.data_filename) as fp:
+                context.update(json.load(fp))
         # done!
         return context

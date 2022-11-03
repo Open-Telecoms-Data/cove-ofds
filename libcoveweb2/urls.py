@@ -11,7 +11,9 @@ urlpatterns = [
     ),
     # TODO move terms.html template into libcoveweb2
     re_path(
-        r"^terms/$", TemplateView.as_view(template_name="terms.html"), name="terms"
+        r"^terms/$",
+        TemplateView.as_view(template_name="libcoveweb2/terms.html"),
+        name="terms",
     ),
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
