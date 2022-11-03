@@ -13,9 +13,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 import environ
-from cove import settings
 
-from libcoveweb2 import settings as libcoveweb2settings
+from libcoveweb2 import settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -62,8 +61,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "bootstrap3",
-    "cove",
-    "cove.input",
     "libcoveweb2",
     "cove_ofds",
 ]
@@ -78,7 +75,7 @@ MIDDLEWARE = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "cove.middleware.CoveConfigCurrentApp",
+    "libcoveweb2.middleware.CoveConfigCurrentApp",
 )
 
 
@@ -161,7 +158,7 @@ COVE_CONFIG = {
 # https://github.com/OpenDataServices/cove/issues/1098
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-ALLOWED_GEOJSON_CONTENT_TYPES = libcoveweb2settings.ALLOWED_JSON_CONTENT_TYPES + [
+ALLOWED_GEOJSON_CONTENT_TYPES = settings.ALLOWED_JSON_CONTENT_TYPES + [
     "application/geo+json"
 ]
-ALLOWED_GEOJSON_EXTENSIONS = libcoveweb2settings.ALLOWED_JSON_EXTENSIONS
+ALLOWED_GEOJSON_EXTENSIONS = settings.ALLOWED_JSON_EXTENSIONS

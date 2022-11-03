@@ -1,0 +1,31 @@
+{% extends 'libcoveweb2/base.html' %}
+{% load i18n %}
+{% block content %}
+    {% with app=request.current_app %}
+        <div>
+            {% comment %}
+            The content is split into many small templates.
+            This is so if one cove instance wants to change only one small bit of the page, they can do so by providing replacement templates of only the bit they want to change.
+            For example, a cove instance may want to keep most of the page the same but add legal content for another tracker.
+            {% endcomment %}
+
+            {% include "libcoveweb2/terms_conditions.html" %}
+
+            {% include "libcoveweb2/terms_cookies.html" %}
+
+            {% include "libcoveweb2/terms_privacy.html" %}
+
+            {% include "libcoveweb2/terms_trackers.html" %}
+
+            {% include "libcoveweb2/terms_data_uploaded.html" %}
+
+            {% include "libcoveweb2/terms_data_deleting.html" %}
+
+            {% include "libcoveweb2/terms_security.html" %}
+
+            {% include "libcoveweb2/terms_links.html" %}
+
+            {% include "libcoveweb2/terms_disclaimer.html" %}
+        </div>
+    {% endwith %}
+{% endblock %}

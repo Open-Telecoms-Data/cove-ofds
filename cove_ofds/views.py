@@ -1,4 +1,3 @@
-import functools
 import json
 import logging
 from decimal import Decimal
@@ -6,15 +5,16 @@ from decimal import Decimal
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from libcove.lib.exceptions import CoveInputDataError
 
 from cove_ofds.forms import NewGeoJSONUploadForm
 from cove_ofds.process import (
-    ChecksAndStatistics,
+    AdditionalFieldsChecksTask,
     ConvertGeoJSONIntoJSON,
     ConvertJSONIntoGeoJSON,
     ConvertJSONIntoSpreadsheets,
     ConvertSpreadsheetIntoJSON,
+    JsonSchemaValidateTask,
+    PythonValidateTask,
     WasJSONUploaded,
 )
 from libcoveweb2.models import SuppliedData
@@ -28,17 +28,6 @@ class DecimalEncoder(json.JSONEncoder):
         if isinstance(obj, Decimal):
             return str(obj)
         return json.JSONEncoder.default(self, obj)
-
-
-def cove_web_input_error(func):
-    @functools.wraps(func)
-    def wrapper(request, *args, **kwargs):
-        try:
-            return func(request, *args, **kwargs)
-        except CoveInputDataError as err:
-            return render(request, "error.html", context=err.context)
-
-    return wrapper
 
 
 def index(request):
@@ -87,7 +76,6 @@ def new_geojson(request):
     return render(request, "cove_ofds/new_geojson.html", {"forms": forms})
 
 
-@cove_web_input_error
 def explore_ofds(request, pk):
     context, db_data, error = explore_data_context(request, pk)
     if error:
@@ -102,7 +90,9 @@ def explore_ofds(request, pk):
         ConvertJSONIntoGeoJSON(db_data),
         ConvertJSONIntoSpreadsheets(db_data),
         # Checks and stats
-        ChecksAndStatistics(db_data),
+        AdditionalFieldsChecksTask(db_data),
+        PythonValidateTask(db_data),
+        JsonSchemaValidateTask(db_data),
     ]
 
     # Process bit that should be a task in a worker
