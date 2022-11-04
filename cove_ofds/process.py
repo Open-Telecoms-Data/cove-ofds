@@ -298,6 +298,41 @@ class PythonValidateTask(ProcessDataTask):
             context["additional_checks"], lambda i: i["type"]
         )
 
+        # The library returns *_name_does_not_match and *_reference_name_set_but_not_in_original as different types,
+        # but in this UI we don't care - we just want to show them as one section.
+        # So join the 2 types of errors into 1 list.
+        for f1, f2 in [
+            (
+                "node_phase_reference_name_does_not_match",
+                "node_phase_reference_name_set_but_not_in_original",
+            ),
+            (
+                "span_phase_reference_name_does_not_match",
+                "span_phase_reference_name_set_but_not_in_original",
+            ),
+            (
+                "contract_related_phase_reference_name_does_not_match",
+                "contract_related_phase_reference_name_set_but_not_in_original",
+            ),
+            (
+                "node_organisation_reference_name_does_not_match",
+                "node_organisation_reference_name_set_but_not_in_original",
+            ),
+            (
+                "span_organisation_reference_name_does_not_match",
+                "span_organisation_reference_name_set_but_not_in_original",
+            ),
+            (
+                "phase_organisation_reference_name_does_not_match",
+                "phase_organisation_reference_name_set_but_not_in_original",
+            ),
+        ]:
+            new_list = context["additional_checks"].get(f1, []) + context[
+                "additional_checks"
+            ].get(f2, [])
+            if new_list:
+                context["additional_checks"][f1] = new_list
+
         with open(self.data_filename, "w") as fp:
             json.dump(context, fp, indent=4)
 
