@@ -4,6 +4,12 @@
 {% if 'span_start_node_not_found' in additional_checks or 'span_end_node_not_found' in additional_checks  %}
     <h3>{% trans 'Node references'  %}</h3>
     <p>{% trans 'Your data contains spans with node references that cannot be resolved. `Span.start` and `Span.end` must match the `.id` of exactly one node in the `/nodes` array.'  %}</p>
+    {% if 'span_start_node_not_found' in additional_checks %}
+        <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/Span,start">{% trans 'Schema Documentation' %}</a></p>
+    {% endif %}
+    {% if 'span_end_node_not_found' in additional_checks %}
+        <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/Span,end">{% trans 'Schema Documentation' %}</a></p>
+    {% endif %}
     <table class="table">
         <thead>
             <tr>
@@ -47,6 +53,7 @@
 {% if 'node_location_type_incorrect' in additional_checks %}
     <h3>{% trans 'Node location type'  %}</h3>
     <p>{% trans 'Your data contains nodes with incorrect location types. `/nodes/location/type` must be `Point`.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/Geometry,type">{% trans 'Schema Documentation' %}</a></p>
     <table class="table">
         <thead>
             <tr>
@@ -73,6 +80,7 @@
 {% if 'node_location_coordinates_incorrect' in additional_checks %}
     <h3>{% trans 'Node location coordinates'  %}</h3>
     <p>{% trans 'Your data contains nodes with incorrectly formatted location coordinates. `/nodes/location/coordinates` must be a single position, i.e. an array of numbers.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/Geometry,coordinates">{% trans 'Schema Documentation' %}</a></p>
     <table class="table">
         <thead>
             <tr>
@@ -99,6 +107,7 @@
 {% if 'span_route_type_incorrect' in additional_checks %}
     <h3>{% trans 'Span route geometry'  %}</h3>
     <p>{% trans 'Your data contains spans with incorrect route types. `/spans/route/type` must be `LineString`.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/Geometry,type">{% trans 'Schema Documentation' %}</a></p>
     <table class="table">
         <thead>
             <tr>
@@ -125,6 +134,7 @@
 {% if 'span_route_coordinates_incorrect' in additional_checks %}
     <h3>{% trans 'Span route coordinates'  %}</h3>
     <p>{% trans 'Your data contains spans with incorrectly formatted route coordinates. `/spans/route/coordinates` must be an array of positions, i.e. an array of arrays of numbers.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/Geometry,coordinates">{% trans 'Schema Documentation' %}</a></p>
     <table class="table">
         <thead>
             <tr>
@@ -151,6 +161,7 @@
 {% if 'node_phase_reference_id_not_found' in additional_checks or 'span_phase_reference_id_not_found' in additional_checks or 'contract_related_phase_reference_id_not_found' in additional_checks  %}
     <h3>{% trans 'Phase references'  %}</h3>
     <p>{% trans 'Your data contains phase references that cannot be resolved. The `.id` of each phase reference must match the `.id` of exactly one phase in the `/phases` array.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/PhaseReference,id">{% trans 'Schema Documentation' %}</a></p>
     {% if 'node_phase_reference_id_not_found' in additional_checks %}
         <table class="table">
             <thead>
@@ -225,6 +236,7 @@
 {% if 'node_phase_reference_name_does_not_match' in additional_checks or 'span_phase_reference_name_does_not_match' in additional_checks or 'contract_related_phase_reference_name_does_not_match' in additional_checks %}
     <h3>{% trans 'Phase names'  %}</h3>
     <p>{% trans 'Your data contains phase references with inconsistent names. The `.name` of each phase reference must match the `.name` of the phase it references.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/PhaseReference,name">{% trans 'Schema Documentation' %}</a></p>
     {% if 'node_phase_reference_name_does_not_match' in additional_checks %}
         <table class="table">
             <thead>
@@ -297,6 +309,7 @@
 {% if 'node_organisation_reference_id_not_found' in additional_checks or 'node_organisation_reference_id_not_found' in additional_checks or 'phase_organisation_reference_id_not_found' in additional_checks %}
     <h3>{% trans 'Organisation references'  %}</h3>
     <p>{% trans 'Your data contains organisation references that cannot be resolved. The `.id` of each organisation reference must match the `.id` of exactly one organisation in the `/organisations` array.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/OrganisationReference,id">{% trans 'Schema Documentation' %}</a></p>
     {% if 'node_organisation_reference_id_not_found' in additional_checks %}
         <table class="table">
             <thead>
@@ -378,6 +391,7 @@
 {% if 'node_organisation_reference_name_does_not_match' in additional_checks %}
     <h3>{% trans 'Organisation names'  %}</h3>
     <p>{% trans 'Your data contains organisation references with inconsistent names. The `.name` of each organisation reference must match the `.name` of the organisation it references.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/OrganisationReference,name">{% trans 'Schema Documentation' %}</a></p>
     {% if 'node_organisation_reference_name_does_not_match' in additional_checks %}
         <table class="table">
             <thead>
@@ -458,6 +472,7 @@
 {% if 'node_international_connections_country_not_set' in additional_checks %}
     <h3>{% trans 'International connection countries'  %}</h3>
     <p>{% trans 'Your data contains nodes with international connections that do not specify a country. `.country` must be set for each international connection in `/nodes/internationalConnections`.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,/definitions/Node,internationalConnections">{% trans 'Schema Documentation' %}</a></p>
     <table class="table">
         <thead>
             <tr>
@@ -484,12 +499,14 @@
 {% if 'has_links_with_external_node_data' in additional_checks %}
     <h3>{% trans 'Links to nodes data'  %}</h3>
     <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,,links">{% trans 'Schema Documentation' %}</a></p>
 {% endif %}
 
 
 {% if 'has_links_with_external_span_data' in additional_checks %}
     <h3>{% trans 'Links to spans data'  %}</h3>
     <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
+    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,,links">{% trans 'Schema Documentation' %}</a></p>
 {% endif %}
 
 
