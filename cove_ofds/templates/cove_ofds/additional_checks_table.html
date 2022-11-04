@@ -496,20 +496,6 @@
 {% endif %}
 
 
-{% if 'has_links_with_external_node_data' in additional_checks %}
-    <h3>{% trans 'Links to nodes data'  %}</h3>
-    <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
-    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,,links">{% trans 'Schema Documentation' %}</a></p>
-{% endif %}
-
-
-{% if 'has_links_with_external_span_data' in additional_checks %}
-    <h3>{% trans 'Links to spans data'  %}</h3>
-    <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
-    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,,links">{% trans 'Schema Documentation' %}</a></p>
-{% endif %}
-
-
 {% if 'node_not_used_in_any_spans' in additional_checks %}
     <h3>{% trans 'Unreferenced nodes'  %}</h3>
     <p>{% trans 'Your data contains nodes that are not referenced by any spans.'  %}</p>

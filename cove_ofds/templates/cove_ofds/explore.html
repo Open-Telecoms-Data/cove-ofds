@@ -20,6 +20,39 @@
           </div>
     </div>
 
+
+    {% if has_links_with_external_node_data %}
+        <div class="row">
+             <div class="panel {% if unknown_schema_version_used or inconsistent_schema_version_used_count %}panel-danger{% else %}panel-success{% endif %}">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="validationTable" data-toggle="collapse" data-target="#validationTable">
+                  <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Links to nodes data' %}
+                  </h4>
+                </div>
+                <div id="validationTable" class="collapse in panel-body">
+                    <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
+                    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,,links">{% trans 'Schema Documentation' %}</a></p>
+                </div>
+              </div>
+        </div>
+    {% endif %}
+
+    {% if has_links_with_external_span_data %}
+        <div class="row">
+             <div class="panel {% if unknown_schema_version_used or inconsistent_schema_version_used_count %}panel-danger{% else %}panel-success{% endif %}">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="validationTable" data-toggle="collapse" data-target="#validationTable">
+                  <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Links to spans data' %}
+                  </h4>
+                </div>
+                <div id="validationTable" class="collapse in panel-body">
+                    <p>{% trans 'Your data contains links to API endpoints or bulk files for nodes. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE.'  %}</p>
+                    <p><a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,,links">{% trans 'Schema Documentation' %}</a></p>
+                </div>
+              </div>
+        </div>
+    {% endif %}
+
     <div class="row">
 
             <div class="panel panel-success">

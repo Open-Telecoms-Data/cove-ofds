@@ -291,8 +291,38 @@ class PythonValidateTask(ProcessDataTask):
 
         schema = OFDSSchema()
         worker = PythonValidate(schema)
-
         context = {"additional_checks": worker.validate(data)}
+
+        # has_links_with_external_node_data and has_links_with_external_span_data are shown in a different bit of UI.
+        # Set variables and move out of additional_checks
+        context["has_links_with_external_node_data"] = (
+            True
+            if [
+                r
+                for r in context["additional_checks"]
+                if r["type"] == "has_links_with_external_node_data"
+            ]
+            else False
+        )
+        context["has_links_with_external_span_data"] = (
+            True
+            if [
+                r
+                for r in context["additional_checks"]
+                if r["type"] == "has_links_with_external_span_data"
+            ]
+            else False
+        )
+        context["additional_checks"] = [
+            r
+            for r in context["additional_checks"]
+            if (
+                r["type"] != "has_links_with_external_node_data"
+                and r["type"] != "has_links_with_external_span_data"
+            )
+        ]
+
+        # Count and group what's left
         context["additional_checks_count"] = len(context["additional_checks"])
         context["additional_checks"] = group_data_list_by(
             context["additional_checks"], lambda i: i["type"]
