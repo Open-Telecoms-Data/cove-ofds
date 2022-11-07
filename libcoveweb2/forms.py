@@ -15,6 +15,10 @@ class NewJSONUploadForm(forms.Form):
     )
 
 
+class NewJSONTextForm(forms.Form):
+    paste = forms.CharField(label="Paste (JSON only)", widget=forms.Textarea)
+
+
 class NewSpreadsheetUploadForm(forms.Form):
     file_upload = forms.FileField(
         widget=forms.FileInput(

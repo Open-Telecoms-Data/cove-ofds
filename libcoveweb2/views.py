@@ -6,43 +6,71 @@ from django.utils.translation import gettext_lazy as _
 
 from libcoveweb2.forms import (
     NewCSVsUploadForm,
+    NewJSONTextForm,
     NewJSONUploadForm,
     NewSpreadsheetUploadForm,
 )
 from libcoveweb2.models import SuppliedData, SuppliedDataFile
 
+JSON_FORM_CLASSES = {
+    "upload_form": NewJSONUploadForm,
+    "text_form": NewJSONTextForm,
+}
+
 
 def new_json(request):
 
     forms = {
-        "upload_form": NewJSONUploadForm(request.POST, request.FILES)
-        if request.POST
-        else NewJSONUploadForm()
+        form_name: form_class() for form_name, form_class in JSON_FORM_CLASSES.items()
     }
-    form = forms["upload_form"]
-    if form.is_valid():
-        # Extra Validation
-        if (
-            not request.FILES["file_upload"].content_type
-            in settings.ALLOWED_JSON_CONTENT_TYPES
-        ):
-            form.add_error("file_upload", "This does not appear to be a JSON file")
-        if not [
-            e
-            for e in settings.ALLOWED_JSON_EXTENSIONS
-            if str(request.FILES["file_upload"].name).lower().endswith(e)
-        ]:
-            form.add_error("file_upload", "This does not appear to be a JSON file")
-
-        # Process
+    request_data = None
+    if request.POST:
+        request_data = request.POST
+    if request_data:
+        if "paste" in request_data:
+            form_name = "text_form"
+        else:
+            form_name = "upload_form"
+        forms[form_name] = JSON_FORM_CLASSES[form_name](request_data, request.FILES)
+        form = forms[form_name]
         if form.is_valid():
-            supplied_data = SuppliedData()
-            supplied_data.format = "json"
-            supplied_data.save()
+            # Extra Validation
+            if form_name == "upload_form":
+                if (
+                    not request.FILES["file_upload"].content_type
+                    in settings.ALLOWED_JSON_CONTENT_TYPES
+                ):
+                    form.add_error(
+                        "file_upload", "This does not appear to be a JSON file"
+                    )
+                if not [
+                    e
+                    for e in settings.ALLOWED_JSON_EXTENSIONS
+                    if str(request.FILES["file_upload"].name).lower().endswith(e)
+                ]:
+                    form.add_error(
+                        "file_upload", "This does not appear to be a JSON file"
+                    )
+            elif form_name == "text_form":
+                pass  # TODO
 
-            supplied_data.save_file(request.FILES["file_upload"])
+            # Process
+            if form.is_valid():
+                supplied_data = SuppliedData()
+                supplied_data.format = "json"
+                supplied_data.save()
 
-            return HttpResponseRedirect(supplied_data.get_absolute_url())
+                if form_name == "upload_form":
+                    supplied_data.save_file(request.FILES["file_upload"])
+                elif form_name == "text_form":
+                    supplied_data.save_file_contents(
+                        "input.json",
+                        form.cleaned_data["paste"],
+                        "application/json",
+                        None,
+                    )
+
+                return HttpResponseRedirect(supplied_data.get_absolute_url())
 
     return render(request, "libcoveweb2/new_json.html", {"forms": forms})
 
