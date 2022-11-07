@@ -75,6 +75,11 @@ def new_json(request):
     return render(request, "libcoveweb2/new_json.html", {"forms": forms})
 
 
+CSVS_FORM_CLASSES = {
+    "upload_form": NewCSVsUploadForm,
+}
+
+
 def new_csvs(request):
 
     forms = {

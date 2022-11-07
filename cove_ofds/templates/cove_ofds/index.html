@@ -4,17 +4,137 @@
 
 {% block content %}
 
-    <div>
-        <a href="{% url 'new_json' %}">Upload JSON</a>
+
+    <p>
+        Use the form below to submit your data. You can submit data in either JSON, GeoJSON or CSV format.
+        For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats.html" target="_blank">publication format reference</a>.
+    </p>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 30px;">
+      <li class="active">
+          <a href="#json" role="tab" data-toggle="tab">
+              JSON
+          </a>
+      </li>
+      <li>
+          <a href="#geojson" role="tab" data-toggle="tab">
+              GeoJSON
+          </a>
+      </li>
+      <li>
+          <a href="#csvs" role="tab" data-toggle="tab">
+            CSVs
+          </a>
+      </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div class="tab-pane fade active in" id="json">
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  <h4 class="panel-title">
+                    <a class="accordion-toggle">
+                      <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>{% trans "Upload" %}
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                  <div class="panel-body">
+                    <form method="POST" action="{% url 'new_json' %}" enctype="multipart/form-data">{% csrf_token %}
+                        {% bootstrap_form forms.json.upload_form %}
+                        {% buttons %}
+                            <button type="submit" class="btn btn-primary">
+                                {% trans 'Submit' %}
+                            </button>
+                        {% endbuttons %}
+                    </form>
+                  </div>
+                </div>
+            </div>
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                  <h4 class="panel-title">
+                    <a class="accordion-toggle">
+                      <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>{% trans "Paste" %}
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+                  <div class="panel-body">
+                    <form method="POST" action="{% url 'new_json' %}" enctype="multipart/form-data">{% csrf_token %}
+                        {% bootstrap_form forms.json.text_form %}
+                        {% buttons %}
+                            <button type="submit" class="btn btn-primary">
+                                {% trans 'Submit' %}
+                            </button>
+                        {% endbuttons %}
+                    </form>
+                  </div>
+                </div>
+            </div>
+
+
+      </div>
+      <div class="tab-pane fade" id="geojson">
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingFour" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                  <h4 class="panel-title">
+                    <a class="accordion-toggle">
+                      <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>{% trans "Upload" %}
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseFour" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingFour">
+                  <div class="panel-body">
+                    <form method="POST" action="{% url 'new_geojson' %}" enctype="multipart/form-data">{% csrf_token %}
+                        {% bootstrap_form forms.geojson.upload_form %}
+                        {% buttons %}
+                            <button type="submit" class="btn btn-primary">
+                                {% trans 'Submit' %}
+                            </button>
+                        {% endbuttons %}
+                    </form>
+                  </div>
+                </div>
+            </div>
+
+      </div>
+      <div class="tab-pane fade" id="csvs">
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingSeven" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
+                  <h4 class="panel-title">
+                    <a class="accordion-toggle">
+                      <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>{% trans "Upload" %}
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseSeven" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSeven">
+                  <div class="panel-body">
+                    <form method="POST" action="{% url 'new_csvs' %}" enctype="multipart/form-data">{% csrf_token %}
+                        {% bootstrap_form forms.csvs.upload_form %}
+                        {% buttons %}
+                            <button type="submit" class="btn btn-primary">
+                                {% trans 'Submit' %}
+                            </button>
+                        {% endbuttons %}
+                    </form>
+                  </div>
+                </div>
+            </div>
+
+      </div>
     </div>
-    <div>
-        <a href="{% url 'new_spreadsheet' %}">Upload Spreadsheet</a>
-    </div>
-    <div>
-        <a href="{% url 'new_csvs' %}">Upload CSVs</a>
-    </div>
-    <div>
-        <a href="{% url 'new_geojson' %}">Upload GeoJSON</a>
-    </div>
+
+
 
 {% endblock %}

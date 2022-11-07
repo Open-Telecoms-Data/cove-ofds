@@ -4,6 +4,7 @@ from django.conf import settings
 
 class NewGeoJSONUploadForm(forms.Form):
     nodes_file_upload = forms.FileField(
+        label="Select GeoJSON Nodes file",
         widget=forms.FileInput(
             attrs={
                 "accept": ",".join(
@@ -11,9 +12,10 @@ class NewGeoJSONUploadForm(forms.Form):
                     + settings.ALLOWED_GEOJSON_EXTENSIONS
                 )
             }
-        )
+        ),
     )
     spans_file_upload = forms.FileField(
+        label="Select GeoJSON Spans file",
         widget=forms.FileInput(
             attrs={
                 "accept": ",".join(
@@ -21,5 +23,5 @@ class NewGeoJSONUploadForm(forms.Form):
                     + settings.ALLOWED_GEOJSON_EXTENSIONS
                 )
             }
-        )
+        ),
     )
