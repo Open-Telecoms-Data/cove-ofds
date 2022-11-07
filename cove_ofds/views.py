@@ -50,13 +50,13 @@ def new_geojson(request):
                 not request.FILES[field].content_type
                 in settings.ALLOWED_GEOJSON_CONTENT_TYPES
             ):
-                form.add_error("file_upload", "This does not appear to be a JSON file")
+                form.add_error(field, "This does not appear to be a JSON file")
             if not [
                 e
                 for e in settings.ALLOWED_GEOJSON_EXTENSIONS
                 if str(request.FILES[field].name).lower().endswith(e)
             ]:
-                form.add_error("file_upload", "This does not appear to be a JSON file")
+                form.add_error(field, "This does not appear to be a JSON file")
 
         # Process
         if form.is_valid():
