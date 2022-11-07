@@ -38,77 +38,130 @@
 
     <div class="row">
 
-            <div class="panel panel-success">
-                <div id="download-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="downloadData" data-toggle="collapse" data-target="#downloadData">
+        <div class="panel panel-success">
+            <div id="download-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+                 aria-controls="downloadData" data-toggle="collapse" data-target="#downloadData">
+                <h4 class="panel-title">
                     <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Download Data' %}
-                  </h4>
-                </div>
-                <div id="downloadData" class="collapse in panel-body">
-
-                    <p>
-                        {% if original_format == 'json' %}
-                            {% trans 'You uploaded data in JSON format.' %}
-                        {% elif original_format == 'spreadsheet' %}
-                            {% trans 'You uploaded data in a spreadsheet format.' %}
-                        {% elif original_format == 'geojson' %}
-                            {% trans 'You uploaded data in a GeoJSON format.' %}
-                        {% endif %}
-                    </p>
-
-                    <p>
-                        {% trans 'You can download your original data:' %}
-                    </p>
-
-                    <ul class="list-unstyled">
-                        {% for supplied_data_file in supplied_data_files %}
-                            <li>
-                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{   supplied_data_file.size|filesizeformat }})</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-
-                    {% if can_download_geojson or can_download_xlsx or can_download_ods or can_download_json %}
-                        <p>{% trans 'We converted this to the following formats for you:' %}</p>
-                        <ul class="list-unstyled">
-                            {% if can_download_json %}
-                              <li>
-                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                  <a href="{{download_json_url}}">{% trans 'JSON' %} ({{   download_json_size|filesizeformat }})</a>
-                              </li>
-                            {% endif %}
-                            {% if can_download_geojson %}
-                              <li>
-                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                  <a href="{{download_geojson_nodes_url}}">{% trans 'Nodes GeoJSON' %} ({{   download_geojson_nodes_size|filesizeformat }})</a>
-                              </li>
-                              <li>
-                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                  <a href="{{download_geojson_spans_url}}">{% trans 'Spans GeoJSON' %} ({{   download_geojson_spans_size|filesizeformat }})</a>
-                              </li>
-                            {% endif %}
-                            {% if can_download_xlsx %}
-                              <li>
-                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                  <a href="{{download_xlsx_url}}">{% trans 'Spreadsheet (XLSX)' %} ({{   download_xlsx_size|filesizeformat }})</a>
-                              </li>
-                            {% endif %}
-                            {% if can_download_ods %}
-                              <li>
-                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                  <a href="{{download_ods_url}}">{% trans 'Spreadsheet (ODS)' %} ({{   download_ods_size|filesizeformat }})</a>
-                              </li>
-                            {% endif %}
-                            {% if can_download_csvs_zip %}
-                              <li>
-                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                  <a href="{{download_csvs_zip_url}}">{% trans 'CSVs in a ZIP file' %} ({{   download_csvs_zip_size|filesizeformat }})</a>
-                              </li>
-                            {% endif %}
-                        </ul>
-                    {% endif %}
-                </div>
+                </h4>
             </div>
+            <div id="downloadData" class="collapse in panel-body">
+
+                <p>
+                    For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats.html" target="_blank">publication format reference</a>.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-4">
+
+
+                        <div class="panel {% if original_format == 'json' %}panel-info{% else %}panel-success{% endif %}">
+                            <div id="download-json-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+                                 aria-controls="downloadData" data-toggle="collapse" data-target="#downloadDataJSON">
+                                <h4 class="panel-title">
+                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'JSON' %} {% if original_format == 'json' %}{% trans '(original)' %}{% endif %}
+                                </h4>
+                            </div>
+                            <div id="downloadDataJSON" class="collapse in panel-body">
+                                {% if original_format == 'json' %}
+                                    <ul class="list-unstyled">
+                                        {% for supplied_data_file in supplied_data_files %}
+                                        <li>
+                                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                            <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{ supplied_data_file.size|filesizeformat }})</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {% if can_download_json %}
+                                        <ul class="list-unstyled">
+                                            <li>
+                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                <a href="{{download_json_url}}">{% trans 'JSON' %} ({{ download_json_size|filesizeformat }})</a>
+                                            </li>
+                                        </ul>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4">
+
+                        <div class="panel {% if original_format == 'geojson' %}panel-info{% else %}panel-success{% endif %}">
+                            <div id="download-geojson-panel" class="panel-heading pointer" role="region"
+                                 aria-expanded="true" aria-controls="downloadData" data-toggle="collapse"
+                                 data-target="#downloadDataGeoJSON">
+                                <h4 class="panel-title">
+                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'GeoJSON' %} {% if original_format == 'geojson' %}{% trans '(original)' %}{% endif %}
+                                </h4>
+                            </div>
+                            <div id="downloadDataGeoJSON" class="collapse in panel-body">
+                                {% if original_format == 'geojson' %}
+                                    <ul class="list-unstyled">
+                                        {% for supplied_data_file in supplied_data_files %}
+                                        <li>
+                                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                            <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{ supplied_data_file.size|filesizeformat }})</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {% if can_download_geojson %}
+                                        <ul class="list-unstyled">
+                                            <li>
+                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                <a href="{{download_geojson_nodes_url}}">{% trans 'Nodes GeoJSON' %} ({{ download_geojson_nodes_size|filesizeformat }})</a>
+                                            </li>
+                                            <li>
+                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                <a href="{{download_geojson_spans_url}}">{% trans 'Spans GeoJSON' %} ({{ download_geojson_spans_size|filesizeformat }})</a>
+                                            </li>
+                                        </ul>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4">
+
+                        <div class="panel {% if original_format == 'csvs' %}panel-info{% else %}panel-success{% endif %}">
+                            <div id="download-csvs-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+                                 aria-controls="downloadData" data-toggle="collapse" data-target="#downloadDataCSVs">
+                                <h4 class="panel-title">
+                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'CSVs' %} {% if original_format == 'csvs' %}{% trans '(original)' %}{% endif %}
+                                </h4>
+                            </div>
+                            <div id="downloadDataCSVs" class="collapse in panel-body">
+                                {% if original_format == 'csvs' %}
+                                    <ul class="list-unstyled">
+                                        {% for supplied_data_file in supplied_data_files %}
+                                        <li>
+                                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                            <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{ supplied_data_file.size|filesizeformat }})</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {% if can_download_csvs_zip %}
+                                        <ul class="list-unstyled">
+                                            <li>
+                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                <a href="{{download_csvs_zip_url}}">{% trans 'CSVs in a ZIP file' %} ({{ download_csvs_zip_size|filesizeformat }})</a>
+                                            </li>
+                                        </ul>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <div class="row">
