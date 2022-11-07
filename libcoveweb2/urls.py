@@ -6,6 +6,7 @@ import libcoveweb2.views
 
 urlpatterns = [
     re_path(r"^new_json$", libcoveweb2.views.new_json, name="new_json"),
+    re_path(r"^new_csvs$", libcoveweb2.views.new_csvs, name="new_csvs"),
     re_path(
         r"^new_spreadsheet$", libcoveweb2.views.new_spreadsheet, name="new_spreadsheet"
     ),

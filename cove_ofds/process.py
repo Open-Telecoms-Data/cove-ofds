@@ -97,6 +97,55 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         return context
 
 
+class ConvertCSVsIntoJSON(ProcessDataTask):
+    """If User uploaded CSVs, convert to our primary format, JSON."""
+
+    def process(self, process_data: dict) -> dict:
+        if self.supplied_data.format != "csvs":
+            return process_data
+
+        # check already done
+        # TODO
+
+        output_dir = os.path.join(self.supplied_data.data_dir(), "unflatten")
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        unflatten_kwargs = {
+            "output_name": os.path.join(output_dir, "unflattened.json"),
+            "root_list_path": "networks",
+            "input_format": "csv",
+        }
+
+        flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
+
+        process_data["json_data_filename"] = os.path.join(
+            self.supplied_data.data_dir(), "unflatten", "unflattened.json"
+        )
+
+        return process_data
+
+    def get_context(self):
+        context = {}
+        # original format
+        if self.supplied_data.format == "csvs":
+            context["original_format"] = "csvs"
+            # Download data
+            filename = os.path.join(
+                self.supplied_data.data_dir(), "unflatten", "unflattened.json"
+            )
+            if os.path.exists(filename):
+                context["can_download_json"] = True
+                context["download_json_url"] = os.path.join(
+                    self.supplied_data.data_url(), "unflatten", "unflattened.json"
+                )
+                context["download_json_size"] = os.stat(filename).st_size
+            else:
+                context["can_download_json"] = False
+        # Return
+        return context
+
+
 class ConvertGeoJSONIntoJSON(ProcessDataTask):
     """If User uploaded GeoJSON, convert to our primary format, JSON."""
 

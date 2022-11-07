@@ -9,6 +9,7 @@ from django.shortcuts import render
 from cove_ofds.forms import NewGeoJSONUploadForm
 from cove_ofds.process import (
     AdditionalFieldsChecksTask,
+    ConvertCSVsIntoJSON,
     ConvertGeoJSONIntoJSON,
     ConvertJSONIntoGeoJSON,
     ConvertJSONIntoSpreadsheets,
@@ -85,6 +86,7 @@ def explore_ofds(request, pk):
         # Make sure uploads are in primary format
         WasJSONUploaded(db_data),
         ConvertSpreadsheetIntoJSON(db_data),
+        ConvertCSVsIntoJSON(db_data),
         ConvertGeoJSONIntoJSON(db_data),
         # Convert into output formats
         ConvertJSONIntoGeoJSON(db_data),

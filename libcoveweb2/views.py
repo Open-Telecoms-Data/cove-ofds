@@ -1,16 +1,15 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
-from libcoveweb2.forms import NewJSONUploadForm, NewSpreadsheetUploadForm
-from libcoveweb2.models import SuppliedData, SuppliedDataFile
-from libcoveweb2.settings import (
-    ALLOWED_JSON_CONTENT_TYPES,
-    ALLOWED_JSON_EXTENSIONS,
-    ALLOWED_SPREADSHEET_CONTENT_TYPES,
-    ALLOWED_SPREADSHEET_EXTENSIONS,
+from libcoveweb2.forms import (
+    NewCSVsUploadForm,
+    NewJSONUploadForm,
+    NewSpreadsheetUploadForm,
 )
+from libcoveweb2.models import SuppliedData, SuppliedDataFile
 
 
 def new_json(request):
@@ -23,11 +22,14 @@ def new_json(request):
     form = forms["upload_form"]
     if form.is_valid():
         # Extra Validation
-        if not request.FILES["file_upload"].content_type in ALLOWED_JSON_CONTENT_TYPES:
+        if (
+            not request.FILES["file_upload"].content_type
+            in settings.ALLOWED_JSON_CONTENT_TYPES
+        ):
             form.add_error("file_upload", "This does not appear to be a JSON file")
         if not [
             e
-            for e in ALLOWED_JSON_EXTENSIONS
+            for e in settings.ALLOWED_JSON_EXTENSIONS
             if str(request.FILES["file_upload"].name).lower().endswith(e)
         ]:
             form.add_error("file_upload", "This does not appear to be a JSON file")
@@ -45,6 +47,45 @@ def new_json(request):
     return render(request, "libcoveweb2/new_json.html", {"forms": forms})
 
 
+def new_csvs(request):
+
+    forms = {
+        "upload_form": NewCSVsUploadForm(request.POST, request.FILES)
+        if request.POST
+        else NewCSVsUploadForm()
+    }
+    form = forms["upload_form"]
+    if form.is_valid():
+        # Extra Validation
+        for field in form.file_field_names:
+            if request.FILES.get(field):
+                if (
+                    not request.FILES[field].content_type
+                    in settings.ALLOWED_CSV_CONTENT_TYPES
+                ):
+                    form.add_error(field, "This does not appear to be a CSV file")
+                if not [
+                    e
+                    for e in settings.ALLOWED_CSV_EXTENSIONS
+                    if str(request.FILES[field].name).lower().endswith(e)
+                ]:
+                    form.add_error(field, "This does not appear to be a CSV file")
+
+        # Process
+        if form.is_valid():
+            supplied_data = SuppliedData()
+            supplied_data.format = "csvs"
+            supplied_data.save()
+
+            for field in form.file_field_names:
+                if request.FILES.get(field):
+                    supplied_data.save_file(request.FILES[field])
+
+            return HttpResponseRedirect(supplied_data.get_absolute_url())
+
+    return render(request, "libcoveweb2/new_csvs.html", {"forms": forms})
+
+
 def new_spreadsheet(request):
 
     forms = {
@@ -57,12 +98,12 @@ def new_spreadsheet(request):
         # Extra Validation
         if (
             not request.FILES["file_upload"].content_type
-            in ALLOWED_SPREADSHEET_CONTENT_TYPES
+            in settings.ALLOWED_SPREADSHEET_CONTENT_TYPES
         ):
             form.add_error("file_upload", "This does not appear to be a spreadsheet")
         if not [
             e
-            for e in ALLOWED_SPREADSHEET_EXTENSIONS
+            for e in settings.ALLOWED_SPREADSHEET_EXTENSIONS
             if str(request.FILES["file_upload"].name).lower().endswith(e)
         ]:
             form.add_error("file_upload", "This does not appear to be a spreadsheet")
