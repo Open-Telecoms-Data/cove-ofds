@@ -28,7 +28,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
     - run: pip install dokkusd
-    - run: python -m dokkusd.cli deploy --appname ${{ secrets.DOKKUSD_LIVE_APP_NAME }}
+    - uses: oNaiPs/secrets-to-env-action@v1
+      with:
+        secrets: ${{ toJSON(secrets) }}
+        prefix: ALLSECRETS_
+    - run: python -m dokkusd.cli deploy --appname ${{ secrets.DOKKUSD_LIVE_APP_NAME }} --environmentvariablesprefixedby ALLSECRETS_DOKKUSD_LIVE_ENVIRONMENT_VARIABLE_
       env:
         DOKKUSD_REMOTE_HOST: ${{ secrets.DOKKUSD_LIVE_REMOTE_HOST }}
         DOKKUSD_REMOTE_PORT: ${{ secrets.DOKKUSD_LIVE_REMOTE_PORT }}
