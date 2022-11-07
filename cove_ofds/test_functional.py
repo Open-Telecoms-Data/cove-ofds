@@ -32,7 +32,7 @@ def server_url(request, live_server):
     ("link_text", "url"),
     [
         (
-            "Open Fibre Data Standard",
+            "Open Fibre Data Standard Documentation",
             "https://open-fibre-data-standard.readthedocs.io/en/latest/",
         ),
     ],
