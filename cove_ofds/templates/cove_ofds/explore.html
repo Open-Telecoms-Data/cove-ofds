@@ -99,6 +99,12 @@
                                   <a href="{{download_ods_url}}">{% trans 'Spreadsheet (ODS)' %} ({{   download_ods_size|filesizeformat }})</a>
                               </li>
                             {% endif %}
+                            {% if can_download_csvs_zip %}
+                              <li>
+                                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                  <a href="{{download_csvs_zip_url}}">{% trans 'CSVs in a ZIP file' %} ({{   download_csvs_zip_size|filesizeformat }})</a>
+                              </li>
+                            {% endif %}
                         </ul>
                     {% endif %}
                 </div>

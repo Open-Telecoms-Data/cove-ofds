@@ -1,5 +1,6 @@
 import json
 import os.path
+import zipfile
 
 import flattentool
 from libcoveofds.additionalfields import AdditionalFields
@@ -279,6 +280,12 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
 class ConvertJSONIntoSpreadsheets(ProcessDataTask):
     """Convert primary format (JSON) to spreadsheets"""
 
+    def __init__(self, supplied_data):
+        super().__init__(supplied_data)
+        self.csvs_zip_filename = os.path.join(
+            self.supplied_data.data_dir(), "flatten", "flattened.csvs.zip"
+        )
+
     def process(self, process_data: dict) -> dict:
 
         # TODO don't run if already done
@@ -291,6 +298,12 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         }
 
         flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
+
+        # Make Zip file of all CSV files
+        with zipfile.ZipFile(self.csvs_zip_filename, "w") as out_zip:
+            for f in os.listdir(output_dir):
+                if os.path.isfile(os.path.join(output_dir, f)) and f.endswith(".csv"):
+                    out_zip.write(os.path.join(output_dir, f), arcname=f)
 
         return process_data
 
@@ -320,6 +333,15 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             context["download_ods_size"] = os.stat(ods_filename).st_size
         else:
             context["can_download_ods"] = False
+        # CSVs
+        if os.path.exists(self.csvs_zip_filename):
+            context["can_download_csvs_zip"] = True
+            context["download_csvs_zip_url"] = os.path.join(
+                self.supplied_data.data_url(), "flatten", "flattened.csvs.zip"
+            )
+            context["download_csvs_zip_size"] = os.stat(ods_filename).st_size
+        else:
+            context["can_download_csvs_zip"] = False
         # done!
         return context
 
