@@ -474,6 +474,41 @@ class PythonValidateTask(ProcessDataTask):
             if new_list:
                 context["additional_checks"][f1] = new_list
 
+        # Work out which level to show box at
+        error_level_checks = [
+            "span_start_node_not_found",
+            "span_end_node_not_found",
+            "node_location_type_incorrect",
+            "node_location_coordinates_incorrect",
+            "span_route_type_incorrect",
+            "span_route_coordinates_incorrect",
+            "node_phase_reference_id_not_found",
+            "span_phase_reference_id_not_found",
+            "contract_related_phase_reference_id_not_found",
+            "node_phase_reference_name_does_not_match",
+            "span_phase_reference_name_does_not_match",
+            "contract_related_phase_reference_name_does_not_match",
+            "node_phase_reference_name_set_but_not_in_original",
+            "span_phase_reference_name_set_but_not_in_original",
+            "contract_related_phase_reference_name_set_but_not_in_original",
+            "node_organisation_reference_id_not_found",
+            "span_organisation_reference_id_not_found",
+            "phase_organisation_reference_id_not_found",
+            "node_organisation_reference_name_does_not_match",
+            "span_organisation_reference_name_does_not_match",
+            "phase_organisation_reference_name_does_not_match",
+            "node_organisation_reference_name_set_but_not_in_original",
+            "span_organisation_reference_name_set_but_not_in_original",
+            "phase_organisation_reference_name_set_but_not_in_original",
+            "node_international_connections_country_not_set",
+        ]
+        if [i for i in error_level_checks if i in context["additional_checks"].keys()]:
+            context["additional_checks_level"] = "Error"
+        elif "node_not_used_in_any_spans" in context["additional_checks"].keys():
+            context["additional_checks_level"] = "Warning"
+        else:
+            context["additional_checks_level"] = "n/a"
+
         with open(self.data_filename, "w") as fp:
             json.dump(context, fp, indent=4)
 

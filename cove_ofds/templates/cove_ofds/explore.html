@@ -248,7 +248,7 @@
     <div class="row">
 
         <a name="additional-checks" class="anchor"></a>
-        <div {% if additional_checks_count %}class="panel panel-danger" {% else %}class="panel panel-success"{% endif %}>
+        <div class="panel {% if additional_checks_level == 'Error' %}panel-danger{% elif additional_checks_level == 'Warning' %}panel-warning{% else %}panel-success{% endif %}">
             <div id="checks-panel" class="panel-heading pointer" role="region" aria-expanded="true"
                  aria-controls="additionalChecksTable" data-toggle="collapse" data-target="#additionalChecksTable">
                 <h4 class="panel-title">
