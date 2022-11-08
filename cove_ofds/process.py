@@ -63,10 +63,13 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
 
         os.makedirs(output_dir, exist_ok=True)
 
+        schema = OFDSSchema
+
         unflatten_kwargs = {
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
             "input_format": _get_file_type(input_filename),
+            "schema": schema.data_schema_url,
         }
 
         flattentool.unflatten(input_filename, **unflatten_kwargs)
@@ -112,10 +115,13 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
 
         os.makedirs(output_dir, exist_ok=True)
 
+        schema = OFDSSchema
+
         unflatten_kwargs = {
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
             "input_format": "csv",
+            "schema": schema.data_schema_url,
         }
 
         flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
@@ -302,9 +308,12 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
 
         os.makedirs(self.output_dir, exist_ok=True)
 
+        schema = OFDSSchema
+
         flatten_kwargs = {
             "output_name": self.output_dir,
             "root_list_path": "networks",
+            "schema": schema.data_schema_url,
         }
 
         flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
