@@ -130,7 +130,7 @@
                             <div id="download-csvs-panel" class="panel-heading pointer" role="region" aria-expanded="true"
                                  aria-controls="downloadData" data-toggle="collapse" data-target="#downloadDataCSVs">
                                 <h4 class="panel-title">
-                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'CSVs' %} {% if original_format == 'csvs' %}{% trans '(original)' %}{% endif %}
+                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'CSV' %} {% if original_format == 'csvs' %}{% trans '(original)' %}{% endif %}
                                 </h4>
                             </div>
                             <div id="downloadDataCSVs" class="collapse in panel-body">
@@ -149,7 +149,7 @@
                                         <ul class="list-unstyled">
                                             <li>
                                                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                                <a href="{{download_csvs_zip_url}}">{% trans 'CSVs in a ZIP file' %} ({{ download_csvs_zip_size|filesizeformat }})</a>
+                                                <a href="{{download_csvs_zip_url}}">{% trans 'CSV in a ZIP file' %} ({{ download_csvs_zip_size|filesizeformat }})</a>
                                             </li>
                                         </ul>
                                         <p>Uncompressed:</p>
