@@ -166,7 +166,7 @@ def explore_data_context(request, pk):
             None,
             render(
                 request,
-                "error.html",
+                "libcoveweb2/error.html",
                 {
                     "sub_title": _(
                         "Sorry, the page you are looking for is not available"
@@ -189,7 +189,7 @@ def explore_data_context(request, pk):
                 None,
                 render(
                     request,
-                    "error.html",
+                    "libcoveweb2/error.html",
                     {
                         "sub_title": _(
                             "Sorry, the page you are looking for is not available"

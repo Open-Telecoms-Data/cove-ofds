@@ -18,6 +18,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
     - run: pip install -r requirements_dev.txt
-    - run: isort --check-only cove_project/ cove_ofds/
-    - run: black --check cove_project/ cove_ofds/
-    - run: flake8 cove_project/ cove_ofds/
+    - run: isort --check-only cove_project/ cove_ofds/ libcoveweb2/
+    - run: black --check cove_project/ cove_ofds/ libcoveweb2/
+    - run: flake8 cove_project/ cove_ofds/ libcoveweb2/
