@@ -231,9 +231,13 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
         self.spans_file_name = os.path.join(
             self.supplied_data.data_dir(), "spans.geo.json"
         )
+        self.meta_file_name = os.path.join(
+            self.supplied_data.data_dir(), "geojson.meta.json"
+        )
 
     def process(self, process_data: dict) -> dict:
-        # TODO if original format this, don't bother
+        # TODO if original format is geojson, don't bother? or do bother?
+        #  because maybe we'll need the meta files for the map?
 
         if os.path.exists(self.nodes_file_name):
             return process_data
@@ -249,6 +253,9 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
 
         with open(self.spans_file_name, "w") as fp:
             json.dump(converter.get_spans_geojson(), fp, indent=4)
+
+        with open(self.meta_file_name, "w") as fp:
+            json.dump(converter.get_meta_json(), fp, indent=4)
 
         return process_data
 
