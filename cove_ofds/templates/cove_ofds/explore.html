@@ -144,12 +144,22 @@
                                         {% endfor %}
                                     </ul>
                                 {% else %}
-                                    {% if can_download_csvs_zip %}
+                                    {% if can_download_csvs %}
+                                        <p>Compressed:</p>
                                         <ul class="list-unstyled">
                                             <li>
                                                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
                                                 <a href="{{download_csvs_zip_url}}">{% trans 'CSVs in a ZIP file' %} ({{ download_csvs_zip_size|filesizeformat }})</a>
                                             </li>
+                                        </ul>
+                                        <p>Uncompressed:</p>
+                                        <ul class="list-unstyled">
+                                            {% for file in download_csv_individual_files %}
+                                                <li>
+                                                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                    <a href="{{file.url}}">{{ file.name }} ({{ file.size|filesizeformat }})</a>
+                                                </li>
+                                            {% endfor %}
                                         </ul>
                                     {% endif %}
                                 {% endif %}
