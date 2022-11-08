@@ -1,7 +1,6 @@
 sentry-sdk
 Django>3.2,<3.3
 libcoveofds
-ofdskit
 gunicorn
 flattentool
 django-bootstrap3

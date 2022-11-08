@@ -4,10 +4,10 @@ import zipfile
 
 import flattentool
 from libcoveofds.additionalfields import AdditionalFields
+from libcoveofds.geojson import GeoJSONToJSONConverter, JSONToGeoJSONConverter
 from libcoveofds.jsonschemavalidate import JSONSchemaValidator
 from libcoveofds.python_validate import PythonValidate
 from libcoveofds.schema import OFDSSchema
-from ofdskit.lib.geojson import GeoJSONToJSONConverter, JSONToGeoJSONConverter
 
 from libcoveweb2.models import SuppliedDataFile
 from libcoveweb2.process import ProcessDataTask
