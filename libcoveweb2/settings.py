@@ -182,3 +182,6 @@ ALLOWED_SPREADSHEET_CONTENT_TYPES = [
     "application/vnd.oasis.opendocument.spreadsheet",
 ]
 ALLOWED_SPREADSHEET_EXTENSIONS = [".ods", ".xlsx"]
+
+ALLOWED_CSV_CONTENT_TYPES = ["text/csv"]
+ALLOWED_CSV_EXTENSIONS = [".csv"]

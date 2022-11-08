@@ -44,6 +44,29 @@ class SuppliedData(models.Model):
             for chunk in f.chunks():
                 destination.write(chunk)
 
+    def save_file_contents(
+        self,
+        filename: str,
+        contents: str,
+        content_type: str,
+        charset: str = None,
+        meta: dict = {},
+    ):
+
+        os.makedirs(self.upload_dir(), exist_ok=True)
+
+        supplied_data_file = SuppliedDataFile()
+        supplied_data_file.supplied_data = self
+        supplied_data_file.filename = filename
+        supplied_data_file.size = len(contents)
+        supplied_data_file.content_type = content_type
+        supplied_data_file.charset = charset
+        supplied_data_file.meta = meta
+        supplied_data_file.save()
+
+        with open(supplied_data_file.upload_dir_and_filename(), "w") as destination:
+            destination.write(contents)
+
 
 class SuppliedDataFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

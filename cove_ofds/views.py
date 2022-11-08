@@ -9,6 +9,7 @@ from django.shortcuts import render
 from cove_ofds.forms import NewGeoJSONUploadForm
 from cove_ofds.process import (
     AdditionalFieldsChecksTask,
+    ConvertCSVsIntoJSON,
     ConvertGeoJSONIntoJSON,
     ConvertJSONIntoGeoJSON,
     ConvertJSONIntoSpreadsheets,
@@ -18,7 +19,7 @@ from cove_ofds.process import (
     WasJSONUploaded,
 )
 from libcoveweb2.models import SuppliedData
-from libcoveweb2.views import explore_data_context
+from libcoveweb2.views import CSVS_FORM_CLASSES, JSON_FORM_CLASSES, explore_data_context
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +31,29 @@ class DecimalEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+GEOJSON_FORM_CLASSES = {
+    "upload_form": NewGeoJSONUploadForm,
+}
+
+
 def index(request):
 
-    return render(request, "cove_ofds/index.html", {})
+    forms = {
+        "json": {
+            form_name: form_class()
+            for form_name, form_class in JSON_FORM_CLASSES.items()
+        },
+        "csvs": {
+            form_name: form_class()
+            for form_name, form_class in CSVS_FORM_CLASSES.items()
+        },
+        "geojson": {
+            form_name: form_class()
+            for form_name, form_class in GEOJSON_FORM_CLASSES.items()
+        },
+    }
+
+    return render(request, "cove_ofds/index.html", {"forms": forms})
 
 
 def new_geojson(request):
@@ -50,13 +71,13 @@ def new_geojson(request):
                 not request.FILES[field].content_type
                 in settings.ALLOWED_GEOJSON_CONTENT_TYPES
             ):
-                form.add_error("file_upload", "This does not appear to be a JSON file")
+                form.add_error(field, "This does not appear to be a JSON file")
             if not [
                 e
                 for e in settings.ALLOWED_GEOJSON_EXTENSIONS
                 if str(request.FILES[field].name).lower().endswith(e)
             ]:
-                form.add_error("file_upload", "This does not appear to be a JSON file")
+                form.add_error(field, "This does not appear to be a JSON file")
 
         # Process
         if form.is_valid():
@@ -85,6 +106,7 @@ def explore_ofds(request, pk):
         # Make sure uploads are in primary format
         WasJSONUploaded(db_data),
         ConvertSpreadsheetIntoJSON(db_data),
+        ConvertCSVsIntoJSON(db_data),
         ConvertGeoJSONIntoJSON(db_data),
         # Convert into output formats
         ConvertJSONIntoGeoJSON(db_data),

@@ -1,5 +1,6 @@
 import json
 import os.path
+import zipfile
 
 import flattentool
 from libcoveofds.additionalfields import AdditionalFields
@@ -81,6 +82,55 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         # original format
         if self.supplied_data.format == "spreadsheet":
             context["original_format"] = "spreadsheet"
+            # Download data
+            filename = os.path.join(
+                self.supplied_data.data_dir(), "unflatten", "unflattened.json"
+            )
+            if os.path.exists(filename):
+                context["can_download_json"] = True
+                context["download_json_url"] = os.path.join(
+                    self.supplied_data.data_url(), "unflatten", "unflattened.json"
+                )
+                context["download_json_size"] = os.stat(filename).st_size
+            else:
+                context["can_download_json"] = False
+        # Return
+        return context
+
+
+class ConvertCSVsIntoJSON(ProcessDataTask):
+    """If User uploaded CSVs, convert to our primary format, JSON."""
+
+    def process(self, process_data: dict) -> dict:
+        if self.supplied_data.format != "csvs":
+            return process_data
+
+        # check already done
+        # TODO
+
+        output_dir = os.path.join(self.supplied_data.data_dir(), "unflatten")
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        unflatten_kwargs = {
+            "output_name": os.path.join(output_dir, "unflattened.json"),
+            "root_list_path": "networks",
+            "input_format": "csv",
+        }
+
+        flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
+
+        process_data["json_data_filename"] = os.path.join(
+            self.supplied_data.data_dir(), "unflatten", "unflattened.json"
+        )
+
+        return process_data
+
+    def get_context(self):
+        context = {}
+        # original format
+        if self.supplied_data.format == "csvs":
+            context["original_format"] = "csvs"
             # Download data
             filename = os.path.join(
                 self.supplied_data.data_dir(), "unflatten", "unflattened.json"
@@ -230,6 +280,12 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
 class ConvertJSONIntoSpreadsheets(ProcessDataTask):
     """Convert primary format (JSON) to spreadsheets"""
 
+    def __init__(self, supplied_data):
+        super().__init__(supplied_data)
+        self.csvs_zip_filename = os.path.join(
+            self.supplied_data.data_dir(), "flatten", "flattened.csvs.zip"
+        )
+
     def process(self, process_data: dict) -> dict:
 
         # TODO don't run if already done
@@ -242,6 +298,12 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         }
 
         flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
+
+        # Make Zip file of all CSV files
+        with zipfile.ZipFile(self.csvs_zip_filename, "w") as out_zip:
+            for f in os.listdir(output_dir):
+                if os.path.isfile(os.path.join(output_dir, f)) and f.endswith(".csv"):
+                    out_zip.write(os.path.join(output_dir, f), arcname=f)
 
         return process_data
 
@@ -271,6 +333,15 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             context["download_ods_size"] = os.stat(ods_filename).st_size
         else:
             context["can_download_ods"] = False
+        # CSVs
+        if os.path.exists(self.csvs_zip_filename):
+            context["can_download_csvs_zip"] = True
+            context["download_csvs_zip_url"] = os.path.join(
+                self.supplied_data.data_url(), "flatten", "flattened.csvs.zip"
+            )
+            context["download_csvs_zip_size"] = os.stat(ods_filename).st_size
+        else:
+            context["can_download_csvs_zip"] = False
         # done!
         return context
 
@@ -291,12 +362,77 @@ class PythonValidateTask(ProcessDataTask):
 
         schema = OFDSSchema()
         worker = PythonValidate(schema)
-
         context = {"additional_checks": worker.validate(data)}
+
+        # has_links_with_external_node_data and has_links_with_external_span_data are shown in a different bit of UI.
+        # Set variables and move out of additional_checks
+        context["has_links_with_external_node_data"] = (
+            True
+            if [
+                r
+                for r in context["additional_checks"]
+                if r["type"] == "has_links_with_external_node_data"
+            ]
+            else False
+        )
+        context["has_links_with_external_span_data"] = (
+            True
+            if [
+                r
+                for r in context["additional_checks"]
+                if r["type"] == "has_links_with_external_span_data"
+            ]
+            else False
+        )
+        context["additional_checks"] = [
+            r
+            for r in context["additional_checks"]
+            if (
+                r["type"] != "has_links_with_external_node_data"
+                and r["type"] != "has_links_with_external_span_data"
+            )
+        ]
+
+        # Count and group what's left
         context["additional_checks_count"] = len(context["additional_checks"])
         context["additional_checks"] = group_data_list_by(
             context["additional_checks"], lambda i: i["type"]
         )
+
+        # The library returns *_name_does_not_match and *_reference_name_set_but_not_in_original as different types,
+        # but in this UI we don't care - we just want to show them as one section.
+        # So join the 2 types of errors into 1 list.
+        for f1, f2 in [
+            (
+                "node_phase_reference_name_does_not_match",
+                "node_phase_reference_name_set_but_not_in_original",
+            ),
+            (
+                "span_phase_reference_name_does_not_match",
+                "span_phase_reference_name_set_but_not_in_original",
+            ),
+            (
+                "contract_related_phase_reference_name_does_not_match",
+                "contract_related_phase_reference_name_set_but_not_in_original",
+            ),
+            (
+                "node_organisation_reference_name_does_not_match",
+                "node_organisation_reference_name_set_but_not_in_original",
+            ),
+            (
+                "span_organisation_reference_name_does_not_match",
+                "span_organisation_reference_name_set_but_not_in_original",
+            ),
+            (
+                "phase_organisation_reference_name_does_not_match",
+                "phase_organisation_reference_name_set_but_not_in_original",
+            ),
+        ]:
+            new_list = context["additional_checks"].get(f1, []) + context[
+                "additional_checks"
+            ].get(f2, [])
+            if new_list:
+                context["additional_checks"][f1] = new_list
 
         with open(self.data_filename, "w") as fp:
             json.dump(context, fp, indent=4)

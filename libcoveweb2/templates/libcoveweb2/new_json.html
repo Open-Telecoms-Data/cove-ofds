@@ -6,15 +6,48 @@
 
 
     <div class="panel panel-default">
-        <form method="POST" action="{% url 'new_json' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% bootstrap_form forms.upload_form %}
-            {% buttons %}
-                <button type="submit" class="btn btn-primary">
-                    {% trans 'Submit' %}
-                </button>
-            {% endbuttons %}
-        </form>
+        <div class="panel-heading" role="tab" id="headingOne" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          <h4 class="panel-title">
+            <a class="accordion-toggle">
+              <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>{% trans "Upload" %}
+            </a>
+          </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            <form method="POST" action="{% url 'new_json' %}" enctype="multipart/form-data">{% csrf_token %}
+                {% bootstrap_form forms.upload_form %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">
+                        {% trans 'Submit' %}
+                    </button>
+                {% endbuttons %}
+            </form>
+          </div>
+        </div>
+    </div>
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTwo" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <h4 class="panel-title">
+            <a class="accordion-toggle">
+              <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>{% trans "Paste" %}
+            </a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            <form method="POST" action="{% url 'new_json' %}" enctype="multipart/form-data">{% csrf_token %}
+                {% bootstrap_form forms.text_form %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">
+                        {% trans 'Submit' %}
+                    </button>
+                {% endbuttons %}
+            </form>
+          </div>
+        </div>
     </div>
 
 {% endblock %}
