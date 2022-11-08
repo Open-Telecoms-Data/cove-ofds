@@ -93,7 +93,7 @@ jsonschema==4.17.0
     # via
     #   -r requirements.txt
     #   libcoveofds
-libcoveofds==0.2.0
+libcoveofds==0.3.0
     # via -r requirements.txt
 libsass==0.21.0
     # via -r requirements_dev.in
@@ -109,8 +109,6 @@ odfpy==1.4.1
     # via
     #   -r requirements.txt
     #   flattentool
-ofdskit==0.1.0
-    # via -r requirements.txt
 openpyxl==3.0.10
     # via
     #   -r requirements.txt
