@@ -314,6 +314,7 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             "output_name": self.output_dir,
             "root_list_path": "networks",
             "schema": schema.data_schema_url,
+            "truncation_length": 9,
         }
 
         flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
