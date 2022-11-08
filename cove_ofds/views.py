@@ -120,17 +120,11 @@ def explore_ofds(request, pk):
     # Process bit that should be a task in a worker
     process_data = {}
     for task in PROCESS_TASKS:
-        try:
-            process_data = task.process(process_data)
-        except Exception as err:
-            print(err)
+        process_data = task.process(process_data)
 
     # read results
     for task in PROCESS_TASKS:
-        try:
-            context.update(task.get_context())
-        except Exception as err:
-            print(err)
+        context.update(task.get_context())
 
     template = "cove_ofds/explore.html"
 

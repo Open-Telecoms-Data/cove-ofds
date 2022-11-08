@@ -6,6 +6,8 @@ from django.urls import re_path
 import cove_ofds.views
 from libcoveweb2.urls import urlpatterns
 
+handler500 = "libcoveweb2.views.handler500"
+
 urlpatterns += [
     re_path(r"^$", cove_ofds.views.index, name="index"),
     url(r"^data/(.+)$", cove_ofds.views.explore_ofds, name="explore"),
