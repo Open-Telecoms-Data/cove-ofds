@@ -84,6 +84,10 @@ iniconfig==1.1.1
     # via pytest
 isort==5.10.1
     # via -r requirements_dev.in
+json-merge-patch==0.2
+    # via
+    #   -r requirements.txt
+    #   libcoveofds
 jsonref==0.2
     # via
     #   -r requirements.txt
@@ -93,7 +97,7 @@ jsonschema==4.17.0
     # via
     #   -r requirements.txt
     #   libcoveofds
-libcoveofds==0.3.0
+libcoveofds @ git+https://github.com/Open-Telecoms-Data/lib-cove-ofds@2022-11-09
     # via -r requirements.txt
 libsass==0.21.0
     # via -r requirements_dev.in

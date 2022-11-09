@@ -42,13 +42,15 @@ idna==3.4
     # via requests
 ijson==3.1.4
     # via flattentool
+json-merge-patch==0.2
+    # via libcoveofds
 jsonref==0.2
     # via
     #   flattentool
     #   libcoveofds
 jsonschema==4.17.0
     # via libcoveofds
-libcoveofds==0.3.0
+libcoveofds @ git+https://github.com/Open-Telecoms-Data/lib-cove-ofds@2022-11-09
     # via -r requirements.in
 lxml==4.9.1
     # via flattentool
