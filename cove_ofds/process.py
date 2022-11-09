@@ -63,10 +63,13 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
 
         os.makedirs(output_dir, exist_ok=True)
 
+        schema = OFDSSchema
+
         unflatten_kwargs = {
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
             "input_format": _get_file_type(input_filename),
+            "schema": schema.data_schema_url,
         }
 
         flattentool.unflatten(input_filename, **unflatten_kwargs)
@@ -112,10 +115,13 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
 
         os.makedirs(output_dir, exist_ok=True)
 
+        schema = OFDSSchema
+
         unflatten_kwargs = {
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
             "input_format": "csv",
+            "schema": schema.data_schema_url,
         }
 
         flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
@@ -292,27 +298,43 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         self.csvs_zip_filename = os.path.join(
             self.supplied_data.data_dir(), "flatten", "flattened.csvs.zip"
         )
+        self.output_dir = os.path.join(
+            self.supplied_data.data_dir(), "flatten", "flattened"
+        )
 
     def process(self, process_data: dict) -> dict:
 
         # TODO don't run if already done
-        output_dir = os.path.join(self.supplied_data.data_dir(), "flatten", "flattened")
-        os.makedirs(output_dir, exist_ok=True)
+
+        os.makedirs(self.output_dir, exist_ok=True)
+
+        schema = OFDSSchema
 
         flatten_kwargs = {
-            "output_name": output_dir,
+            "output_name": self.output_dir,
             "root_list_path": "networks",
+            "schema": schema.data_schema_url,
+            "truncation_length": 9,
         }
 
         flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
 
         # Make Zip file of all CSV files
         with zipfile.ZipFile(self.csvs_zip_filename, "w") as out_zip:
-            for f in os.listdir(output_dir):
-                if os.path.isfile(os.path.join(output_dir, f)) and f.endswith(".csv"):
-                    out_zip.write(os.path.join(output_dir, f), arcname=f)
+            for f in self._get_list_csv_filenames():
+                out_zip.write(os.path.join(self.output_dir, f), arcname=f)
 
         return process_data
+
+    def _get_list_csv_filenames(self):
+        return sorted(
+            [
+                f
+                for f in os.listdir(self.output_dir)
+                if os.path.isfile(os.path.join(self.output_dir, f))
+                and f.endswith(".csv")
+            ]
+        )
 
     def get_context(self):
         context = {}
@@ -342,13 +364,24 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             context["can_download_ods"] = False
         # CSVs
         if os.path.exists(self.csvs_zip_filename):
-            context["can_download_csvs_zip"] = True
+            context["can_download_csvs"] = True
             context["download_csvs_zip_url"] = os.path.join(
                 self.supplied_data.data_url(), "flatten", "flattened.csvs.zip"
             )
             context["download_csvs_zip_size"] = os.stat(ods_filename).st_size
+            context["download_csv_individual_files"] = [
+                {
+                    "name": f,
+                    "size": os.stat(os.path.join(self.output_dir, f)).st_size,
+                    "url": os.path.join(
+                        self.supplied_data.data_url(), "flatten", "flattened", f
+                    ),
+                }
+                for f in self._get_list_csv_filenames()
+            ]
+
         else:
-            context["can_download_csvs_zip"] = False
+            context["can_download_csvs"] = False
         # done!
         return context
 
@@ -440,6 +473,41 @@ class PythonValidateTask(ProcessDataTask):
             ].get(f2, [])
             if new_list:
                 context["additional_checks"][f1] = new_list
+
+        # Work out which level to show box at
+        error_level_checks = [
+            "span_start_node_not_found",
+            "span_end_node_not_found",
+            "node_location_type_incorrect",
+            "node_location_coordinates_incorrect",
+            "span_route_type_incorrect",
+            "span_route_coordinates_incorrect",
+            "node_phase_reference_id_not_found",
+            "span_phase_reference_id_not_found",
+            "contract_related_phase_reference_id_not_found",
+            "node_phase_reference_name_does_not_match",
+            "span_phase_reference_name_does_not_match",
+            "contract_related_phase_reference_name_does_not_match",
+            "node_phase_reference_name_set_but_not_in_original",
+            "span_phase_reference_name_set_but_not_in_original",
+            "contract_related_phase_reference_name_set_but_not_in_original",
+            "node_organisation_reference_id_not_found",
+            "span_organisation_reference_id_not_found",
+            "phase_organisation_reference_id_not_found",
+            "node_organisation_reference_name_does_not_match",
+            "span_organisation_reference_name_does_not_match",
+            "phase_organisation_reference_name_does_not_match",
+            "node_organisation_reference_name_set_but_not_in_original",
+            "span_organisation_reference_name_set_but_not_in_original",
+            "phase_organisation_reference_name_set_but_not_in_original",
+            "node_international_connections_country_not_set",
+        ]
+        if [i for i in error_level_checks if i in context["additional_checks"].keys()]:
+            context["additional_checks_level"] = "Error"
+        elif "node_not_used_in_any_spans" in context["additional_checks"].keys():
+            context["additional_checks_level"] = "Warning"
+        else:
+            context["additional_checks_level"] = "n/a"
 
         with open(self.data_filename, "w") as fp:
             json.dump(context, fp, indent=4)

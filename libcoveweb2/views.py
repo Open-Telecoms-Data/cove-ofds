@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import render
+from django.template import loader
 from django.utils.translation import gettext_lazy as _
 
 from libcoveweb2.forms import (
@@ -166,7 +167,7 @@ def explore_data_context(request, pk):
             None,
             render(
                 request,
-                "error.html",
+                "libcoveweb2/error.html",
                 {
                     "sub_title": _(
                         "Sorry, the page you are looking for is not available"
@@ -189,7 +190,7 @@ def explore_data_context(request, pk):
                 None,
                 render(
                     request,
-                    "error.html",
+                    "libcoveweb2/error.html",
                     {
                         "sub_title": _(
                             "Sorry, the page you are looking for is not available"
@@ -214,3 +215,15 @@ def explore_data_context(request, pk):
     }
 
     return (context, data, None)
+
+
+def handler500(request):
+    """500 error handler which includes ``request`` in the context."""
+
+    context = {
+        "request": request,
+    }
+    context.update(settings.COVE_CONFIG)
+
+    t = loader.get_template("libcoveweb2/500.html")
+    return HttpResponseServerError(t.render(context))
