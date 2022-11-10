@@ -279,6 +279,9 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
             context["download_geojson_spans_url"] = os.path.join(
                 self.supplied_data.data_url(), "spans.geo.json"
             )
+            context["download_geojson_meta_url"] = os.path.join(
+                self.supplied_data.data_url(), "geojson.meta.json"
+            )
             context["download_geojson_nodes_size"] = os.stat(
                 self.nodes_file_name
             ).st_size
