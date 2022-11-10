@@ -268,7 +268,7 @@
     </div>
 
     <div class="row">
-      <div class="panel {% if can_download_geojson%}panel-success{% else %}panel-danger{% endif %}">
+      <div class="panel {% if any_nodes_with_geometry == False and any_spans_with_geometry == False %}panel-warning{% elif can_download_geojson == False %}panel-danger{% else %}panel-success{% endif %}">
           <div id="visualisation-panel" class="panel-heading pointer" role="region" aria-expanded="true"
                aria-controls="validationTable" data-toggle="collapse" data-target="#mapVisualisation">
               <h4 class="panel-title">
@@ -276,13 +276,17 @@
               </h4>
           </div>
           <div id="mapVisualisation" class="collapse in panel-body">
-            {% if can_download_geojson %}
-            <p>{% trans 'The GeoJSON version of your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>            
-              <div id="map" class="map" style="width: 100%; height: 600px;"></div>
-            {% else %}
+            {% if any_nodes_with_geometry == False and any_spans_with_geometry == False %}
               <div>
-                <p>{% trans 'Your data cannot be visualised because it is not available in GeoJSON format. For more information, see ' %}<a href="#download-panel">{% trans 'data conversion' %}</a>.</p>
+                <p>{% trans 'Your data cannot be visualised on a map because it does not contain coordinates. If you expected your data to include coordinates, you should check your mapping and data pipeline for errors. For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#geometry">{% trans 'Geometry' %}</a>.</p>
               </div>
+            {% elif can_download_geojson == False %}
+              <div>
+                <p>{% trans 'Your data cannot be visualised on a map because there were errors loading it. You should check your mapping and data pipeline for errors.' %}</p>
+              </div>
+            {% else %}
+              <p>{% trans 'The GeoJSON version of your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you should check that your coordinates are in longitude, latitude order. You may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>            
+              <div id="map" class="map" style="width: 100%; height: 600px;"></div>
             {% endif %}
           </div>
       </div>
