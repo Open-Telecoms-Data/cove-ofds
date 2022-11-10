@@ -288,6 +288,10 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
             context["download_geojson_spans_size"] = os.stat(
                 self.spans_file_name
             ).st_size
+            with open(self.meta_file_name) as fp:
+                data = json.load(fp)
+            context["any_nodes_with_geometry"] = data["any_nodes_with_geometry"]
+            context["any_spans_with_geometry"] = data["any_spans_with_geometry"]
         else:
             context["can_download_geojson"] = False
         # done!
