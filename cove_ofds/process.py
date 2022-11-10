@@ -8,6 +8,7 @@ from libcoveofds.geojson import GeoJSONToJSONConverter, JSONToGeoJSONConverter
 from libcoveofds.jsonschemavalidate import JSONSchemaValidator
 from libcoveofds.python_validate import PythonValidate
 from libcoveofds.schema import OFDSSchema
+from sentry_sdk import capture_exception
 
 import cove_ofds.jsonschema_validation_errors
 from libcoveweb2.models import SuppliedDataFile
@@ -252,17 +253,22 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
         with open(process_data["json_data_filename"]) as fp:
             data = json.load(fp)
 
-        converter = JSONToGeoJSONConverter()
-        converter.process_package(data)
+        try:
+            converter = JSONToGeoJSONConverter()
+            converter.process_package(data)
 
-        with open(self.nodes_file_name, "w") as fp:
-            json.dump(converter.get_nodes_geojson(), fp, indent=4)
+            with open(self.nodes_file_name, "w") as fp:
+                json.dump(converter.get_nodes_geojson(), fp, indent=4)
 
-        with open(self.spans_file_name, "w") as fp:
-            json.dump(converter.get_spans_geojson(), fp, indent=4)
+            with open(self.spans_file_name, "w") as fp:
+                json.dump(converter.get_spans_geojson(), fp, indent=4)
 
-        with open(self.meta_file_name, "w") as fp:
-            json.dump(converter.get_meta_json(), fp, indent=4)
+            with open(self.meta_file_name, "w") as fp:
+                json.dump(converter.get_meta_json(), fp, indent=4)
+
+        except Exception as err:
+            capture_exception(err)
+            # TODO log and show to user. https://github.com/Open-Telecoms-Data/cove-ofds/issues/24
 
         return process_data
 
@@ -325,12 +331,17 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             "truncation_length": 9,
         }
 
-        flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
+        try:
+            flattentool.flatten(process_data["json_data_filename"], **flatten_kwargs)
 
-        # Make Zip file of all CSV files
-        with zipfile.ZipFile(self.csvs_zip_filename, "w") as out_zip:
-            for f in self._get_list_csv_filenames():
-                out_zip.write(os.path.join(self.output_dir, f), arcname=f)
+            # Make Zip file of all CSV files
+            with zipfile.ZipFile(self.csvs_zip_filename, "w") as out_zip:
+                for f in self._get_list_csv_filenames():
+                    out_zip.write(os.path.join(self.output_dir, f), arcname=f)
+
+        except Exception as err:
+            capture_exception(err)
+            # TODO log and show to user. https://github.com/Open-Telecoms-Data/cove-ofds/issues/24
 
         return process_data
 
