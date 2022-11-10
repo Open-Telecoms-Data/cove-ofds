@@ -1,3 +1,5 @@
+# This function may be a candidate to move to libcoveofds?
+# It could do with some testing, wherever it ends up
 def add_type_to_json_schema_validation_error(data: dict) -> dict:
 
     if data["validator"] == "prefixItems":
@@ -12,6 +14,8 @@ def add_type_to_json_schema_validation_error(data: dict) -> dict:
     elif data["validator"] == "uniqueItems":
         data["cove_type"] = "Nonuniqueitems"
 
+    # these 2 pattern checks are brittle
+    # using instance is not a great choice as that may easily change if the schema changes. TODO
     elif data["validator"] == "pattern" and data["instance"] in [
         "properties",
         "features",
@@ -66,7 +70,7 @@ def add_type_to_json_schema_validation_error(data: dict) -> dict:
     else:
         data["cove_type"] = "unknown"
 
-    # TODO this should be in lib
+    # TODO this should be in libcoveofds
     data["path_no_num"] = tuple(key for key in data["path"] if isinstance(key, str))
 
     return data
