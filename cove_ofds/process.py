@@ -9,6 +9,7 @@ from libcoveofds.jsonschemavalidate import JSONSchemaValidator
 from libcoveofds.python_validate import PythonValidate
 from libcoveofds.schema import OFDSSchema
 
+import cove_ofds.jsonschema_validation_errors
 from libcoveweb2.models import SuppliedDataFile
 from libcoveweb2.process import ProcessDataTask
 
@@ -278,6 +279,9 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
             context["download_geojson_spans_url"] = os.path.join(
                 self.supplied_data.data_url(), "spans.geo.json"
             )
+            context["download_geojson_meta_url"] = os.path.join(
+                self.supplied_data.data_url(), "geojson.meta.json"
+            )
             context["download_geojson_nodes_size"] = os.stat(
                 self.nodes_file_name
             ).st_size
@@ -541,13 +545,28 @@ class JsonSchemaValidateTask(ProcessDataTask):
         schema = OFDSSchema()
         worker = JSONSchemaValidator(schema)
 
-        context = {"validation_errors": worker.validate(data)}
-        context["validation_errors"] = [i.json() for i in context["validation_errors"]]
-        context["validation_errors_count"] = len(context["validation_errors"])
-        context["validation_errors"] = group_data_list_by(
-            context["validation_errors"],
-            lambda i: str(i["path"]) + i["validator"] + i["message"],
+        # Get list of validation errors
+        validation_errors = worker.validate(data)
+        validation_errors = [i.json() for i in validation_errors]
+
+        # Add type to each
+        validation_errors = [
+            cove_ofds.jsonschema_validation_errors.add_type_to_json_schema_validation_error(
+                i
+            )
+            for i in validation_errors
+        ]
+
+        # Add count
+        context = {"validation_errors_count": len(validation_errors)}
+
+        # group by type
+        validation_errors = group_data_list_by(
+            validation_errors, lambda i: str(i["cove_type"])
         )
+
+        # and we are done
+        context["validation_errors"] = validation_errors
 
         with open(self.data_filename, "w") as fp:
             json.dump(context, fp, indent=4)

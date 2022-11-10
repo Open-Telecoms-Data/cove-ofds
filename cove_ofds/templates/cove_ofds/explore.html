@@ -188,7 +188,7 @@
                 </div>
                 <div id="validationTable" class="collapse in panel-body">
                   <p>{% trans 'The structure and format of your data does not conform to the OFDS schema. You should check your mapping and data pipeline for errors. For more information, see the ' %}<a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference">{% trans 'reference documentation' %}</a>.</p>
-                  {% include "cove_ofds/validation_table.html" %}
+                  {% include "cove_ofds/jsonschema_validation_panel.html" %}
                 </div>
               </div>
         {% else %}
