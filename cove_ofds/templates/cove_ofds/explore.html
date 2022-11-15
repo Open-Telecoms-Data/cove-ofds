@@ -30,7 +30,7 @@
                   </h4>
                 </div>
                 <div id="unchecked-data" class="collapse in panel-body">
-                    <p>{% trans 'Your data contains links to API endpoints or bulk files. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE. For more information, see '  %}<a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#network-schema.json,,links"><code>/links</code></a>.</p>
+                    <p>{% trans 'Your data contains links to API endpoints or bulk files. The additional data available from the links has not been checked. You can check the data by embedding it in network package and submitting it to CoVE. For more information, see '  %}<a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,,links"><code>/links</code></a>.</p>
                 </div>
               </div>
         </div>
@@ -48,7 +48,7 @@
             <div id="downloadData" class="collapse in panel-body">
 
                 <p>
-                    For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats.html" target="_blank">publication format reference</a>.
+                    For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/index.html" target="_blank">publication format reference</a>.
                 </p>
 
                 <div class="row">
@@ -187,7 +187,7 @@
                   </h4>
                 </div>
                 <div id="validationTable" class="collapse in panel-body">
-                  <p>{% trans 'The structure and format of your data does not conform to the OFDS schema. You should check your mapping and data pipeline for errors. For more information, see the ' %}<a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference">{% trans 'reference documentation' %}</a>.</p>
+                  <p>{% trans 'The structure and format of your data does not conform to the OFDS schema. You should check your mapping and data pipeline for errors. For more information, see the ' %}<a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference">{% trans 'reference documentation' %}</a>.</p>
                   {% include "cove_ofds/jsonschema_validation_panel.html" %}
                 </div>
               </div>
@@ -224,9 +224,9 @@
                   <ul>
                     <li>{% trans 'Check that additional fields are not the result of typos in field names or other errors in your mapping or data pipeline.' %}</li>
                     <li>{% trans 'Check whether the data in these fields could be provided by using a field in the OFDS schema.' %}</li>
-                    <li>{% trans 'Document the structure, format and meaning of additional fields in your' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-write-a-data-user-guide">{% trans 'data user guide' %}</a>.</li>
+                    <li>{% trans 'Document the structure, format and meaning of additional fields in your' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-write-a-data-user-guide">{% trans 'data user guide' %}</a>.</li>
                   </ul>
-                  <p>{% trans 'For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-add-additional-fields">{% trans 'how to add additional fields' %}</a>.</p>
+                  <p>{% trans 'For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-add-additional-fields">{% trans 'how to add additional fields' %}</a>.</p>
                   {% include "libcoveweb2/additional_fields_table.html" %}
                 </div>
               </div>
@@ -238,7 +238,7 @@
                   </h4>
                 </div>
                 <div id="additionalFieldsTable" class="collapse in panel-body">
-                    <p>{% trans 'Your data contains no additional fields. For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-add-additional-fields">{% trans 'how to add additional fields' %}</a>.</p>
+                    <p>{% trans 'Your data contains no additional fields. For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-add-additional-fields">{% trans 'how to add additional fields' %}</a>.</p>
                 </div>
               </div>
         {% endif %}
