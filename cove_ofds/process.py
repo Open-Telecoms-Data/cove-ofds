@@ -184,18 +184,21 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
             f for f in supplied_data_json_files if f.meta.get("geojson") == "spans"
         ]
 
-        if len(nodes_data_json_files) != 1 or len(spans_data_json_files) != 1:
+        if len(nodes_data_json_files) != 1 and len(spans_data_json_files) != 1:
             raise Exception("Can't find JSON original data!")
 
         # Get data from files
-        nodes_data_json_file = nodes_data_json_files[0]
-        spans_data_json_file = spans_data_json_files[0]
-
-        with open(nodes_data_json_file.upload_dir_and_filename()) as fp:
-            nodes_data = json.load(fp)
-
-        with open(spans_data_json_file.upload_dir_and_filename()) as fp:
-            spans_data = json.load(fp)
+        # (Or insert dummy data, if no file was uploaded)
+        if nodes_data_json_files:
+            with open(nodes_data_json_files[0].upload_dir_and_filename()) as fp:
+                nodes_data = json.load(fp)
+        else:
+            nodes_data = {"type": "FeatureCollection", "features": []}
+        if spans_data_json_files:
+            with open(spans_data_json_files[0].upload_dir_and_filename()) as fp:
+                spans_data = json.load(fp)
+        else:
+            spans_data = {"type": "FeatureCollection", "features": []}
 
         # Convert
         converter = GeoJSONToJSONConverter()

@@ -13,6 +13,7 @@ class NewGeoJSONUploadForm(forms.Form):
                 )
             }
         ),
+        required=False,
     )
     spans_file_upload = forms.FileField(
         label="Select GeoJSON Spans file",
@@ -24,4 +25,5 @@ class NewGeoJSONUploadForm(forms.Form):
                 )
             }
         ),
+        required=False,
     )
