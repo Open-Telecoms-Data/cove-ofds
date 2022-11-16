@@ -380,9 +380,7 @@
       }
 
       function getJsonFromDict(feature) {
-        console.log(feature.geometry.type)
         if (feature.geometry.type === 'Point') {
-          console.log('node', document.getElementById('node-fields').textContent)
           return JSON.parse(document.getElementById('node-fields').textContent);
         } else if (feature.geometry.type === 'LineString') {
           return JSON.parse(document.getElementById('span-fields').textContent);
@@ -439,6 +437,9 @@
           spanLayerGroup.addLayer(layer)
           map.fitBounds(layer.getBounds())
           return generateLegendItems(spanFeatureData)
+        }).catch(err => {
+          console.log("The Spans data could not be loaded.");
+          return [];
         })
       }
 
@@ -455,7 +456,11 @@
             }
           }).bindPopup(layer => generatePopup(layer), customOptions)
           nodeLayerGroup.addLayer(layer)
+          map.fitBounds(layer.getBounds())
           return generateLegendItems(nodeFeatureData)
+        }).catch(err => {
+          console.log("The Nodes data could not be loaded.")
+          return [];
         })
       }
 
