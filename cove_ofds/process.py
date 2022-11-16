@@ -239,11 +239,11 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
         "/features/properties/phase/name": "Phase",
         "/features/properties/physicalInfrastructureProvider/name": "Physical Infrastructure Provider",
         "/features/properties/networkProvider/name": "Network Provider",
-        # "/features/properties/technologies": "Technologies",
-        # "/features/properties/status": "Status",
-        # "/features/properties/type": "Type",
-        # "/features/properties/accessPoint": "accessPoint",
-        # "/features/properties/power": "Power",
+        "/features/properties/technologies": "Technologies",
+        "/features/properties/status": "Status",
+        "/features/properties/type": "Type",
+        "/features/properties/accessPoint": "accessPoint",
+        "/features/properties/power": "Power",
     }
 
     spanFields = {
@@ -253,13 +253,13 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
         "/features/properties/physicalInfrastructureProvider/name": "Physical Infrastructure Provider",
         "/features/properties/networkProvider/name": "Network Provider",
         "/features/properties/supplier/name": "Supplier",
-        # "/features/properties/transmissionMedium": "Transmission Medium",
-        # "/features/properties/deployment": "Deployment",
-        # "/features/properties/darkFibre": "Dark Fibre",
-        # "/features/properties/fibreType": "Fibre Type",
-        # "/features/properties/fibreCount": "Fibre Count",
-        # "/features/properties/technologies": "Technologies",
-        # "/features/properties/capacity": "Capacity",
+        "/features/properties/transmissionMedium": "Transmission Medium",
+        "/features/properties/deployment": "Deployment",
+        "/features/properties/darkFibre": "Dark Fibre",
+        "/features/properties/fibreType": "Fibre Type",
+        "/features/properties/fibreCount": "Fibre Count",
+        "/features/properties/technologies": "Technologies",
+        "/features/properties/capacity": "Capacity",
     }
 
     def __init__(self, supplied_data):
@@ -329,8 +329,16 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
                 data = json.load(fp)
             context["any_nodes_with_geometry"] = data["any_nodes_with_geometry"]
             context["any_spans_with_geometry"] = data["any_spans_with_geometry"]
-            context["nodes_fields"] = {field.split("/")[3]: label for field, label in self.nodeFields.items() if field in data["nodes_output_field_coverage"]}
-            context["spans_fields"] = {field.split("/")[3]: label for field, label in self.spanFields.items() if field in data["spans_output_field_coverage"]}
+            context["nodes_fields"] = {
+                field.split("/")[3]: label
+                for field, label in self.nodeFields.items()
+                if field in data["nodes_output_field_coverage"]
+            }
+            context["spans_fields"] = {
+                field.split("/")[3]: label
+                for field, label in self.spanFields.items()
+                if field in data["spans_output_field_coverage"]
+            }
         else:
             context["can_download_geojson"] = False
         # done!

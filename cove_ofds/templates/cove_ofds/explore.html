@@ -313,6 +313,8 @@
 {% block extrafooterscript %}
   {{ block.super }}
   {% if can_download_geojson %}{% if any_nodes_with_geometry or any_spans_with_geometry %}
+  {{ nodes_fields|json_script:"node-fields" }}
+  {{ spans_fields|json_script:"span-fields" }}
     <script>
       function geojsonMarkerOptions(colour) {
         return {
@@ -367,12 +369,47 @@
         })
       }
 
+      function getFeatureID(feature, field) {
+        if (feature?.properties[field]?.id !== undefined) {
+          return feature.properties[field].id
+        } else if ((feature?.properties[field] !== undefined)) {
+          return feature.properties[field]
+        } else {
+          return "unknown"
+        }
+      }
+
+      function getJsonFromDict(feature) {
+        console.log(feature.geometry.type)
+        if (feature.geometry.type === 'Point') {
+          console.log('node', document.getElementById('node-fields').textContent)
+          return JSON.parse(document.getElementById('node-fields').textContent);
+        } else if (feature.geometry.type === 'LineString') {
+          return JSON.parse(document.getElementById('span-fields').textContent);
+        } else {
+          throw "The field options cannot be found."
+        }
+      }
+
+        
+      function getFeatureName(feature, field) {
+        var fieldOptions = getJsonFromDict(feature);
+        if (feature?.properties[field]?.name !== undefined) {
+          return feature.properties[field].name
+        } else if ((feature?.properties[field] !== undefined)) {
+          return `${fieldOptions[field]}: ${feature?.properties[field] || 'no data'}`
+        } else {
+          return `${fieldOptions[field]}: ${feature?.properties[field] || 'no data'}`
+        }
+      }
+
       function generateFeatureData(features, field) {
-        var uniqueIDs = [...new Set(features.map((feature) => feature.properties[field].id))]
+        var uniqueIDs = [...new Set(features.map((feature) => getFeatureID(feature, field)))]
         var featureDetails = uniqueIDs.map((uniqueNetwork, index) => {
-          var uniqueFeature = features.find(feature => feature.properties[field].id === uniqueNetwork)
+          var uniqueFeature = features.find(feature => getFeatureID(feature, field) === uniqueNetwork);
+          var fieldName = getFeatureName(uniqueFeature, field);
           var networkColour = {[uniqueNetwork]: {
-            name: uniqueFeature.properties[field].name,
+            name: [fieldName],
             type: uniqueFeature.geometry.type,
             colour: networkColours[index % networkColours.length]
           }}
@@ -396,7 +433,7 @@
           var spanFeatureData = generateFeatureData(spanJson.features, spanSelect)
           var layer = await L.geoJson(spanJson, {
             style: function(feature) {
-              return {color: spanFeatureData[feature.properties[spanSelect].id]['colour']}
+              return {color: spanFeatureData[getFeatureID(feature, spanSelect)]['colour']}
             }
           }).bindPopup(layer => generatePopup(layer), customOptions)
           spanLayerGroup.addLayer(layer)
@@ -411,10 +448,10 @@
           var nodeFeatureData = generateFeatureData(nodeJson.features, nodeSelect)
           var layer = await L.geoJson(nodeJson, {
             pointToLayer: function (feature, latlng) {
-              return L.circleMarker(latlng, geojsonMarkerOptions(nodeFeatureData[feature.properties[nodeSelect].id]['colour']));
+              return L.circleMarker(latlng, geojsonMarkerOptions(nodeFeatureData[getFeatureID(feature, nodeSelect)]['colour']));
             },
             style: function(feature) {
-              return {color: nodeFeatureData[feature.properties[nodeSelect].id]['colour']}
+              return {color: nodeFeatureData[getFeatureID(feature, nodeSelect)]['colour']}
             }
           }).bindPopup(layer => generatePopup(layer), customOptions)
           nodeLayerGroup.addLayer(layer)
