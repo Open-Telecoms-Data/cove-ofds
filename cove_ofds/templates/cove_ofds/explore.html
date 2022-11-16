@@ -287,7 +287,7 @@
             {% else %}
               <p>{% trans 'The GeoJSON version of your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you should check that your coordinates are in longitude, latitude order. You may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>            
               <div class="form-group">
-                <label for="nodeFieldSelect">Select a Node data field for colourisation:</label>
+                <label for="nodeFieldSelect">Select a Node data field for colour-coding:</label>
                 <select class="form-control" id="nodeFieldSelect" onchange="generateMap(true)">
                   {% for field, label in nodes_fields.items %}
                     <option value="{{ field }}">{{ label }}</option>
@@ -295,7 +295,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="spanFieldSelect">Select a Span data field for colourisation:</label>
+                <label for="spanFieldSelect">Select a Span data field for colour-coding:</label>
                 <select class="form-control" id="spanFieldSelect" onchange="generateMap(true)">
                   {% for field, label in spans_fields.items %}
                     <option value="{{ field }}">{{ label }}</option>
