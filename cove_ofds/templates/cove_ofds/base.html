@@ -5,10 +5,10 @@
 {% block after_head %}
   <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="{% static 'dataexplore/css/leaflet.css' %}">
-  <script type='text/javascript' src="{% static 'dataexplore/js/leaflet.js' %}"></script>
-  <link rel="stylesheet" type="text/css" href="{% static 'dataexplore/css/leaflet.legend.css' %}">
-  <script type='text/javascript' src="{% static 'dataexplore/js/leaflet.legend.js' %}"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'dataexplore/css/leaflet.css' %}"> <!--https://github.com/Leaflet/Leaflet-->
+  <script type='text/javascript' src="{% static 'dataexplore/js/leaflet.js' %}"></script> <!--https://github.com/Leaflet/Leaflet-->
+  <link rel="stylesheet" type="text/css" href="{% static 'dataexplore/css/leaflet.legend.css' %}"> <!--https://github.com/ptma/Leaflet.Legend-->
+  <script type='text/javascript' src="{% static 'dataexplore/js/leaflet.legend.js' %}"></script> <!--https://github.com/ptma/Leaflet.Legend-->
   <script>try{Typekit.load({ async: true });}catch(e){}</script>
 {% endblock %}
 
