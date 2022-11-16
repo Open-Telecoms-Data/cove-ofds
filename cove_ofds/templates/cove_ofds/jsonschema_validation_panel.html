@@ -1,12 +1,5 @@
 {% load i18n %}
 
-{% if 'prefixItems' in validation_errors %}
-    <h4>{% trans 'prefixItems' %}</h4>
-    <p>DESCIRPTION</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.prefixItems %}
-{% endif %}
-
-
 {% if 'Valuedoesnotmatchconstant' in validation_errors %}
     <h4>{% trans 'Value does not match constant' %}</h4>
     <p>You must update each value to match the constant specified in the schema.</p>
