@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load cove_tags %}
+{% load ofds_cove_tags %}
 
 <table class="table table-condensed">
     <thead>
@@ -37,7 +38,7 @@
             </td>
             {% if col_instance %}
                 <td>
-                    {{ error.instance }}
+                    {{ error.instance|error_instance_display }}
                 </td>
             {% endif %}
             {% if col_validator_value %}
