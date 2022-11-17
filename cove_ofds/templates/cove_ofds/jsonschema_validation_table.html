@@ -6,7 +6,12 @@
     <tr>
         <th>{% trans 'Identifiers' %}</th>
         <th>{% trans 'Path' %}</th>
-        <th>{% trans 'Value' %}</Th>
+        {% if col_instance %}
+            <th>{% trans 'Value' %}</Th>
+        {% endif %}
+        {% if col_validator_value %}
+            <th>{{ col_validator_value_label }}</Th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -30,9 +35,16 @@
             <td>
                 /{{ error.path|join:"/" }}
             </td>
-            <td>
-                {{ error.instance }}
-            </td>
+            {% if col_instance %}
+                <td>
+                    {{ error.instance }}
+                </td>
+            {% endif %}
+            {% if col_validator_value %}
+                <td>
+                    {{ error.validator_value }}
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>
