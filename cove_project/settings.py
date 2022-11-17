@@ -155,6 +155,8 @@ COVE_CONFIG = {
     "support_email": "data@open-contracting.org",
 }
 
+DELETE_FILES_AFTER_DAYS = settings.DELETE_FILES_AFTER_DAYS
+
 # https://github.com/OpenDataServices/cove/issues/1098
 FILE_UPLOAD_PERMISSIONS = 0o644
 
