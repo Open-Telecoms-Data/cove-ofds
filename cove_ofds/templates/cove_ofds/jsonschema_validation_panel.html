@@ -3,55 +3,55 @@
 {% if 'Valuedoesnotmatchconstant' in validation_errors %}
     <h4>{% trans 'Value does not match constant' %}</h4>
     <p>You must update each value to match the constant specified in the schema.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchconstant col_instance=True col_validator_value=True  col_validator_value_label="Constant" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchconstant col_instance=True col_validator_value=True  col_validator_value_label="Constant" error_table_id="Valuedoesnotmatchconstant" %}
 {% endif %}
 
 
 {% if 'prefixItems' in validation_errors %}
     <h4>{% trans 'Empty array' %}</h4>
     <p>You must omit empty arrays from your data in their entirety (key and value).</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyarray col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyarray col_instance=True error_table_id="Emptyarray" %}
 {% endif %}
 
 
 {% if 'Nonuniqueitems' in validation_errors %}
     <h4>{% trans 'Non-unique items' %}</h4>
     <p>You must ensure that the items in each array are unique.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Nonuniqueitems col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Nonuniqueitems col_instance=True error_table_id="Nonuniqueitems" %}
 {% endif %}
 
 
 {% if 'Fieldnamedoesnotmatchpattern' in validation_errors %}
     <h4>{% trans 'Field name does not match pattern' %}</h4>
     <p>You must ensure that fields in `Node.location` and `Span.route` are not named 'properties' or 'nodes'.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern error_table_id="Fieldnamedoesnotmatchpattern" %}
 {% endif %}
 
 {% if 'Valuedoesnotmatchpattern' in validation_errors %}
     <h4>{% trans 'Value does not match pattern' %}</h4>
     <p>You must ensure that only the first item in the `links` array has `.rel` set to 'describedBy`.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern col_instance=True error_table_id="Fieldnamedoesnotmatchpattern" %}
 {% endif %}
 
 
 {% if 'Emptystring' in validation_errors %}
     <h4>{% trans 'Empty string' %}</h4>
     <p>You must omit empty strings from your data in their entirety (key and value).</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptystring col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptystring col_instance=True error_table_id="Emptystring" %}
 {% endif %}
 
 
 {% if 'Valuedoesnotmatchanycodes' in validation_errors %}
     <h4>{% trans 'Value does not match any codes.' %}</h4>
     <p>You must update each value to match a code from the codelist specified in the schema.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchanycodes col_instance=Trues col_validator_value=True col_validator_value_label="Codelist" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchanycodes col_instance=Trues col_validator_value=True col_validator_value_label="Codelist" error_table_id="Valuedoesnotmatchanycodes" %}
 {% endif %}
 
 
 {% if 'Valueisnotaboolean' in validation_errors %}
     <h4>{% trans 'Value is not a boolean' %}</h4>
     <p>You must ensure that each value is either `true` or `false`. You should check that values are not enclosed in qoute characters (`"`).</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotaboolean col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotaboolean col_instance=True error_table_id="Valueisnotaboolean" %}
 {% endif %}
 
 
@@ -61,70 +61,70 @@
         You must ensure that each value contains only digits (`0-9`) and, optionally, the dot character (`.`). Integer values must have either no fractional part (e.g. `1`) or a zero fractional part (e.g. `1.0`).
         You should check that values are not enclosed in quote characters, e.g. `1` is an integer, but `"1"` is a string.
     </p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotaninteger col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotaninteger col_instance=True error_table_id="Valueisnotaninteger" %}
 {% endif %}
 
 
 {% if 'Valueisnotanumber' in validation_errors %}
     <h4>{% trans 'Value is not a number' %}</h4>
     <p>You must ensure that each value contains only digits (`0-9`) and, optionally, the dot character (`.`). You should check that values are not enclosed in quote characters, e.g. `1` is an integer, but `"1"` is a string.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanumber col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanumber col_instance=True error_table_id="Valueisnotanumber" %}
 {% endif %}
 
 
 {% if 'Valueisnotastring' in validation_errors %}
     <h4>{% trans 'Value is not a string' %}</h4>
     <p>You must ensure that each value begins and ends with the quote character (`"`) and that any quotes within the value are escaped with a backslash (`\`).</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotastring col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotastring col_instance=True error_table_id="Valueisnotastring" %}
 {% endif %}
 
 
 {% if 'Valueisnotanobject' in validation_errors %}
     <h4>{% trans 'Value is not an object' %}</h4>
     <p>You must ensure that each value is enclosed in curly braces (`{` and `}`) and contains only key/value pairs.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanobject col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanobject col_instance=True error_table_id="Valueisnotanobject" %}
 {% endif %}
 
 
 {% if 'Valueisnotanarray' in validation_errors %}
     <h4>{% trans 'Value is not an array' %}</h4>
     <p>You must ensure that each value is enclosed in square brackets (`[` and `]`).</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanarray col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanarray col_instance=True error_table_id="Valueisnotanarray" %}
 {% endif %}
 
 
 {% if 'Missingrequiredfields' in validation_errors %}
     <h4>{% trans 'Missing required fields' %}</h4>
     <p>You must ensure that your data contains the required fields specified in the schema.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Missingrequiredfields col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Missingrequiredfields col_instance=True error_table_id="Missingrequiredfields" %}
 {% endif %}
 
 
 {% if 'Emptyobject' in validation_errors %}
     <h4>{% trans 'Empty object' %}</h4>
     <p>You must omit empty objects from your data in their entirety (key and value).</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyobject col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyobject col_instance=True error_table_id="Emptyobject" %}
 {% endif %}
 
 
 {% if 'Incorrectlyformatteddate' in validation_errors %}
     <h4>{% trans 'Incorrectly formatted date' %}</h4>
     <p>You must ensure that each date is in `"YYYY-MM-DD"` format.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteddate col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteddate col_instance=True error_table_id="Incorrectlyformatteddate" %}
 {% endif %}
 
 
 {% if 'Incorrectlyformattediri' in validation_errors %}
     <h4>{% trans 'Incorrectly formatted iri' %}</h4>
     <p>You must ensure that each iri is formatted according to <a href="https://www.rfc-editor.org/rfc/rfc3987" target="_blank">RFC3897</a>.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformattediri col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformattediri col_instance=True error_table_id="Incorrectlyformattediri" %}
 {% endif %}
 
 
 {% if 'Incorrectlyformatteduri' in validation_errors %}
     <h4>{% trans 'Incorrectly formatted uri' %}</h4>
     <p>You must ensure that each uri is formatted according to <a href="https://www.rfc-editor.org/rfc/rfc3986" target="_blank">RFC3896</a>.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteduri col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteduri col_instance=True error_table_id="Incorrectlyformatteduri" %}
 {% endif %}
 
 
@@ -134,11 +134,11 @@
         You must ensure that each uuid is formatted according to <a href="https://datatracker.ietf.org/doc/html/rfc4122" target="_blank">RFC4122</a>.
         For more information, see <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-generate-universally-unique-identifiers" target="_blank">how to generate universally unique identifiers</a>.
     </p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteduuid col_instance=True %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteduuid col_instance=True error_table_id="Incorrectlyformatteduuid" %}
 {% endif %}
 
 
 {% if 'unknown' in validation_errors %}
     <h4>{% trans 'unknown' %}</h4>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.unknown %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.unknown error_table_id="unknown" %}
 {% endif %}
