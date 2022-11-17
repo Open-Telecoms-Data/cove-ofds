@@ -286,6 +286,22 @@
               </div>
             {% else %}
               <p>{% trans 'The GeoJSON version of your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you should check that your coordinates are in longitude, latitude order. You may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>            
+              <div class="form-group">
+                <label for="nodeFieldSelect">Select a Node data field for colour-coding:</label>
+                <select class="form-control" id="nodeFieldSelect" onchange="generateMap(true)">
+                  {% for field, label in nodes_fields.items %}
+                    <option value="{{ field }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="spanFieldSelect">Select a Span data field for colour-coding:</label>
+                <select class="form-control" id="spanFieldSelect" onchange="generateMap(true)">
+                  {% for field, label in spans_fields.items %}
+                    <option value="{{ field }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
               <div id="map" class="map" style="width: 100%; height: 600px;"></div>
             {% endif %}
           </div>
@@ -297,25 +313,28 @@
 {% block extrafooterscript %}
   {{ block.super }}
   {% if can_download_geojson %}{% if any_nodes_with_geometry or any_spans_with_geometry %}
+  {{ nodes_fields|json_script:"node-fields" }}
+  {{ spans_fields|json_script:"span-fields" }}
     <script>
-      var map = L.map('map').setView([9.072973, 7.481621], 6);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-
-      var geojsonMarkerOptions = {
-        radius: 6,
-        fillColor: "#0000FF",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
+      function geojsonMarkerOptions(colour) {
+        return {
+          radius: 6,
+          fillColor: colour,
+          color: colour,
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.6
+        }
       };
 
-      var generatePopup = function (layer) {
-        return `<p><strong>Name:</strong> ${layer.feature.properties.name || 'Unknown'}</p>
-        <p><strong>Network:</strong> ${layer.feature.properties.network.name || 'Unknown'}</p>
-        <p><strong>Phase:</strong> ${layer.feature.properties.phase.name || 'Unknown'}</p>`;
+      function generatePopup(layer) {
+        return `
+          <p><strong>Name:</strong> ${layer?.feature?.properties?.name || 'Unknown'}</p>
+          <p><strong>Network:</strong> ${layer?.feature?.properties?.network?.name || 'Unknown'}</p>
+          <p><strong>Network provider:</strong> ${layer?.feature?.properties?.networkProvider?.name || 'Unknown'}</p>
+          <p><strong>Physical infrastructure provider:</strong> ${layer?.feature?.properties?.physicalInfrastructureProvider?.name || 'Unknown'}</p>
+          <p><strong>Phase:</strong> ${layer?.feature?.properties?.phase?.name || 'Unknown'}</p>
+        `;
       } 
 
       var customOptions = {
@@ -324,32 +343,161 @@
         'className' : 'popupCustom'
       }
 
-      function addLayer(jsonData) {
-        return L.geoJSON(jsonData, {
-          pointToLayer: function (feature, latlng) {
-              return L.circleMarker(latlng, geojsonMarkerOptions);
-          },
-          style: {color: '#000000'}
-        }).bindPopup(layer => generatePopup(layer), customOptions)
-        .addTo(map);
+      var networkColours = [
+        '#e31a1c',
+        '#1f78b4',
+        '#33a02c',
+        '#fb9a99',
+        '#fdbf6f',
+        '#6a3d9a',
+        '#ff7f00',
+      ];
+
+      //sample legend - needs customisation
+      function generateLegendItems(layerData) {
+        return Object.values(layerData).map(networkValues => {
+          var isNode = networkValues.type === 'Point' ? true : false
+          return {
+            label: `${networkValues.name} (${isNode ? 'Node' : 'Span'})`,
+            type: isNode ? 'circle' : 'polyline',
+            radius: 6,
+            color: networkValues.colour,
+            fillColor: networkValues.colour,
+            fillOpacity: 0.6,
+            weight: 2,
+          }
+        })
       }
 
-      function getGeoJSON(url) {
-        fetch(url, {
-          method: 'get'
+      function getFeatureID(feature, field) {
+        if (feature?.properties[field]?.id !== undefined) {
+          return feature.properties[field].id
+        } else if ((feature?.properties[field] !== undefined)) {
+          return feature.properties[field]
+        } else {
+          return "unknown"
+        }
+      }
+
+      function getJsonFromDict(feature) {
+        if (feature.geometry.type === 'Point') {
+          return JSON.parse(document.getElementById('node-fields').textContent);
+        } else if (feature.geometry.type === 'LineString') {
+          return JSON.parse(document.getElementById('span-fields').textContent);
+        } else {
+          throw "The field options cannot be found."
+        }
+      }
+
+        
+      function getFeatureName(feature, field) {
+        var fieldOptions = getJsonFromDict(feature);
+        if (feature?.properties[field]?.name !== undefined) {
+          return feature.properties[field].name
+        } else if ((feature?.properties[field] !== undefined)) {
+          return `${fieldOptions[field]}: ${feature?.properties[field] || 'no data'}`
+        } else {
+          return `${fieldOptions[field]}: ${feature?.properties[field] || 'no data'}`
+        }
+      }
+
+      function generateFeatureData(features, field) {
+        var uniqueIDs = [...new Set(features.map((feature) => getFeatureID(feature, field)))]
+        var featureDetails = uniqueIDs.map((uniqueNetwork, index) => {
+          var uniqueFeature = features.find(feature => getFeatureID(feature, field) === uniqueNetwork);
+          var fieldName = getFeatureName(uniqueFeature, field);
+          var networkColour = {[uniqueNetwork]: {
+            name: [fieldName],
+            type: uniqueFeature.geometry.type,
+            colour: networkColours[index % networkColours.length]
+          }}
+          return networkColour
         })
-        .then(response => response.json())
-        .then(jsonData => addLayer(jsonData))
-        .then(layer => map.fitBounds(layer.getBounds()))
-        .catch(err => {
+        return Object.assign({}, ...featureDetails);
+      }
+
+      var map = L.map('map').setView([9.072973, 7.481621], 6);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      var nodeLayerGroup = L.layerGroup().addTo(map);
+      var spanLayerGroup = L.layerGroup().addTo(map);
+      var legend = {}
+
+      async function getSpans() {
+        return fetch(spanLink, {method: 'get'}).then(response => response.json()).then(async spanJson => {
+          var spanSelect = document.getElementById("spanFieldSelect").value;
+          var spanFeatureData = generateFeatureData(spanJson.features, spanSelect)
+          var layer = await L.geoJson(spanJson, {
+            style: function(feature) {
+              return {color: spanFeatureData[getFeatureID(feature, spanSelect)]['colour']}
+            }
+          }).bindPopup(layer => generatePopup(layer), customOptions)
+          spanLayerGroup.addLayer(layer)
+          map.fitBounds(layer.getBounds())
+          return generateLegendItems(spanFeatureData)
+        }).catch(err => {
+          console.log("The Spans data could not be loaded.");
+          return [];
+        })
+      }
+
+      async function getNodes() {
+        return fetch(nodeLink, {method: 'get'}).then(response => response.json()).then(async nodeJson => {
+          var nodeSelect = document.getElementById("nodeFieldSelect").value;
+          var nodeFeatureData = generateFeatureData(nodeJson.features, nodeSelect)
+          var layer = await L.geoJson(nodeJson, {
+            pointToLayer: function (feature, latlng) {
+              return L.circleMarker(latlng, geojsonMarkerOptions(nodeFeatureData[getFeatureID(feature, nodeSelect)]['colour']));
+            },
+            style: function(feature) {
+              return {color: nodeFeatureData[getFeatureID(feature, nodeSelect)]['colour']}
+            }
+          }).bindPopup(layer => generatePopup(layer), customOptions)
+          nodeLayerGroup.addLayer(layer)
+          map.fitBounds(layer.getBounds())
+          return generateLegendItems(nodeFeatureData)
+        }).catch(err => {
+          console.log("The Nodes data could not be loaded.")
+          return [];
+        })
+      }
+
+
+      async function generateMapData(spanLink, nodeLink) {
+        var [nodeLegendItems, spanLegendItems] = await Promise.all([getNodes(), getSpans()])
+        var legendItems = [...nodeLegendItems, ...spanLegendItems]
+        legend = L.control.Legend({
+          title: 'Legend',
+          position: "bottomleft",
+          collapsed: false,
+          symbolWidth: 24,
+          opacity: 1,
+          column: 1,
+          legends: legendItems
+        }).addTo(map)
+      }
+
+      var spanLink = '{{download_geojson_spans_url}}';
+      var nodeLink = '{{download_geojson_nodes_url}}';
+
+      function generateMap(refresh=false) {
+        try {
+          legend?.options?.title === "Legend" && refresh && map.removeControl(legend) 
+          refresh && nodeLayerGroup.clearLayers()
+          refresh && spanLayerGroup.clearLayers()
+          generateMapData(spanLink, nodeLink);
+        } 
+        catch(err) {
           console.error(`Could not download data or create layer: `, err);
           var mapElement = document.getElementById('mapVisualisation')
           mapElement.innerHTML = `<p>{% trans 'There was an error loading: ${url.substring(url.lastIndexOf("/") + 1, url.length)}' %}</p>` + mapElement.innerHTML
-        });
+        }
       }
+      
+      generateMap();
 
-      var geoJsonFiles = ['{{download_geojson_spans_url}}', '{{download_geojson_nodes_url}}']
-      geoJsonFiles.forEach(geoJsonFile => getGeoJSON(geoJsonFile))
     </script>
   {% endif %}{% endif %}
 {% endblock %}
