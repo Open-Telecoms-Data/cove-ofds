@@ -1,39 +1,61 @@
 {% load i18n %}
 {% load cove_tags %}
+{% load ofds_cove_tags %}
 
-<table class="table table-condensed">
-    <thead>
-    <tr>
-        <th>{% trans 'Identifiers' %}</th>
-        <th>{% trans 'Path' %}</th>
-        <th>{% trans 'Value' %}</Th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for error in validation_errors_for_table %}
+
+<div style="text-align: right;">
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#validation_error_details_{{ error_table_id }}" aria-expanded="false" aria-controls="validation_error_details_{{ error_table_id }}">
+        Show/Hide errors
+    </button>
+</div>
+
+<div class="collapse" id="validation_error_details_{{ error_table_id }}">
+    <table class="table table-condensed">
+        <thead>
         <tr>
-            <td>
-                {% if error.data_ids.network_id or error.data_ids.span_id or error.data_ids.node_id %}
-                    {% if error.data_ids.network_id %}
-                        <div>{% trans 'Network' %}: {{ error.data_ids.network_id }}</div>
-                    {% endif %}
-                    {% if error.data_ids.span_id %}
-                        <div>{% trans 'Span' %}: {{ error.data_ids.span_id }}</div>
-                    {% endif %}
-                    {% if error.data_ids.node_id %}
-                        <div>{% trans 'Node' %}: {{ error.data_ids.node_id }}</div>
-                    {% endif %}
-                {% else %}
-                    N/A
-                {% endif %}
-            </td>
-            <td>
-                /{{ error.path|join:"/" }}
-            </td>
-            <td>
-                {{ error.instance }}
-            </td>
+            <th>{% trans 'Identifiers' %}</th>
+            <th>{% trans 'Path' %}</th>
+            {% if col_instance %}
+                <th>{% trans 'Value' %}</Th>
+            {% endif %}
+            {% if col_validator_value %}
+                <th>{{ col_validator_value_label }}</Th>
+            {% endif %}
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for error in validation_errors_for_table %}
+            <tr>
+                <td>
+                    {% if error.data_ids.network_id or error.data_ids.span_id or error.data_ids.node_id %}
+                        {% if error.data_ids.network_id %}
+                            <div>{% trans 'Network' %}: {{ error.data_ids.network_id }}</div>
+                        {% endif %}
+                        {% if error.data_ids.span_id %}
+                            <div>{% trans 'Span' %}: {{ error.data_ids.span_id }}</div>
+                        {% endif %}
+                        {% if error.data_ids.node_id %}
+                            <div>{% trans 'Node' %}: {{ error.data_ids.node_id }}</div>
+                        {% endif %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    /{{ error.path|join:"/" }}
+                </td>
+                {% if col_instance %}
+                    <td>
+                        {{ error.instance|error_instance_display }}
+                    </td>
+                {% endif %}
+                {% if col_validator_value %}
+                    <td>
+                        {{ error.validator_value }}
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
