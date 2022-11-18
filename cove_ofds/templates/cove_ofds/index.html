@@ -10,7 +10,7 @@
         For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/index.html" target="_blank">publication format reference</a>.
     </p>
     <p>
-      After submitting your data, you can download it in alternative formats, get feedback on its quality and visualise it on a map.
+      After submitting your data, you can download it in alternative formats, get feedback on its quality and visualise it on a map. Data is stored for 90 days at a randomly generated URL. You can share the URL with others to support discussion of data quality.
     </p>
 
     <!-- Nav tabs -->
@@ -36,10 +36,6 @@
     <div class="tab-content">
       <div class="tab-pane fade active in" id="json">
 
-        <p>
-          <strong>Accepted formats:</strong> a UTF-8 encoded JSON file that conforms to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/json.html#small-files-and-api-responses-option" target="_blank">JSON small files and API responses publication format</a>.
-        </p>
-
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingOne" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                   <h4 class="panel-title">
@@ -50,6 +46,11 @@
                 </div>
                 <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                   <div class="panel-body">
+
+                    <p>
+                      <strong>Accepted formats:</strong> a UTF-8 encoded JSON file that conforms to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/json.html#small-files-and-api-responses-option" target="_blank">JSON small files and API responses publication format</a>.
+                    </p>
+
                     <form method="POST" action="{% url 'new_json' %}" enctype="multipart/form-data">{% csrf_token %}
                         {% bootstrap_form forms.json.upload_form %}
                         {% buttons %}
@@ -89,10 +90,6 @@
       </div>
       <div class="tab-pane fade" id="geojson">
 
-        <p>
-          <strong>Accepted formats:</strong> UTF-8 encoded GeoJSON feature collections that conform to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/geojson.html#small-files-and-api-responses-option" target="_blank">GeoJSON small files and API responses publication format</a>.
-        </p>
-
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingFour" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
                   <h4 class="panel-title">
@@ -103,6 +100,11 @@
                 </div>
                 <div id="collapseFour" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingFour">
                   <div class="panel-body">
+
+                    <p>
+                      <strong>Accepted formats:</strong> UTF-8 encoded GeoJSON files that conform to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/geojson.html#small-files-and-api-responses-option" target="_blank">GeoJSON small files and API responses publication format</a>.
+                    </p>
+
                     <form method="POST" action="{% url 'new_geojson' %}" enctype="multipart/form-data">{% csrf_token %}
                         {% bootstrap_form forms.geojson.upload_form %}
                         {% buttons %}
@@ -118,10 +120,6 @@
       </div>
       <div class="tab-pane fade" id="csvs">
 
-        <p>
-          <strong>Accepted formats:</strong> UTF-8 encoded CSV files that conform to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/csv.html" target="_blank">CSV publication format</a>.
-        </p>
-
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingSeven" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
                   <h4 class="panel-title">
@@ -132,6 +130,11 @@
                 </div>
                 <div id="collapseSeven" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSeven">
                   <div class="panel-body">
+
+                    <p>
+                      <strong>Accepted formats:</strong> UTF-8 encoded CSV files that conform to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/csv.html" target="_blank">CSV publication format</a>.
+                    </p>
+
                     <form method="POST" action="{% url 'new_csvs' %}" enctype="multipart/form-data">{% csrf_token %}
                         {% bootstrap_form forms.csvs.upload_form %}
                         {% buttons %}
