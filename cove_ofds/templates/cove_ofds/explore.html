@@ -276,7 +276,7 @@
               </h4>
           </div>
           <div id="mapVisualisation" class="collapse in panel-body">
-            {% if any_nodes_with_geometry == False and any_spans_with_geometry == False %}
+            {% if any_nodes_with_geometry == False or any_spans_with_geometry == False %}
               <div>
                 <p>{% trans 'Your data cannot be visualised on a map because it does not contain coordinates. If you expected your data to include coordinates, you should check your mapping and data pipeline for errors. For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#geometry">{% trans 'Geometry' %}</a>.</p>
               </div>
@@ -287,7 +287,7 @@
             {% else %}
               <p>{% trans 'The GeoJSON version of your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you should check that your coordinates are in longitude, latitude order. You may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>            
               <div class="form-group">
-                <label for="nodeFieldSelect">Select a Node data field for colour-coding:</label>
+                <label for="nodeFieldSelect">Colour nodes by:</label>
                 <select class="form-control" id="nodeFieldSelect" onchange="generateMap(true)">
                   {% for field, label in nodes_fields.items %}
                     <option value="{{ field }}">{{ label }}</option>
@@ -295,7 +295,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="spanFieldSelect">Select a Span data field for colour-coding:</label>
+                <label for="spanFieldSelect">Colour spans by:</label>
                 <select class="form-control" id="spanFieldSelect" onchange="generateMap(true)">
                   {% for field, label in spans_fields.items %}
                     <option value="{{ field }}">{{ label }}</option>
@@ -358,7 +358,7 @@
         return Object.values(layerData).map(networkValues => {
           var isNode = networkValues.type === 'Point' ? true : false
           return {
-            label: `${networkValues.name} (${isNode ? 'Node' : 'Span'})`,
+            label: `${networkValues.name}`,
             type: isNode ? 'circle' : 'polyline',
             radius: 6,
             color: networkValues.colour,
@@ -423,7 +423,8 @@
 
       var nodeLayerGroup = L.layerGroup().addTo(map);
       var spanLayerGroup = L.layerGroup().addTo(map);
-      var legend = {}
+      var nodeLegend = {}
+      var spanLegend = {}
 
       async function getSpans() {
         return fetch(spanLink, {method: 'get'}).then(response => response.json()).then(async spanJson => {
@@ -468,14 +469,25 @@
       async function generateMapData(spanLink, nodeLink) {
         var [nodeLegendItems, spanLegendItems] = await Promise.all([getNodes(), getSpans()])
         var legendItems = [...nodeLegendItems, ...spanLegendItems]
-        legend = L.control.Legend({
-          title: 'Legend',
-          position: "bottomleft",
+
+        nodeLegend = L.control.Legend({
+          title: 'Nodes',
+          position: "bottomright",
           collapsed: false,
           symbolWidth: 24,
           opacity: 1,
           column: 1,
-          legends: legendItems
+          legends: nodeLegendItems
+        }).addTo(map)
+
+        spanLegend = L.control.Legend({
+          title: 'Spans',
+          position: "bottomright",
+          collapsed: false,
+          symbolWidth: 24,
+          opacity: 1,
+          column: 1,
+          legends: spanLegendItems
         }).addTo(map)
       }
 
@@ -484,7 +496,8 @@
 
       function generateMap(refresh=false) {
         try {
-          legend?.options?.title === "Legend" && refresh && map.removeControl(legend) 
+          nodeLegend?.options?.title === "Nodes" && refresh && map.removeControl(nodeLegend)
+          spanLegend?.options?.title === "Spans" && refresh && map.removeControl(spanLegend) 
           refresh && nodeLayerGroup.clearLayers()
           refresh && spanLayerGroup.clearLayers()
           generateMapData(spanLink, nodeLink);

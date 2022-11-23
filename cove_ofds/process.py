@@ -249,11 +249,11 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
     spanFields = {
         "/features/properties/network/name": "Network",
         "/features/properties/phase/name": "Phase",
-        "/features/properties/status/name": "Status",
         "/features/properties/physicalInfrastructureProvider/name": "Physical Infrastructure Provider",
         "/features/properties/networkProvider/name": "Network Provider",
         "/features/properties/supplier/name": "Supplier",
         "/features/properties/transmissionMedium": "Transmission Medium",
+        "/features/properties/status": "Status",
         "/features/properties/deployment": "Deployment",
         "/features/properties/darkFibre": "Dark Fibre",
         "/features/properties/fibreType": "Fibre Type",
