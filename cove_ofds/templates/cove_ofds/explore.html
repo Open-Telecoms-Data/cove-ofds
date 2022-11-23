@@ -39,16 +39,16 @@
     <div class="row">
 
         <div class="panel panel-success">
-            <div id="download-panel" class="panel-heading pointer" role="region" aria-expanded="true"
-                 aria-controls="downloadData" data-toggle="collapse" data-target="#downloadData">
+            <div id="conversion-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+                 aria-controls="dataConversion" data-toggle="collapse" data-target="#downloadData">
                 <h4 class="panel-title">
-                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Download Data' %}
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Data conversion' %}
                 </h4>
             </div>
-            <div id="downloadData" class="collapse in panel-body">
+            <div id="dataConversion" class="collapse in panel-body">
 
                 <p>
-                    For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/index.html" target="_blank">publication format reference</a>.
+                    Download the data that you submitted in either its original format or in alternative formats. For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/index.html" target="_blank">publication format reference</a>. If you are investigating an error, you might find the alternative formats easier to use.
                 </p>
 
                 <div class="row">
@@ -57,7 +57,7 @@
 
                         <div class="panel {% if original_format == 'json' %}panel-info{% else %}panel-success{% endif %}">
                             <div id="download-json-panel" class="panel-heading pointer" role="region" aria-expanded="true"
-                                 aria-controls="downloadData" data-toggle="collapse" data-target="#downloadDataJSON">
+                                 aria-controls="dataConversion" data-toggle="collapse" data-target="#downloadDataJSON">
                                 <h4 class="panel-title">
                                     <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'JSON' %} {% if original_format == 'json' %}{% trans '(original)' %}{% endif %}
                                 </h4>
@@ -74,6 +74,7 @@
                                     </ul>
                                 {% else %}
                                     {% if can_download_json %}
+                                        <p>{% trans 'Your data was successfully converted to JSON format.' %}</p>
                                         <ul class="list-unstyled">
                                             <li>
                                                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
@@ -90,7 +91,7 @@
 
                         <div class="panel {% if original_format == 'geojson' %}panel-info{% else %}panel-success{% endif %}">
                             <div id="download-geojson-panel" class="panel-heading pointer" role="region"
-                                 aria-expanded="true" aria-controls="downloadData" data-toggle="collapse"
+                                 aria-expanded="true" aria-controls="dataConversion" data-toggle="collapse"
                                  data-target="#downloadDataGeoJSON">
                                 <h4 class="panel-title">
                                     <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'GeoJSON' %} {% if original_format == 'geojson' %}{% trans '(original)' %}{% endif %}
@@ -108,14 +109,15 @@
                                     </ul>
                                 {% else %}
                                     {% if can_download_geojson %}
+                                        <p>{% trans 'Your data was successfully converted to GeoJSON format.' %}</p>
                                         <ul class="list-unstyled">
                                             <li>
                                                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                                <a href="{{download_geojson_nodes_url}}">{% trans 'Nodes GeoJSON' %} ({{ download_geojson_nodes_size|filesizeformat }})</a>
+                                                <a href="{{download_geojson_nodes_url}}">nodes.geojson ({{ download_geojson_nodes_size|filesizeformat }})</a>
                                             </li>
                                             <li>
                                                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                                <a href="{{download_geojson_spans_url}}">{% trans 'Spans GeoJSON' %} ({{ download_geojson_spans_size|filesizeformat }})</a>
+                                                <a href="{{download_geojson_spans_url}}">spans.geojson ({{ download_geojson_spans_size|filesizeformat }})</a>
                                             </li>
                                         </ul>
                                     {% endif %}
@@ -128,7 +130,7 @@
 
                         <div class="panel {% if original_format == 'csvs' %}panel-info{% else %}panel-success{% endif %}">
                             <div id="download-csvs-panel" class="panel-heading pointer" role="region" aria-expanded="true"
-                                 aria-controls="downloadData" data-toggle="collapse" data-target="#downloadDataCSVs">
+                                 aria-controls="dataConversion" data-toggle="collapse" data-target="#downloadDataCSVs">
                                 <h4 class="panel-title">
                                     <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'CSV' %} {% if original_format == 'csvs' %}{% trans '(original)' %}{% endif %}
                                 </h4>
@@ -145,11 +147,11 @@
                                     </ul>
                                 {% else %}
                                     {% if can_download_csvs %}
-                                        <p>Compressed:</p>
+                                        <p>{% trans 'Your data was successfully converted to CSV format.' %}</p>
                                         <ul class="list-unstyled">
                                             <li>
                                                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                                <a href="{{download_csvs_zip_url}}">{% trans 'CSV in a ZIP file' %} ({{ download_csvs_zip_size|filesizeformat }})</a>
+                                                <a href="{{download_csvs_zip_url}}">data.zip (compressed, {{ download_csvs_zip_size|filesizeformat }})</a>
                                             </li>
                                         </ul>
                                         <p>Uncompressed:</p>
@@ -187,7 +189,7 @@
                   </h4>
                 </div>
                 <div id="validationTable" class="collapse in panel-body">
-                  <p>{% trans 'The structure and format of your data does not conform to the OFDS schema. You should check your mapping and data pipeline for errors. For more information, see the ' %}<a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference">{% trans 'reference documentation' %}</a>.</p>
+                  <p>{% trans 'The structure and format of your data does not conform to the OFDS schema. You should check your mapping and data pipeline for errors. ' %}{% if original_format != 'json' %}{% trans 'Your data was converted to JSON format and checked against the OFDS schema. Errors are reported according to their location in the JSON format version of your data. ' %}{% endif %}{% trans 'For more information, see the ' %}<a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference">{% trans 'reference documentation' %}</a>.</p>
                   {% include "cove_ofds/jsonschema_validation_panel.html" %}
                 </div>
               </div>
@@ -220,11 +222,11 @@
                   </h4>
                 </div>
                 <div id="additionalFieldsTable" class="collapse in panel-body">
-                  <p>{% trans 'Your data contains additional fields that are not part of the OFDS schema. You should:' %}</p>
+                  <p>{% trans 'Your data contains additional fields that are not part of the OFDS schema. ' %}{% if original_format != 'json' %}{% trans 'Additional fields are reported according to their location in the JSON format version of your data.' %}{% endif %}{% trans ' You should:' %}</p>
                   <ul>
                     <li>{% trans 'Check that additional fields are not the result of typos in field names or other errors in your mapping or data pipeline.' %}</li>
                     <li>{% trans 'Check whether the data in these fields could be provided by using a field in the OFDS schema.' %}</li>
-                    <li>{% trans 'Document the structure, format and meaning of additional fields in your' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-write-a-data-user-guide">{% trans 'data user guide' %}</a>.</li>
+                    <li>{% trans 'Document the structure, format and meaning of additional fields in your ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-write-a-data-user-guide">{% trans 'data user guide' %}</a>.</li>
                   </ul>
                   <p>{% trans 'For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-add-additional-fields">{% trans 'how to add additional fields' %}</a>.</p>
                   {% include "libcoveweb2/additional_fields_table.html" %}
@@ -257,7 +259,7 @@
             </div>
             <div id="additionalChecksTable" class="collapse in panel-body">
                 {% if additional_checks_count %}
-                <p>{% trans 'Your data failed the following additional checks. You should check your mapping and data pipeline for errors.' %}</p>
+                <p>{% trans 'Your data failed the following additional checks. You should check your mapping and data pipeline for errors.' %}{% if original_format != 'json' %}{% trans ' Failures are reported according to their location in the JSON format version of your data.' %}{% endif %}</p>
                     {% include "cove_ofds/additional_checks_table.html" %}
                 {% else %}
                     <p>{% trans 'Your data passed all additional checks.' %}</p>
