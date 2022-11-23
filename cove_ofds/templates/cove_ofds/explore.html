@@ -276,7 +276,7 @@
               </h4>
           </div>
           <div id="mapVisualisation" class="collapse in panel-body">
-            {% if any_nodes_with_geometry == False or any_spans_with_geometry == False %}
+            {% if any_nodes_with_geometry == False and any_spans_with_geometry == False %}
               <div>
                 <p>{% trans 'Your data cannot be visualised on a map because it does not contain coordinates. If you expected your data to include coordinates, you should check your mapping and data pipeline for errors. For more information, see ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/reference/schema.html#geometry">{% trans 'Geometry' %}</a>.</p>
               </div>
@@ -286,6 +286,7 @@
               </div>
             {% else %}
               <p>{% trans 'The GeoJSON version of your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you should check that your coordinates are in longitude, latitude order. You may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>            
+              {% if any_nodes_with_geometry %}
               <div class="form-group">
                 <label for="nodeFieldSelect">Colour nodes by:</label>
                 <select class="form-control" id="nodeFieldSelect" onchange="generateMap(true)">
@@ -294,14 +295,17 @@
                   {% endfor %}
                 </select>
               </div>
-              <div class="form-group">
-                <label for="spanFieldSelect">Colour spans by:</label>
-                <select class="form-control" id="spanFieldSelect" onchange="generateMap(true)">
-                  {% for field, label in spans_fields.items %}
-                    <option value="{{ field }}">{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+              {% endif %}
+              {% if any_spans_with_geometry %}
+                <div class="form-group">
+                  <label for="spanFieldSelect">Colour spans by:</label>
+                  <select class="form-control" id="spanFieldSelect" onchange="generateMap(true)">
+                    {% for field, label in spans_fields.items %}
+                      <option value="{{ field }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% endif %}
               <div id="map" class="map" style="width: 100%; height: 600px;"></div>
             {% endif %}
           </div>
@@ -316,6 +320,12 @@
   {{ nodes_fields|json_script:"node-fields" }}
   {{ spans_fields|json_script:"span-fields" }}
     <script>
+
+      let map = L.map('map').setView([9.072973, 7.481621], 6);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
       function geojsonMarkerOptions(colour) {
         return {
           radius: 6,
@@ -337,46 +347,51 @@
         `;
       } 
 
-      var customOptions = {
+      let customOptions = {
         'maxWidth': '400',
         'width': '200',
         'className' : 'popupCustom'
       }
 
-      var networkColours = [
-        '#e31a1c',
-        '#1f78b4',
-        '#33a02c',
-        '#fb9a99',
-        '#fdbf6f',
-        '#6a3d9a',
-        '#ff7f00',
+      let colours = [
+        '#e6194b',
+        '#3cb44b',
+        '#ffe119',
+        '#4363d8',
+        '#f58231',
+        '#911eb4',
+        '#46f0f0',
+        '#f032e6',
+        '#bcf60c',
+        '#fabebe',
+        '#008080',
+        '#e6beff',
+        '#9a6324',
+        '#fffac8',
+        '#800000',
+        '#aaffc3',
+        '#808000',
+        '#ffd8b1',
+        '#000075',
+        '#808080',
+        '#ffffff',
+        '#000000'
       ];
 
       //sample legend - needs customisation
       function generateLegendItems(layerData) {
-        return Object.values(layerData).map(networkValues => {
-          var isNode = networkValues.type === 'Point' ? true : false
+        return Object.values(layerData).map(featureValues => {
+          let isNode = featureValues.type === 'Point' ? true : false;
           return {
-            label: `${networkValues.name}`,
+            label: `${featureValues.name}`,
             type: isNode ? 'circle' : 'polyline',
             radius: 6,
-            color: networkValues.colour,
-            fillColor: networkValues.colour,
+            color: featureValues.colour,
+            fillColor: featureValues.colour,
             fillOpacity: 0.6,
             weight: 2,
           }
         })
-      }
-
-      function getFeatureID(feature, field) {
-        if (feature?.properties[field]?.id !== undefined) {
-          return feature.properties[field].id
-        } else if ((feature?.properties[field] !== undefined)) {
-          return feature.properties[field]
-        } else {
-          return "unknown"
-        }
       }
 
       function getJsonFromDict(feature) {
@@ -389,9 +404,8 @@
         }
       }
 
-        
       function getFeatureName(feature, field) {
-        var fieldOptions = getJsonFromDict(feature);
+        let fieldOptions = getJsonFromDict(feature);
         if (feature?.properties[field]?.name !== undefined) {
           return feature.properties[field].name
         } else if ((feature?.properties[field] !== undefined)) {
@@ -401,76 +415,90 @@
         }
       }
 
-      function generateFeatureData(features, field) {
-        var uniqueIDs = [...new Set(features.map((feature) => getFeatureID(feature, field)))]
-        var featureDetails = uniqueIDs.map((uniqueNetwork, index) => {
-          var uniqueFeature = features.find(feature => getFeatureID(feature, field) === uniqueNetwork);
-          var fieldName = getFeatureName(uniqueFeature, field);
-          var networkColour = {[uniqueNetwork]: {
+      let spanLink = '{{download_geojson_spans_url}}';
+      let nodeLink = '{{download_geojson_nodes_url}}';
+      let nodeLayerGroup = L.layerGroup().addTo(map);
+      let spanLayerGroup = L.layerGroup().addTo(map);
+      let nodeLegend = {}
+      let spanLegend = {}
+
+      function getFeatureID(feature, field) {
+        if (feature?.properties[field]?.id !== undefined) {
+          return feature.properties[field].id
+        } else if ((feature?.properties[field] !== undefined)) {
+          return feature.properties[field]
+        } else {
+          return "unknown"
+        }
+      }
+
+      function generateFeatureData(features, field, uniqueColours) {
+        let uniqueIDs = [...new Set(features.map((feature) => getFeatureID(feature, field)))]
+        let featureDetails = uniqueIDs.map((uniqueNetwork, index) => {
+          let uniqueFeature = features.find(feature => getFeatureID(feature, field) === uniqueNetwork);
+          let fieldName = getFeatureName(uniqueFeature, field);
+          let networkColour = {[uniqueNetwork]: {
             name: [fieldName],
             type: uniqueFeature.geometry.type,
-            colour: networkColours[index % networkColours.length]
+            colour: uniqueColours[uniqueNetwork]
           }}
           return networkColour
         })
         return Object.assign({}, ...featureDetails);
+      } 
+
+      async function getNodesGeoJson(nodeLink) {
+        return fetch(nodeLink, {method: 'get'}).then(response => response.json())
       }
 
-      var map = L.map('map').setView([9.072973, 7.481621], 6);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-
-      var nodeLayerGroup = L.layerGroup().addTo(map);
-      var spanLayerGroup = L.layerGroup().addTo(map);
-      var nodeLegend = {}
-      var spanLegend = {}
-
-      async function getSpans() {
-        return fetch(spanLink, {method: 'get'}).then(response => response.json()).then(async spanJson => {
-          var spanSelect = document.getElementById("spanFieldSelect").value;
-          var spanFeatureData = generateFeatureData(spanJson.features, spanSelect)
-          var layer = await L.geoJson(spanJson, {
-            style: function(feature) {
-              return {color: spanFeatureData[getFeatureID(feature, spanSelect)]['colour']}
-            }
-          }).bindPopup(layer => generatePopup(layer), customOptions)
-          spanLayerGroup.addLayer(layer)
-          map.fitBounds(layer.getBounds())
-          return generateLegendItems(spanFeatureData)
-        }).catch(err => {
-          console.log("The Spans data could not be loaded.");
-          return [];
-        })
+      async function getSpansGeoJson(nodeLink) {
+        return fetch(nodeLink, {method: 'get'}).then(response => response.json())
       }
 
-      async function getNodes() {
-        return fetch(nodeLink, {method: 'get'}).then(response => response.json()).then(async nodeJson => {
-          var nodeSelect = document.getElementById("nodeFieldSelect").value;
-          var nodeFeatureData = generateFeatureData(nodeJson.features, nodeSelect)
-          var layer = await L.geoJson(nodeJson, {
-            pointToLayer: function (feature, latlng) {
-              return L.circleMarker(latlng, geojsonMarkerOptions(nodeFeatureData[getFeatureID(feature, nodeSelect)]['colour']));
-            },
-            style: function(feature) {
-              return {color: nodeFeatureData[getFeatureID(feature, nodeSelect)]['colour']}
-            }
-          }).bindPopup(layer => generatePopup(layer), customOptions)
-          nodeLayerGroup.addLayer(layer)
-          map.fitBounds(layer.getBounds())
-          return generateLegendItems(nodeFeatureData)
-        }).catch(err => {
-          console.log("The Nodes data could not be loaded.")
-          return [];
-        })
+      function getUniqueIds(features, field) {
+        return [...new Set(features.map((feature) => getFeatureID(feature, field)))]
       }
-
 
       async function generateMapData(spanLink, nodeLink) {
-        var [nodeLegendItems, spanLegendItems] = await Promise.all([getNodes(), getSpans()])
-        var legendItems = [...nodeLegendItems, ...spanLegendItems]
+        const anyNodes = '{{ any_nodes_with_geometry }}' === 'True';
+        const anySpans = '{{ any_spans_with_geometry }}' === 'True';
+        const spanSelect = anySpans ? document.getElementById("spanFieldSelect").value : null;
+        const nodeSelect = anyNodes ? document.getElementById("nodeFieldSelect").value : null;
 
-        nodeLegend = L.control.Legend({
+        const nodeGeoJson = anyNodes ? await getNodesGeoJson(nodeLink) : {};
+        const spanGeoJson = anySpans ? await getSpansGeoJson(spanLink) : {};
+
+        const nodeUniqueIds = anyNodes ? await getUniqueIds(nodeGeoJson.features, nodeSelect) : {};
+        const spanUniqueIds = anySpans ? await getUniqueIds(spanGeoJson.features, spanSelect) : {};
+        const uniqueFeatureIds = anySpans && anyNodes ? new Set([...nodeUniqueIds, ...spanUniqueIds]) : 
+                      anyNodes ? nodeUniqueIds : 
+                      anySpans ? spanUniqueIds : [];
+        const uniqueColours = Object.assign({}, ...Array.from(uniqueFeatureIds).map((featureId, index) => {
+          return {[featureId]: colours[index % colours.length]}
+        }));
+        const nodeLegendItems = anyNodes && generateLegendItems(generateFeatureData(nodeGeoJson.features, nodeSelect, uniqueColours));
+        const spanLegendItems = anySpans && generateLegendItems(generateFeatureData(spanGeoJson.features, spanSelect, uniqueColours));
+
+        const nodeLayer = anyNodes ? await L.geoJson(nodeGeoJson, {
+          pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions(uniqueColours[getFeatureID(feature, nodeSelect)]));
+          },
+          style: function(feature) {
+            return {color: uniqueColours[getFeatureID(feature, nodeSelect)]}
+          }
+        }).bindPopup(layer => generatePopup(layer), customOptions) : null;
+
+        const spanLayer = anySpans ? await L.geoJson(spanGeoJson, {
+          style: function(feature) {
+            return {color: uniqueColours[getFeatureID(feature, spanSelect)]}
+          }
+        }).bindPopup(layer => generatePopup(layer), customOptions) : null;
+
+        nodeLayer && nodeLayerGroup.addLayer(nodeLayer);
+        spanLayer && spanLayerGroup.addLayer(spanLayer);
+        spanLayer ? map.fitBounds(spanLayer.getBounds()) : map.fitBounds(nodeLayer.getBounds())
+
+        nodeLegend = anyNodes ? L.control.Legend({
           title: 'Nodes',
           position: "bottomright",
           collapsed: false,
@@ -478,9 +506,9 @@
           opacity: 1,
           column: 1,
           legends: nodeLegendItems
-        }).addTo(map)
+        }).addTo(map) : null
 
-        spanLegend = L.control.Legend({
+        spanLegend = anySpans ? L.control.Legend({
           title: 'Spans',
           position: "bottomright",
           collapsed: false,
@@ -488,11 +516,8 @@
           opacity: 1,
           column: 1,
           legends: spanLegendItems
-        }).addTo(map)
+        }).addTo(map) : null;
       }
-
-      var spanLink = '{{download_geojson_spans_url}}';
-      var nodeLink = '{{download_geojson_nodes_url}}';
 
       function generateMap(refresh=false) {
         try {
@@ -504,7 +529,7 @@
         } 
         catch(err) {
           console.error(`Could not download data or create layer: `, err);
-          var mapElement = document.getElementById('mapVisualisation')
+          let mapElement = document.getElementById('mapVisualisation')
           mapElement.innerHTML = `<p>{% trans 'There was an error loading: ${url.substring(url.lastIndexOf("/") + 1, url.length)}' %}</p>` + mapElement.innerHTML
         }
       }
