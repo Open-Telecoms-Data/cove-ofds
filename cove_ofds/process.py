@@ -184,18 +184,21 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
             f for f in supplied_data_json_files if f.meta.get("geojson") == "spans"
         ]
 
-        if len(nodes_data_json_files) != 1 or len(spans_data_json_files) != 1:
+        if len(nodes_data_json_files) != 1 and len(spans_data_json_files) != 1:
             raise Exception("Can't find JSON original data!")
 
         # Get data from files
-        nodes_data_json_file = nodes_data_json_files[0]
-        spans_data_json_file = spans_data_json_files[0]
-
-        with open(nodes_data_json_file.upload_dir_and_filename()) as fp:
-            nodes_data = json.load(fp)
-
-        with open(spans_data_json_file.upload_dir_and_filename()) as fp:
-            spans_data = json.load(fp)
+        # (Or insert dummy data, if no file was uploaded)
+        if nodes_data_json_files:
+            with open(nodes_data_json_files[0].upload_dir_and_filename()) as fp:
+                nodes_data = json.load(fp)
+        else:
+            nodes_data = {"type": "FeatureCollection", "features": []}
+        if spans_data_json_files:
+            with open(spans_data_json_files[0].upload_dir_and_filename()) as fp:
+                spans_data = json.load(fp)
+        else:
+            spans_data = {"type": "FeatureCollection", "features": []}
 
         # Convert
         converter = GeoJSONToJSONConverter()
@@ -230,6 +233,34 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
 
 class ConvertJSONIntoGeoJSON(ProcessDataTask):
     """Convert primary format (JSON) to GeoJSON"""
+
+    nodeFields = {
+        "/features/properties/network/name": "Network",
+        "/features/properties/phase/name": "Phase",
+        "/features/properties/physicalInfrastructureProvider/name": "Physical Infrastructure Provider",
+        "/features/properties/networkProvider/name": "Network Provider",
+        "/features/properties/technologies": "Technologies",
+        "/features/properties/status": "Status",
+        "/features/properties/type": "Type",
+        "/features/properties/accessPoint": "accessPoint",
+        "/features/properties/power": "Power",
+    }
+
+    spanFields = {
+        "/features/properties/network/name": "Network",
+        "/features/properties/phase/name": "Phase",
+        "/features/properties/status/name": "Status",
+        "/features/properties/physicalInfrastructureProvider/name": "Physical Infrastructure Provider",
+        "/features/properties/networkProvider/name": "Network Provider",
+        "/features/properties/supplier/name": "Supplier",
+        "/features/properties/transmissionMedium": "Transmission Medium",
+        "/features/properties/deployment": "Deployment",
+        "/features/properties/darkFibre": "Dark Fibre",
+        "/features/properties/fibreType": "Fibre Type",
+        "/features/properties/fibreCount": "Fibre Count",
+        "/features/properties/technologies": "Technologies",
+        "/features/properties/capacity": "Capacity",
+    }
 
     def __init__(self, supplied_data):
         super().__init__(supplied_data)
@@ -298,6 +329,16 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
                 data = json.load(fp)
             context["any_nodes_with_geometry"] = data["any_nodes_with_geometry"]
             context["any_spans_with_geometry"] = data["any_spans_with_geometry"]
+            context["nodes_fields"] = {
+                field.split("/")[3]: label
+                for field, label in self.nodeFields.items()
+                if field in data["nodes_output_field_coverage"]
+            }
+            context["spans_fields"] = {
+                field.split("/")[3]: label
+                for field, label in self.spanFields.items()
+                if field in data["spans_output_field_coverage"]
+            }
         else:
             context["can_download_geojson"] = False
         # done!

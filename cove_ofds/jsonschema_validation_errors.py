@@ -2,10 +2,7 @@
 # It could do with some testing, wherever it ends up
 def add_type_to_json_schema_validation_error(data: dict) -> dict:
 
-    if data["validator"] == "prefixItems":
-        data["cove_type"] = "PrefixItems"
-
-    elif data["validator"] == "const":
+    if data["validator"] == "const":
         data["cove_type"] = "Valuedoesnotmatchconstant"
 
     elif data["validator"] == "minItems":
@@ -29,7 +26,7 @@ def add_type_to_json_schema_validation_error(data: dict) -> dict:
         data["cove_type"] = "Emptystring"
 
     elif data["validator"] == "enum":
-        data["cove_type"] = "Valuedoesnotmatchanycodes."
+        data["cove_type"] = "Valuedoesnotmatchanycodes"
 
     elif data["validator"] == "type" and data["validator_value"] == "boolean":
         data["cove_type"] = "Valueisnotaboolean"

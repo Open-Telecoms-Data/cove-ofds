@@ -67,17 +67,22 @@ def new_geojson(request):
     if form.is_valid():
         # Extra Validation
         for field in ["nodes_file_upload", "spans_file_upload"]:
-            if (
-                not request.FILES[field].content_type
-                in settings.ALLOWED_GEOJSON_CONTENT_TYPES
-            ):
-                form.add_error(field, "This does not appear to be a JSON file")
-            if not [
-                e
-                for e in settings.ALLOWED_GEOJSON_EXTENSIONS
-                if str(request.FILES[field].name).lower().endswith(e)
-            ]:
-                form.add_error(field, "This does not appear to be a JSON file")
+            if field in request.FILES:
+                if (
+                    not request.FILES[field].content_type
+                    in settings.ALLOWED_GEOJSON_CONTENT_TYPES
+                ):
+                    form.add_error(field, "This does not appear to be a JSON file")
+                if not [
+                    e
+                    for e in settings.ALLOWED_GEOJSON_EXTENSIONS
+                    if str(request.FILES[field].name).lower().endswith(e)
+                ]:
+                    form.add_error(field, "This does not appear to be a JSON file")
+        if not ("nodes_file_upload" in request.FILES) and not (
+            "spans_file_upload" in request.FILES
+        ):
+            form.add_error("nodes_file_upload", "You must upload nodes or spans")
 
         # Process
         if form.is_valid():
@@ -85,12 +90,14 @@ def new_geojson(request):
             supplied_data.format = "geojson"
             supplied_data.save()
 
-            supplied_data.save_file(
-                request.FILES["nodes_file_upload"], meta={"geojson": "nodes"}
-            )
-            supplied_data.save_file(
-                request.FILES["spans_file_upload"], meta={"geojson": "spans"}
-            )
+            if "nodes_file_upload" in request.FILES:
+                supplied_data.save_file(
+                    request.FILES["nodes_file_upload"], meta={"geojson": "nodes"}
+                )
+            if "spans_file_upload" in request.FILES:
+                supplied_data.save_file(
+                    request.FILES["spans_file_upload"], meta={"geojson": "spans"}
+                )
 
             return HttpResponseRedirect(supplied_data.get_absolute_url())
 
