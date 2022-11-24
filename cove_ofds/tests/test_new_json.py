@@ -22,5 +22,5 @@ def test_new_json(server_url, browser, json_data):  # noqa
     # This simply waits until we end up on the data page. If we get there, the test passed.
     # If we didn't, it will timeout after 30 seconds and error.
     WebDriverWait(browser, 30).until(
-        EC.presence_of_element_located((By.ID, "download-panel"))
+        EC.presence_of_element_located((By.ID, "conversion-panel"))
     )
