@@ -370,6 +370,7 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             "root_list_path": "networks",
             "schema": schema.data_schema_url,
             "truncation_length": 9,
+            "main_sheet_name": "networks",
         }
 
         try:
