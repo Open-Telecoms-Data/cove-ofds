@@ -643,7 +643,7 @@ class AdditionalFieldsChecksTask(ProcessDataTask):
     def __init__(self, supplied_data):
         super().__init__(supplied_data)
         self.data_filename = os.path.join(
-            self.supplied_data.data_dir(), "additional_fields.json"
+            self.supplied_data.data_dir(), "additional_fields_2.json"
         )
 
     def process(self, process_data: dict) -> dict:
@@ -656,8 +656,9 @@ class AdditionalFieldsChecksTask(ProcessDataTask):
         schema = OFDSSchema()
         worker = AdditionalFields(schema)
 
-        context = {"additional_fields": worker.process(data)}
-        context["additional_fields_count"] = len(context["additional_fields"])
+        output = worker.process(data)
+        context = {"additional_fields": output}
+        context["any_additional_fields_exist"] = len(output) > 0
 
         with open(self.data_filename, "w") as fp:
             json.dump(context, fp, indent=4)

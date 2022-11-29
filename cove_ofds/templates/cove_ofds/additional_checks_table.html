@@ -17,6 +17,7 @@
             <tr>
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Path' %}</th>
                 <th class="">{% trans 'Node Id we can\'t find' %}</th>
             </tr>
         </thead>
@@ -30,6 +31,9 @@
                         {{ additional_check.span_id }}
                     </td>
                     <td>
+                        {{ additional_check.path }}
+                    </td>
+                    <td>
                         {{ additional_check.missing_node_id }}
                     </td>
                 </tr>
@@ -41,6 +45,9 @@
                     </td>
                     <td>
                         {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.path }}
                     </td>
                     <td>
                         {{ additional_check.missing_node_id }}
@@ -66,6 +73,7 @@
             <tr>
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Path' %}</th>
                 <th class="">{% trans 'Type' %}</th>
             </tr>
         </thead>
@@ -77,6 +85,9 @@
                     </td>
                     <td>
                         {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.path }}
                     </td>
                     <td>
                         {{ additional_check.incorrect_type }}
@@ -102,6 +113,7 @@
             <tr>
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Path' %}</th>
                 <th class="">{% trans 'Coordinates' %}</th>
             </tr>
         </thead>
@@ -113,6 +125,9 @@
                     </td>
                     <td>
                         {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.path }}
                     </td>
                     <td>
                         {{ additional_check.incorrect_coordinates }}
@@ -138,6 +153,7 @@
             <tr>
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Path' %}</th>
                 <th class="">{% trans 'Type' %}</th>
             </tr>
         </thead>
@@ -149,6 +165,9 @@
                     </td>
                     <td>
                         {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.path }}
                     </td>
                     <td>
                         {{ additional_check.incorrect_type }}
@@ -174,6 +193,7 @@
             <tr>
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Span Id' %}</th>
+                <th class="">{% trans 'Path' %}</th>
                 <th class="">{% trans 'Coordinates' %}</th>
             </tr>
         </thead>
@@ -185,6 +205,9 @@
                     </td>
                     <td>
                         {{ additional_check.span_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.path }}
                     </td>
                     <td>
                         {{ additional_check.incorrect_coordinates }}
@@ -211,6 +234,7 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Node Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Phase reference' %}</th>
                 </tr>
             </thead>
@@ -222,6 +246,9 @@
                         </td>
                         <td>
                             {{ additional_check.node_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
                         </td>
                         <td>
                             {{ additional_check.phase_id_not_found }}
@@ -237,6 +264,7 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Span Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Phase reference' %}</th>
                 </tr>
             </thead>
@@ -248,6 +276,9 @@
                         </td>
                         <td>
                             {{ additional_check.span_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
                         </td>
                         <td>
                             {{ additional_check.phase_id_not_found }}
@@ -263,6 +294,7 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Contract Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Phase reference' %}</th>
                 </tr>
             </thead>
@@ -274,6 +306,9 @@
                         </td>
                         <td>
                             {{ additional_check.contract_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
                         </td>
                         <td>
                             {{ additional_check.phase_id_not_found }}
@@ -303,7 +338,9 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Node Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Phase reference name' %}</th>
+                    <th class="">{% trans 'Phase name' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -316,7 +353,13 @@
                             {{ additional_check.node_id }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.name_in_reference }}
+                        </td>
+                        <td>
+                            {{ additional_check.name_should_be }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -329,7 +372,9 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Span Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Phase reference name' %}</th>
+                    <th class="">{% trans 'Phase name' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -342,7 +387,13 @@
                             {{ additional_check.span_id }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.name_in_reference }}
+                        </td>
+                        <td>
+                            {{ additional_check.name_should_be }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -355,7 +406,9 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Contract Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Phase reference name' %}</th>
+                    <th class="">{% trans 'Phase name' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -368,7 +421,13 @@
                             {{ additional_check.contract_id }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.name_in_reference }}
+                        </td>
+                        <td>
+                            {{ additional_check.name_should_be }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -394,6 +453,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Node Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Organisation reference' %}</th>
                 </tr>
             </thead>
@@ -410,6 +470,9 @@
                             {{ additional_check.field }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.organisation_id_not_found }}
                         </td>
                     </tr>
@@ -424,6 +487,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Span Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Organisation reference' %}</th>
                 </tr>
             </thead>
@@ -440,6 +504,9 @@
                             {{ additional_check.field }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.organisation_id_not_found }}
                         </td>
                     </tr>
@@ -453,6 +520,7 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Phase Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
                     <th class="">{% trans 'Organisation reference' %}</th>
                 </tr>
             </thead>
@@ -464,6 +532,9 @@
                         </td>
                         <td>
                             {{ additional_check.phase_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
                         </td>
                         <td>
                             {{ additional_check.organisation_id_not_found }}
@@ -493,7 +564,9 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Node Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
-                    <th class="">{% trans 'Organisation reference' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                    <th class="">{% trans 'Organisation reference name' %}</th>
+                    <th class="">{% trans 'Organisation name' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -509,7 +582,13 @@
                             {{ additional_check.field }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.name_in_reference }}
+                        </td>
+                        <td>
+                            {{ additional_check.name_should_be }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -523,7 +602,9 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Span Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
-                    <th class="">{% trans 'Organisation reference' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                    <th class="">{% trans 'Organisation reference name' %}</th>
+                    <th class="">{% trans 'Organisation name' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -539,7 +620,13 @@
                             {{ additional_check.field }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.name_in_reference }}
+                        </td>
+                        <td>
+                            {{ additional_check.name_should_be }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -552,7 +639,9 @@
                 <tr>
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Phase ID' %}</th>
-                    <th class="">{% trans 'Organisation reference' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                    <th class="">{% trans 'Organisation reference name' %}</th>
+                    <th class="">{% trans 'Organisation name' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -565,7 +654,13 @@
                             {{ additional_check.phase_id }}
                         </td>
                         <td>
+                            {{ additional_check.path }}
+                        </td>
+                        <td>
                             {{ additional_check.name_in_reference }}
+                        </td>
+                        <td>
+                            {{ additional_check.name_should_be }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -589,6 +684,7 @@
             <tr>
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Path' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -599,6 +695,9 @@
                     </td>
                     <td>
                         {{ additional_check.node_id }}
+                    </td>
+                    <td>
+                        {{ additional_check.path }}
                     </td>
                 </tr>
             {% endfor %}
@@ -618,6 +717,7 @@
             <tr>
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Node Id' %}</th>
+                <th class="">{% trans 'Path' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -629,9 +729,155 @@
                     <td>
                         {{ additional_check.node_id }}
                     </td>
+                    <td>
+                        {{ additional_check.path }}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+{% endif %}
+
+
+
+{% if 'duplicate_node_id' in additional_checks or 'duplicate_span_id' in additional_checks or 'duplicate_phase_id' in additional_checks or 'duplicate_organisation_id' in additional_checks or 'duplicate_contract_id' in additional_checks %}
+    <h4>
+        {% trans 'Non-unique identifiers'  %}
+        {% include 'cove_ofds/additional_checks_table_failure_counter.html' with list1=additional_checks.node_organisation_reference_name_does_not_match list2=additional_checks.span_organisation_reference_name_does_not_match list3=additional_checks.phase_organisation_reference_name_does_not_match %}
+    </h4>
+    <p>
+        {% trans 'Your data contains non-unique identifiers.' %}
+        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latests/reference/identifiers.html#local-identifiers">identifiers</a>.
+    </p>
+    {% if 'duplicate_node_id' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Network ID' %}</th>
+                    <th class="">{% trans 'Node Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.duplicate_node_id %}
+                    <tr>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.node_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'duplicate_span_id' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Network ID' %}</th>
+                    <th class="">{% trans 'Span Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.duplicate_span_id %}
+                    <tr>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.span_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'duplicate_phase_id' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Network ID' %}</th>
+                    <th class="">{% trans 'Phase Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.duplicate_phase_id %}
+                    <tr>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.phase_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'duplicate_organisation_id' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Network ID' %}</th>
+                    <th class="">{% trans 'Organisation Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.duplicate_organisation_id %}
+                    <tr>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.organisation_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if 'duplicate_contract_id' in additional_checks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="">{% trans 'Network ID' %}</th>
+                    <th class="">{% trans 'Contract Id' %}</th>
+                    <th class="">{% trans 'Path' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for additional_check in additional_checks.duplicate_contract_id %}
+                    <tr>
+                        <td>
+                            {{ additional_check.network_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.contract_id }}
+                        </td>
+                        <td>
+                            {{ additional_check.path }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endif %}
 

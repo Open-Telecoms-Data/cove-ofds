@@ -174,14 +174,15 @@ LOGGING = {
     },
 }
 
-ALLOWED_JSON_CONTENT_TYPES = ["application/json"]
+ALLOWED_JSON_CONTENT_TYPES = ["application/json", "application/octet-stream"]
 ALLOWED_JSON_EXTENSIONS = [".json"]
 
 ALLOWED_SPREADSHEET_CONTENT_TYPES = [
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "application/vnd.oasis.opendocument.spreadsheet",
+    "application/octet-stream",
 ]
 ALLOWED_SPREADSHEET_EXTENSIONS = [".ods", ".xlsx"]
 
-ALLOWED_CSV_CONTENT_TYPES = ["text/csv"]
+ALLOWED_CSV_CONTENT_TYPES = ["text/csv", "application/octet-stream"]
 ALLOWED_CSV_EXTENSIONS = [".csv"]
