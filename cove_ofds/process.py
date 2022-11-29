@@ -656,7 +656,16 @@ class AdditionalFieldsChecksTask(ProcessDataTask):
         schema = OFDSSchema()
         worker = AdditionalFields(schema)
 
-        context = {"additional_fields": worker.process(data)}
+        # Version 0.5 of lib introduces backwards incompatible changes to output;
+        # for now just put output back to how version 0.4 used to be.
+        output = worker.process(data)
+        output = [
+            [field_info["path"], field_info["field_name"], field_info["count"]]
+            for field, field_info in output.items()
+            if field_info["root_additional_field"]
+        ]
+
+        context = {"additional_fields": output}
         context["additional_fields_count"] = len(context["additional_fields"])
 
         with open(self.data_filename, "w") as fp:
