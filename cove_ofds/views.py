@@ -19,7 +19,7 @@ from cove_ofds.process import (
     WasJSONUploaded,
 )
 from libcoveweb2.models import SuppliedData
-from libcoveweb2.views import CSVS_FORM_CLASSES, JSON_FORM_CLASSES, explore_data_context
+from libcoveweb2.views import CSVS_FORM_CLASSES, JSON_FORM_CLASSES, SPREADSHEET_FORM_CLASSES, explore_data_context
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +50,10 @@ def index(request):
         "geojson": {
             form_name: form_class()
             for form_name, form_class in GEOJSON_FORM_CLASSES.items()
+        },
+        "spreadsheet": {
+            form_name: form_class()
+            for form_name, form_class in SPREADSHEET_FORM_CLASSES.items()
         },
     }
 

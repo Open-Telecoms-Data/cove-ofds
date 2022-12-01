@@ -120,6 +120,10 @@ def new_csvs(request):
     return render(request, "libcoveweb2/new_csvs.html", {"forms": forms})
 
 
+SPREADSHEET_FORM_CLASSES = {
+    "upload_form": NewSpreadsheetUploadForm,
+}
+
 def new_spreadsheet(request):
 
     forms = {
