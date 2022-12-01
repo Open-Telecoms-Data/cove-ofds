@@ -52,7 +52,7 @@
                 </p>
 
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
 
 
                         <div class="panel {% if original_format == 'json' %}panel-info{% else %}panel-success{% endif %}">
@@ -87,7 +87,7 @@
                         </div>
 
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
 
                         <div class="panel {% if original_format == 'geojson' %}panel-info{% else %}panel-success{% endif %}">
                             <div id="download-geojson-panel" class="panel-heading pointer" role="region"
@@ -126,7 +126,10 @@
                         </div>
 
                     </div>
-                    <div class="col-md-4">
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
 
                         <div class="panel {% if original_format == 'csvs' %}panel-info{% else %}panel-success{% endif %}">
                             <div id="download-csvs-panel" class="panel-heading pointer" role="region" aria-expanded="true"
@@ -162,6 +165,49 @@
                                                     <a href="{{file.url}}">{{ file.name }} ({{ file.size|filesizeformat }})</a>
                                                 </li>
                                             {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="panel {% if original_format == 'spreadsheet' %}panel-info{% else %}panel-success{% endif %}">
+                            <div id="download-spreadsheet-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+                                 aria-controls="dataConversion" data-toggle="collapse" data-target="#downloadDataSpreadsheet">
+                                <h4 class="panel-title">
+                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Spreadsheet' %} {% if original_format == 'spreadsheet' %}{% trans '(original)' %}{% endif %}
+                                </h4>
+                            </div>
+                            <div id="downloadDataSpreadsheet" class="collapse in panel-body">
+                                {% if original_format == 'spreadsheet' %}
+                                    <ul class="list-unstyled">
+                                        {% for supplied_data_file in supplied_data_files %}
+                                        <li>
+                                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                            <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{ supplied_data_file.size|filesizeformat }})</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {% if can_download_ods or can_download_xlsx %}
+                                        <p>{% trans 'Your data was successfully converted to spreadsheet format.' %}</p>
+                                        <ul class="list-unstyled">
+                                            {% if can_download_ods %}
+                                                <li>
+                                                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                    <a href="{{download_ods_url}}">Open Office, ODS ({{ download_ods_size|filesizeformat }})</a>
+                                                </li>
+                                            {% endif %}
+                                            {% if can_download_xlsx %}
+                                                <li>
+                                                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                    <a href="{{download_xlsx_url}}">Excel, XLSX ({{ download_xlsx_size|filesizeformat }})</a>
+                                                </li>
+                                            {% endif %}
                                         </ul>
                                     {% endif %}
                                 {% endif %}
