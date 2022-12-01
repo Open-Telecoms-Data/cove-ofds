@@ -10,7 +10,7 @@
 {% if 'prefixItems' in validation_errors %}
     <h4>{% trans 'Empty array' %}</h4>
     <p>You must omit empty arrays from your data in their entirety (key and value).</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyarray col_instance=True error_table_id="Emptyarray" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyarray col_instance=True error_table_id="prefixItems" %}
 {% endif %}
 
 
@@ -30,7 +30,7 @@
 {% if 'Valuedoesnotmatchpattern' in validation_errors %}
     <h4>{% trans 'Value does not match pattern' %}</h4>
     <p>You must ensure that only the first item in the `links` array has `.rel` set to 'describedBy`.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern col_instance=True error_table_id="Fieldnamedoesnotmatchpattern" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern col_instance=True error_table_id="Valuedoesnotmatchpattern" %}
 {% endif %}
 
 
