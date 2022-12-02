@@ -96,7 +96,7 @@
 {% if 'Missingrequiredfields' in validation_errors %}
     <h4>{% trans 'Missing required fields' %}</h4>
     <p>You must ensure that your data contains the required fields specified in the schema.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Missingrequiredfields col_instance=True error_table_id="Missingrequiredfields" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Missingrequiredfields error_table_id="Missingrequiredfields" col_validator_value=True col_validator_value_label="Missing fields" %}
 {% endif %}
 
 
