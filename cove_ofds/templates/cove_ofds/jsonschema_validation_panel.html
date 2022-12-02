@@ -23,13 +23,13 @@
 
 {% if 'Fieldnamedoesnotmatchpattern' in validation_errors %}
     <h4>{% trans 'Field name does not match pattern' %}</h4>
-    <p>You must ensure that fields in `Node.location` and `Span.route` are not named 'properties' or 'nodes'.</p>
+    <p>You must ensure that fields in <code>Node.location</code> and <code>Span.route</code> are not named 'properties' or 'nodes'.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern error_table_id="Fieldnamedoesnotmatchpattern" %}
 {% endif %}
 
 {% if 'Valuedoesnotmatchpattern' in validation_errors %}
     <h4>{% trans 'Value does not match pattern' %}</h4>
-    <p>You must ensure that only the first item in the `links` array has `.rel` set to 'describedBy`.</p>
+    <p>You must ensure that only the first item in the <code>links</code> array has <code>.rel</code> set to <code>describedBy</code>.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern col_instance=True error_table_id="Fieldnamedoesnotmatchpattern" %}
 {% endif %}
 
@@ -50,7 +50,7 @@
 
 {% if 'Valueisnotaboolean' in validation_errors %}
     <h4>{% trans 'Value is not a boolean' %}</h4>
-    <p>You must ensure that each value is either `true` or `false`. You should check that values are not enclosed in qoute characters (`"`).</p>
+    <p>You must ensure that each value is either <code>true</code> or <code>false</code>. You should check that values are not enclosed in qoute characters (<code>"</code>).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotaboolean col_instance=True error_table_id="Valueisnotaboolean" %}
 {% endif %}
 
@@ -58,8 +58,8 @@
 {% if 'Valueisnotaninteger' in validation_errors %}
     <h4>{% trans 'Value is not an integer' %}</h4>
     <p>
-        You must ensure that each value contains only digits (`0-9`) and, optionally, the dot character (`.`). Integer values must have either no fractional part (e.g. `1`) or a zero fractional part (e.g. `1.0`).
-        You should check that values are not enclosed in quote characters, e.g. `1` is an integer, but `"1"` is a string.
+        You must ensure that each value contains only digits (<code>0-9</code>) and, optionally, the dot character (<code>.</code>). Integer values must have either no fractional part (e.g. <code>1</code>) or a zero fractional part (e.g. <code>1.0</code>).
+        You should check that values are not enclosed in quote characters, e.g. <code>1</code> is an integer, but <code>"1"</code> is a string.
     </p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotaninteger col_instance=True error_table_id="Valueisnotaninteger" %}
 {% endif %}
@@ -67,28 +67,28 @@
 
 {% if 'Valueisnotanumber' in validation_errors %}
     <h4>{% trans 'Value is not a number' %}</h4>
-    <p>You must ensure that each value contains only digits (`0-9`) and, optionally, the dot character (`.`). You should check that values are not enclosed in quote characters, e.g. `1` is an integer, but `"1"` is a string.</p>
+    <p>You must ensure that each value contains only digits (<code>0-9</code>) and, optionally, the dot character (<code>.</code>). You should check that values are not enclosed in quote characters, e.g. <code>1</code> is an integer, but <code>"1"</code> is a string.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanumber col_instance=True error_table_id="Valueisnotanumber" %}
 {% endif %}
 
 
 {% if 'Valueisnotastring' in validation_errors %}
     <h4>{% trans 'Value is not a string' %}</h4>
-    <p>You must ensure that each value begins and ends with the quote character (`"`) and that any quotes within the value are escaped with a backslash (`\`).</p>
+    <p>You must ensure that each value begins and ends with the quote character (<code>"</code>) and that any quotes within the value are escaped with a backslash (<code>\</code>).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotastring col_instance=True error_table_id="Valueisnotastring" %}
 {% endif %}
 
 
 {% if 'Valueisnotanobject' in validation_errors %}
     <h4>{% trans 'Value is not an object' %}</h4>
-    <p>You must ensure that each value is enclosed in curly braces (`{` and `}`) and contains only key/value pairs.</p>
+    <p>You must ensure that each value is enclosed in curly braces (<code>{</code> and <code>}</code>) and contains only key/value pairs.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanobject col_instance=True error_table_id="Valueisnotanobject" %}
 {% endif %}
 
 
 {% if 'Valueisnotanarray' in validation_errors %}
     <h4>{% trans 'Value is not an array' %}</h4>
-    <p>You must ensure that each value is enclosed in square brackets (`[` and `]`).</p>
+    <p>You must ensure that each value is enclosed in square brackets (<code>[</code> and <code>]</code>).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanarray col_instance=True error_table_id="Valueisnotanarray" %}
 {% endif %}
 
@@ -109,7 +109,7 @@
 
 {% if 'Incorrectlyformatteddate' in validation_errors %}
     <h4>{% trans 'Incorrectly formatted date' %}</h4>
-    <p>You must ensure that each date is in `"YYYY-MM-DD"` format.</p>
+    <p>You must ensure that each date is in <code>"YYYY-MM-DD"</code> format.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteddate col_instance=True error_table_id="Incorrectlyformatteddate" %}
 {% endif %}
 
