@@ -7,7 +7,7 @@
 {% endif %}
 
 
-{% if 'prefixItems' in validation_errors %}
+{% if 'Emptyarray' in validation_errors %}
     <h4>{% trans 'Empty array' %}</h4>
     <p>You must omit empty arrays from your data in their entirety (key and value).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyarray col_instance=True error_table_id="Emptyarray" %}
@@ -30,7 +30,7 @@
 {% if 'Valuedoesnotmatchpattern' in validation_errors %}
     <h4>{% trans 'Value does not match pattern' %}</h4>
     <p>You must ensure that only the first item in the <code>links</code> array has <code>.rel</code> set to <code>describedBy</code>.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern col_instance=True error_table_id="Fieldnamedoesnotmatchpattern" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchpattern col_instance=True error_table_id="Valuedoesnotmatchpattern" %}
 {% endif %}
 
 
@@ -96,7 +96,7 @@
 {% if 'Missingrequiredfields' in validation_errors %}
     <h4>{% trans 'Missing required fields' %}</h4>
     <p>You must ensure that your data contains the required fields specified in the schema.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Missingrequiredfields col_instance=True error_table_id="Missingrequiredfields" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Missingrequiredfields error_table_id="Missingrequiredfields" col_validator_value=True col_validator_value_label="Missing fields" %}
 {% endif %}
 
 

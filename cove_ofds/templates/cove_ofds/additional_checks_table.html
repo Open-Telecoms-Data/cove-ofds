@@ -74,7 +74,7 @@
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Node Id' %}</th>
                 <th class="">{% trans 'Path' %}</th>
-                <th class="">{% trans 'Type' %}</th>
+                <th class="">{% trans 'Value' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -114,7 +114,7 @@
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Node Id' %}</th>
                 <th class="">{% trans 'Path' %}</th>
-                <th class="">{% trans 'Coordinates' %}</th>
+                <th class="">{% trans 'Value' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -141,7 +141,7 @@
 
 {% if 'span_route_type_incorrect' in additional_checks %}
     <h4>
-        {% trans 'Span route geometry'  %}
+        {% trans 'Span route type'  %}
         {% include 'cove_ofds/additional_checks_table_failure_counter.html' with list1=additional_checks.span_route_type_incorrect %}
     </h4>
     <p>
@@ -154,7 +154,7 @@
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Span Id' %}</th>
                 <th class="">{% trans 'Path' %}</th>
-                <th class="">{% trans 'Type' %}</th>
+                <th class="">{% trans 'Value' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -194,7 +194,7 @@
                 <th class="">{% trans 'Network ID' %}</th>
                 <th class="">{% trans 'Span Id' %}</th>
                 <th class="">{% trans 'Path' %}</th>
-                <th class="">{% trans 'Coordinates' %}</th>
+                <th class="">{% trans 'Value' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -235,7 +235,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Node Id' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Phase reference' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -265,7 +265,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Span Id' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Phase reference' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -295,7 +295,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Contract Id' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Phase reference' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -339,7 +339,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Node Id' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Phase reference name' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                     <th class="">{% trans 'Phase name' %}</th>
                 </tr>
             </thead>
@@ -373,7 +373,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Span Id' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Phase reference name' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                     <th class="">{% trans 'Phase name' %}</th>
                 </tr>
             </thead>
@@ -407,7 +407,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Contract Id' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Phase reference name' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                     <th class="">{% trans 'Phase name' %}</th>
                 </tr>
             </thead>
@@ -454,7 +454,7 @@
                     <th class="">{% trans 'Node Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Organisation reference' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -488,7 +488,7 @@
                     <th class="">{% trans 'Span Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Organisation reference' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -521,7 +521,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Phase Id' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Organisation reference' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -565,7 +565,7 @@
                     <th class="">{% trans 'Node Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Organisation reference name' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                     <th class="">{% trans 'Organisation name' %}</th>
                 </tr>
             </thead>
@@ -603,7 +603,7 @@
                     <th class="">{% trans 'Span Id' %}</th>
                     <th class="">{% trans 'Field' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Organisation reference name' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                     <th class="">{% trans 'Organisation name' %}</th>
                 </tr>
             </thead>
@@ -640,7 +640,7 @@
                     <th class="">{% trans 'Network ID' %}</th>
                     <th class="">{% trans 'Phase ID' %}</th>
                     <th class="">{% trans 'Path' %}</th>
-                    <th class="">{% trans 'Organisation reference name' %}</th>
+                    <th class="">{% trans 'Value' %}</th>
                     <th class="">{% trans 'Organisation name' %}</th>
                 </tr>
             </thead>
@@ -743,7 +743,7 @@
 {% if 'duplicate_node_id' in additional_checks or 'duplicate_span_id' in additional_checks or 'duplicate_phase_id' in additional_checks or 'duplicate_organisation_id' in additional_checks or 'duplicate_contract_id' in additional_checks %}
     <h4>
         {% trans 'Non-unique identifiers'  %}
-        {% include 'cove_ofds/additional_checks_table_failure_counter.html' with list1=additional_checks.node_organisation_reference_name_does_not_match list2=additional_checks.span_organisation_reference_name_does_not_match list3=additional_checks.phase_organisation_reference_name_does_not_match %}
+        {% include 'cove_ofds/additional_checks_table_failure_counter.html' with list1=additional_checks.duplicate_node_id list2=additional_checks.duplicate_span_id list3=additional_checks.duplicate_phase_id list4=additional_checks.duplicate_organisation_id  list5=additional_checks.duplicate_contract_id %}
     </h4>
     <p>
         {% trans 'Your data contains non-unique identifiers.' %}

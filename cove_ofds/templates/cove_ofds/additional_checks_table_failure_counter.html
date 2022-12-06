@@ -1,7 +1,7 @@
 {% load i18n %}
 
-{% with l1l=list1|length l2l=list2|length l3l=list3|length%}
-    {% with count=l1l|add:l2l|add:l3l %}
+{% with l1l=list1|length l2l=list2|length l3l=list3|length l4l=list4|length l5l=list5|length%}
+    {% with count=l1l|add:l2l|add:l3l|add:l4l|add:l5l %}
             ({% if count == 1 %}1 failure{% else %}{{ count }} {% trans 'failures'  %}{% endif %})
     {% endwith %}
 {% endwith %}
