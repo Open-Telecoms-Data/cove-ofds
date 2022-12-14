@@ -47,6 +47,10 @@ def add_type_to_json_schema_validation_error(data: dict) -> dict:
         data["cove_type"] = "Valueisnotanarray"
 
     elif data["validator"] == "required":
+        # Need to get Id field - https://github.com/Open-Telecoms-Data/cove-ofds/issues/70
+        if data["message"].endswith("' is a required property"):
+            message_bits = data["message"].split("'")
+            data["validator_value"] = message_bits[1]
         data["cove_type"] = "Missingrequiredfields"
 
     elif data["validator"] == "minProperties":
