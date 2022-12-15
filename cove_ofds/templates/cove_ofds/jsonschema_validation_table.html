@@ -1,6 +1,5 @@
 {% load i18n %}
 {% load cove_tags %}
-{% load ofds_cove_tags %}
 
 <div class="collapse" id="validation_error_details_{{ error_table_id }}">
     <table class="table table-condensed">
@@ -39,12 +38,12 @@
                 </td>
                 {% if col_instance %}
                     <td>
-                        {{ error.instance|error_instance_display }}
+                        {% include "libcoveweb2/show_json_value.html" with value=error.instance %}
                     </td>
                 {% endif %}
                 {% if col_validator_value %}
                     <td>
-                        {{ error.validator_value }}
+                        {% include "libcoveweb2/show_json_value.html" with value=error.validator_value %}
                     </td>
                 {% endif %}
             </tr>

@@ -64,3 +64,8 @@ def take_or_sample(population, k):
 @register.filter(name="list_from_attribute")
 def list_from_attribute(list_of_dicts, key_name):
     return [value[key_name] for value in list_of_dicts]
+
+
+@register.filter(name="get_variable_type")
+def get_variable_type(value):
+    return type(value).__name__
