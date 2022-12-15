@@ -22,6 +22,7 @@ class NewJSONTextForm(forms.Form):
 
 class NewSpreadsheetUploadForm(forms.Form):
     file_upload = forms.FileField(
+        label="",
         widget=forms.FileInput(
             attrs={
                 "accept": ",".join(
@@ -29,7 +30,7 @@ class NewSpreadsheetUploadForm(forms.Form):
                     + settings.ALLOWED_SPREADSHEET_EXTENSIONS
                 )
             }
-        )
+        ),
     )
 
 
