@@ -429,7 +429,7 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             context["download_csvs_zip_url"] = os.path.join(
                 self.supplied_data.data_url(), "flatten", "flattened.csvs.zip"
             )
-            context["download_csvs_zip_size"] = os.stat(ods_filename).st_size
+            context["download_csvs_zip_size"] = os.stat(self.csvs_zip_filename).st_size
             context["download_csv_individual_files"] = [
                 {
                     "name": f,
