@@ -44,7 +44,7 @@
 {% if 'Valuedoesnotmatchanycodes' in validation_errors %}
     <h4>{% trans 'Value does not match any codes.' %}</h4>
     <p>You must update each value to match a code from the codelist specified in the schema.</p>
-    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchanycodes col_instance=Trues col_validator_value=True col_validator_value_label="Codelist" error_table_id="Valuedoesnotmatchanycodes" %}
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchanycodes col_instance=True col_validator_value=True col_validator_value_label="Codelist" error_table_id="Valuedoesnotmatchanycodes" %}
 {% endif %}
 
 

@@ -353,9 +353,7 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         self.csvs_zip_filename = os.path.join(
             self.supplied_data.data_dir(), "flatten", "flattened.csvs.zip"
         )
-        self.output_dir = os.path.join(
-            self.supplied_data.data_dir(), "flatten", "flattened"
-        )
+        self.output_dir = os.path.join(self.supplied_data.data_dir(), "flatten", "data")
 
     def process(self, process_data: dict) -> dict:
 
@@ -401,24 +399,24 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         context = {}
         # XLSX
         xlsx_filename = os.path.join(
-            self.supplied_data.data_dir(), "flatten", "flattened.xlsx"
+            self.supplied_data.data_dir(), "flatten", "data.xlsx"
         )
         if os.path.exists(xlsx_filename):
             context["can_download_xlsx"] = True
             context["download_xlsx_url"] = os.path.join(
-                self.supplied_data.data_url(), "flatten", "flattened.xlsx"
+                self.supplied_data.data_url(), "flatten", "data.xlsx"
             )
             context["download_xlsx_size"] = os.stat(xlsx_filename).st_size
         else:
             context["can_download_xlsx"] = False
         # ODS
         ods_filename = os.path.join(
-            self.supplied_data.data_dir(), "flatten", "flattened.ods"
+            self.supplied_data.data_dir(), "flatten", "data.ods"
         )
         if os.path.exists(ods_filename):
             context["can_download_ods"] = True
             context["download_ods_url"] = os.path.join(
-                self.supplied_data.data_url(), "flatten", "flattened.ods"
+                self.supplied_data.data_url(), "flatten", "data.ods"
             )
             context["download_ods_size"] = os.stat(ods_filename).st_size
         else:
@@ -429,13 +427,13 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             context["download_csvs_zip_url"] = os.path.join(
                 self.supplied_data.data_url(), "flatten", "flattened.csvs.zip"
             )
-            context["download_csvs_zip_size"] = os.stat(ods_filename).st_size
+            context["download_csvs_zip_size"] = os.stat(self.csvs_zip_filename).st_size
             context["download_csv_individual_files"] = [
                 {
                     "name": f,
                     "size": os.stat(os.path.join(self.output_dir, f)).st_size,
                     "url": os.path.join(
-                        self.supplied_data.data_url(), "flatten", "flattened", f
+                        self.supplied_data.data_url(), "flatten", "data", f
                     ),
                 }
                 for f in self._get_list_csv_filenames()
