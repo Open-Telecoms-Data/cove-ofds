@@ -208,15 +208,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const buttons = document.querySelectorAll('.validation-error-toggle');
   buttons.forEach(button => {
     button.addEventListener('click', () => {
-      if (button.classList.contains('collapsed')) {
-      let span = button.querySelector(".glyphicon-chevron-down");
-      span.classList.remove("glyphicon-chevron-down");
-      span.classList.add("glyphicon-chevron-up");
-      } else {
-        let span = button.querySelector(".glyphicon-chevron-up");
-        span.classList.remove("glyphicon-chevron-up");
-        span.classList.add("glyphicon-chevron-down");
-      }
+      setTimeout(() => {
+        if (button.getAttribute('aria-expanded') !== 'false') {
+          let span = button.querySelector(".glyphicon-chevron-down");
+          if (span) {
+            span.classList.remove("glyphicon-chevron-down");
+            span.classList.add("glyphicon-chevron-up");
+          }
+        } else {
+          let span = button.querySelector(".glyphicon-chevron-up");
+          if (span) {
+            span.classList.remove("glyphicon-chevron-up");
+            span.classList.add("glyphicon-chevron-down");
+          }
+        }
+      }, 500)
     });
   });
 });
