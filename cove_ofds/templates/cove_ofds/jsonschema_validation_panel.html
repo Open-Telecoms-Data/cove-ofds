@@ -1,62 +1,89 @@
 {% load i18n %}
 
 {% if 'Valuedoesnotmatchconstant' in validation_errors %}
-    <h4>{% trans 'Value does not match constant' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value does not match constant' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valuedoesnotmatchconstant|length error_table_id="Valuedoesnotmatchconstant" %}
+    </h4>
     <p>You must update each value to match the constant specified in the schema.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchconstant col_instance=True col_validator_value=True  col_validator_value_label="Constant" error_table_id="Valuedoesnotmatchconstant" %}
 {% endif %}
 
 
 {% if 'Emptyarray' in validation_errors %}
-    <h4>{% trans 'Empty array' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Empty array' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Emptyarray|length error_table_id="Emptyarray" %}
+    </h4>
     <p>You must omit empty arrays from your data in their entirety (key and value).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyarray col_instance=True error_table_id="Emptyarray" %}
 {% endif %}
 
 
 {% if 'Nonuniqueitems' in validation_errors %}
-    <h4>{% trans 'Non-unique items' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Non-unique items' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Nonuniqueitems|length error_table_id="Nonuniqueitems"%}
+    </h4>
     <p>You must ensure that the items in each array are unique.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Nonuniqueitems col_instance=True error_table_id="Nonuniqueitems" %}
 {% endif %}
 
 
 {% if 'Fieldnamedoesnotmatchpattern' in validation_errors %}
-    <h4>{% trans 'Field name does not match pattern' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Field name does not match pattern' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Fieldnamedoesnotmatchpattern|length error_table_id="Fieldnamedoesnotmatchpattern" %}
+    </h4>
     <p>You must ensure that fields in <code>Node.location</code> and <code>Span.route</code> are not named 'properties' or 'nodes'.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Fieldnamedoesnotmatchpattern error_table_id="Fieldnamedoesnotmatchpattern" %}
 {% endif %}
 
 {% if 'Valuedoesnotmatchpattern' in validation_errors %}
-    <h4>{% trans 'Value does not match pattern' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value does not match pattern' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valuedoesnotmatchpattern|length error_table_id="Valuedoesnotmatchpattern" %}
+    </h4>
     <p>You must ensure that only the first item in the <code>links</code> array has <code>.rel</code> set to <code>describedBy</code>.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchpattern col_instance=True error_table_id="Valuedoesnotmatchpattern" %}
 {% endif %}
 
 
 {% if 'Emptystring' in validation_errors %}
-    <h4>{% trans 'Empty string' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Empty string' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Emptystring|length error_table_id="Emptystring" %}
+    </h4>
     <p>You must omit empty strings from your data in their entirety (key and value).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptystring col_instance=True error_table_id="Emptystring" %}
 {% endif %}
 
 
 {% if 'Valuedoesnotmatchanycodes' in validation_errors %}
-    <h4>{% trans 'Value does not match any codes.' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value does not match any codes.' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valuedoesnotmatchanycodes|length error_table_id="Valuedoesnotmatchanycodes" %}
+    </h4>
     <p>You must update each value to match a code from the codelist specified in the schema.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valuedoesnotmatchanycodes col_instance=True col_validator_value=True col_validator_value_label="Codelist" error_table_id="Valuedoesnotmatchanycodes" %}
 {% endif %}
 
 
 {% if 'Valueisnotaboolean' in validation_errors %}
-    <h4>{% trans 'Value is not a boolean' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value is not a boolean' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valueisnotaboolean|length error_table_id="Valueisnotaboolean" %}
+    </h4>
     <p>You must ensure that each value is either <code>true</code> or <code>false</code>. You should check that values are not enclosed in qoute characters (<code>"</code>).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotaboolean col_instance=True error_table_id="Valueisnotaboolean" %}
 {% endif %}
 
 
 {% if 'Valueisnotaninteger' in validation_errors %}
-    <h4>{% trans 'Value is not an integer' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value is not an integer' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valueisnotaninteger|length error_table_id="Valueisnotaninteger" %}
+    </h4>
     <p>
         You must ensure that each value contains only digits (<code>0-9</code>) and, optionally, the dot character (<code>.</code>). Integer values must have either no fractional part (e.g. <code>1</code>) or a zero fractional part (e.g. <code>1.0</code>).
         You should check that values are not enclosed in quote characters, e.g. <code>1</code> is an integer, but <code>"1"</code> is a string.
@@ -66,70 +93,100 @@
 
 
 {% if 'Valueisnotanumber' in validation_errors %}
-    <h4>{% trans 'Value is not a number' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value is not a number' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valueisnotanumber|length error_table_id="Valueisnotanumber" %}
+    </h4>
     <p>You must ensure that each value contains only digits (<code>0-9</code>) and, optionally, the dot character (<code>.</code>). You should check that values are not enclosed in quote characters, e.g. <code>1</code> is an integer, but <code>"1"</code> is a string.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanumber col_instance=True error_table_id="Valueisnotanumber" %}
 {% endif %}
 
 
 {% if 'Valueisnotastring' in validation_errors %}
-    <h4>{% trans 'Value is not a string' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value is not a string' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valueisnotastring|length error_table_id="Valueisnotastring" %}
+    </h4>
     <p>You must ensure that each value begins and ends with the quote character (<code>"</code>) and that any quotes within the value are escaped with a backslash (<code>\</code>).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotastring col_instance=True error_table_id="Valueisnotastring" %}
 {% endif %}
 
 
 {% if 'Valueisnotanobject' in validation_errors %}
-    <h4>{% trans 'Value is not an object' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value is not an object' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valueisnotanobject|length error_table_id="Valueisnotanobject" %}
+    </h4>
     <p>You must ensure that each value is enclosed in curly braces (<code>{</code> and <code>}</code>) and contains only key/value pairs.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanobject col_instance=True error_table_id="Valueisnotanobject" %}
 {% endif %}
 
 
 {% if 'Valueisnotanarray' in validation_errors %}
-    <h4>{% trans 'Value is not an array' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Value is not an array' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Valueisnotanarray|length error_table_id="Valueisnotanarray" %}
+    </h4>
     <p>You must ensure that each value is enclosed in square brackets (<code>[</code> and <code>]</code>).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Valueisnotanarray col_instance=True error_table_id="Valueisnotanarray" %}
 {% endif %}
 
 
 {% if 'Missingrequiredfields' in validation_errors %}
-    <h4>{% trans 'Missing required fields' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Missing required fields' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Missingrequiredfields|length error_table_id="Missingrequiredfields" %}
+    </h4>
     <p>You must ensure that your data contains the required fields specified in the schema.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Missingrequiredfields error_table_id="Missingrequiredfields" col_validator_value=True col_validator_value_label="Missing fields" %}
 {% endif %}
 
 
 {% if 'Emptyobject' in validation_errors %}
-    <h4>{% trans 'Empty object' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Empty object' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Emptyobject|length error_table_id="Emptyobject" %}
+    </h4>
     <p>You must omit empty objects from your data in their entirety (key and value).</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Emptyobject col_instance=True error_table_id="Emptyobject" %}
 {% endif %}
 
 
 {% if 'Incorrectlyformatteddate' in validation_errors %}
-    <h4>{% trans 'Incorrectly formatted date' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Incorrectly formatted date' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Incorrectlyformatteddate|length error_table_id="Incorrectlyformatteddate" %}
+    </h4>
     <p>You must ensure that each date is in <code>"YYYY-MM-DD"</code> format.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteddate col_instance=True error_table_id="Incorrectlyformatteddate" %}
 {% endif %}
 
 
 {% if 'Incorrectlyformattediri' in validation_errors %}
-    <h4>{% trans 'Incorrectly formatted iri' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Incorrectly formatted iri' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Incorrectlyformattediri|length error_table_id="Incorrectlyformattediri" %}
+    </h4>
     <p>You must ensure that each iri is formatted according to <a href="https://www.rfc-editor.org/rfc/rfc3987" target="_blank">RFC3897</a>.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformattediri col_instance=True error_table_id="Incorrectlyformattediri" %}
 {% endif %}
 
 
 {% if 'Incorrectlyformatteduri' in validation_errors %}
-    <h4>{% trans 'Incorrectly formatted uri' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Incorrectly formatted uri' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Incorrectlyformatteduri|length error_table_id="Incorrectlyformatteduri" %}
+    </h4>
     <p>You must ensure that each uri is formatted according to <a href="https://www.rfc-editor.org/rfc/rfc3986" target="_blank">RFC3896</a>.</p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteduri col_instance=True error_table_id="Incorrectlyformatteduri" %}
 {% endif %}
 
 
 {% if 'Incorrectlyformatteduuid' in validation_errors %}
-    <h4>{% trans 'Incorrectly formatted uuid' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'Incorrectly formatted uuid' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Incorrectlyformatteduuid|length error_table_id="Incorrectlyformatteduuid" %}
+    </h4>
     <p>
         You must ensure that each uuid is formatted according to <a href="https://datatracker.ietf.org/doc/html/rfc4122" target="_blank">RFC4122</a>.
         For more information, see <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-generate-universally-unique-identifiers" target="_blank">how to generate universally unique identifiers</a>.
@@ -139,6 +196,28 @@
 
 
 {% if 'unknown' in validation_errors %}
-    <h4>{% trans 'unknown' %}</h4>
+    <h4 class="validation-title">
+      {% trans 'unknown' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.unknown|length error_table_id="unknown" %}
+    </h4>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.unknown error_table_id="unknown" %}
 {% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const buttons = document.querySelectorAll('.validation-error-toggle');
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      if (button.classList.contains('collapsed')) {
+      let span = button.querySelector(".glyphicon-chevron-down");
+      span.classList.remove("glyphicon-chevron-down");
+      span.classList.add("glyphicon-chevron-up");
+      } else {
+        let span = button.querySelector(".glyphicon-chevron-up");
+        span.classList.remove("glyphicon-chevron-up");
+        span.classList.add("glyphicon-chevron-down");
+      }
+    });
+  });
+});
+</script>
