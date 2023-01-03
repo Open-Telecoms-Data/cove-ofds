@@ -1,0 +1,9 @@
+{% load i18n %}
+
+({% if count == 1 %}1 error{% else %}{{ count }} {% trans 'errors'  %}{% endif %})
+
+<div style="text-align: right;">
+  <button class="btn btn-link validation-error-toggle collapsed" type="button" data-toggle="collapse" data-target="#validation_error_details_{{ error_table_id }}" aria-expanded="false" aria-controls="validation_error_details_{{ error_table_id }}" aria-label="Show {{ error_table_id }} errors">
+    <span class="glyphicon glyphicon-chevron-down"></span>
+  </button>
+</div>
