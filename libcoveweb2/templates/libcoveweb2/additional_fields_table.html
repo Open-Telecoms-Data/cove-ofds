@@ -20,7 +20,7 @@
          <td>{{info.count}}</td>
          <td>
            {% for example in info.examples %}
-           {{example}} <br />
+           {% include "libcoveweb2/show_json_value.html" with value=example %} <br />
            {% endfor %}
          </td>
          <td>
@@ -64,7 +64,7 @@
                     <td>{{info.count}}</td>
                     <td>
                       {% for example in info.examples %}
-                        {{example}} <br />
+                        {% include "libcoveweb2/show_json_value.html" with value=example %} <br />
                       {% endfor %}
                     </td>
                  </tr>

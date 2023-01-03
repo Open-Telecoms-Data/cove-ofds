@@ -34,7 +34,7 @@
                         {{ additional_check.path }}
                     </td>
                     <td>
-                        {{ additional_check.missing_node_id }}
+                        {% include "libcoveweb2/show_json_value.html" with value=additional_check.missing_node_id %}
                     </td>
                 </tr>
             {% endfor %}
@@ -50,7 +50,7 @@
                         {{ additional_check.path }}
                     </td>
                     <td>
-                        {{ additional_check.missing_node_id }}
+                        {% include "libcoveweb2/show_json_value.html" with value=additional_check.missing_node_id %}
                     </td>
                 </tr>
             {% endfor %}
@@ -90,7 +90,7 @@
                         {{ additional_check.path }}
                     </td>
                     <td>
-                        {{ additional_check.incorrect_type }}
+                        {% include "libcoveweb2/show_json_value.html" with value=additional_check.incorrect_type %}
                     </td>
                 </tr>
             {% endfor %}
@@ -130,7 +130,7 @@
                         {{ additional_check.path }}
                     </td>
                     <td>
-                        {{ additional_check.incorrect_coordinates }}
+                        {% include "libcoveweb2/show_json_value.html" with value=additional_check.incorrect_coordinates %}
                     </td>
                 </tr>
             {% endfor %}
@@ -170,7 +170,7 @@
                         {{ additional_check.path }}
                     </td>
                     <td>
-                        {{ additional_check.incorrect_type }}
+                        {% include "libcoveweb2/show_json_value.html" with value=additional_check.incorrect_type %}
                     </td>
                 </tr>
             {% endfor %}
@@ -210,7 +210,7 @@
                         {{ additional_check.path }}
                     </td>
                     <td>
-                        {{ additional_check.incorrect_coordinates }}
+                        {% include "libcoveweb2/show_json_value.html" with value=additional_check.incorrect_coordinates %}
                     </td>
                 </tr>
             {% endfor %}
@@ -251,7 +251,7 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.phase_id_not_found }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.phase_id_not_found %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -281,7 +281,7 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.phase_id_not_found }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.phase_id_not_found %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -311,7 +311,7 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.phase_id_not_found }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.phase_id_not_found %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -356,10 +356,10 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.name_in_reference }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_in_reference %}
                         </td>
                         <td>
-                            {{ additional_check.name_should_be }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_should_be %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -390,10 +390,10 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.name_in_reference }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_in_reference %}
                         </td>
                         <td>
-                            {{ additional_check.name_should_be }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_should_be %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -424,10 +424,10 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.name_in_reference }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_in_reference %}
                         </td>
                         <td>
-                            {{ additional_check.name_should_be }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_should_be %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -469,7 +469,7 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.organisation_id_not_found }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.organisation_id_not_found %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -499,7 +499,7 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.organisation_id_not_found }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.organisation_id_not_found %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -529,7 +529,7 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.organisation_id_not_found }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.organisation_id_not_found %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -577,10 +577,10 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.name_in_reference }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_in_reference %}
                         </td>
                         <td>
-                            {{ additional_check.name_should_be }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_should_be %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -615,10 +615,10 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.name_in_reference }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_in_reference %}
                         </td>
                         <td>
-                            {{ additional_check.name_should_be }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_should_be %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -649,10 +649,10 @@
                             {{ additional_check.path }}
                         </td>
                         <td>
-                            {{ additional_check.name_in_reference }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_in_reference %}
                         </td>
                         <td>
-                            {{ additional_check.name_should_be }}
+                            {% include "libcoveweb2/show_json_value.html" with value=additional_check.name_should_be %}
                         </td>
                     </tr>
                 {% endfor %}
