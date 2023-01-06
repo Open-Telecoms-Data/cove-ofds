@@ -76,6 +76,7 @@ MIDDLEWARE = (
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "libcoveweb2.middleware.CoveConfigCurrentApp",
+    "dealer.contrib.django.Middleware",
 )
 
 
