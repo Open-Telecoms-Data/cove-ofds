@@ -22,6 +22,8 @@ charset-normalizer==2.1.1
     # via requests
 contextlib2==21.6.0
     # via schema
+dealer==2.1.0
+    # via -r requirements.in
 defusedxml==0.7.1
     # via odfpy
 django==3.2.16

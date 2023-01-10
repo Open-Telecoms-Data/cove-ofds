@@ -46,6 +46,8 @@ contextlib2==21.6.0
     # via
     #   -r requirements.txt
     #   schema
+dealer==2.1.0
+    # via -r requirements.txt
 defusedxml==0.7.1
     # via
     #   -r requirements.txt
