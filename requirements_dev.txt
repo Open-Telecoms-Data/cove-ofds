@@ -99,7 +99,7 @@ jsonschema==4.17.0
     # via
     #   -r requirements.txt
     #   libcoveofds
-libcoveofds==0.6.0
+libcoveofds==0.7.0
     # via -r requirements.txt
 libsass==0.21.0
     # via -r requirements_dev.in
