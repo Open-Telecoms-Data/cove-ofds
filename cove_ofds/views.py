@@ -142,6 +142,10 @@ def explore_ofds(request, pk):
     for task in PROCESS_TASKS:
         context.update(task.get_context())
 
+    # Currently hard coded because the library only supports this version,
+    # but in future this should come from one of the process tasks
+    context["schema_version_used"] = "0.2"
+
     template = "cove_ofds/explore.html"
 
     return render(request, template, context)
