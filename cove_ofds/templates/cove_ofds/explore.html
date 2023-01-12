@@ -386,10 +386,19 @@
       };
 
       function generatePopup(layer) {
+        let networkProvidersNames =  []
+        if (layer?.feature?.properties?.networkProviders) {
+          for(np of layer.feature.properties.networkProviders) {
+            if (np?.name) {
+              networkProvidersNames.push(np.name)
+            }
+          }
+        }
+        networkProvidersNames.sort()
         return `
           <p><strong>Name:</strong> ${layer?.feature?.properties?.name || 'Unknown'}</p>
           <p><strong>Network:</strong> ${layer?.feature?.properties?.network?.name || 'Unknown'}</p>
-          <p><strong>Network provider:</strong> ${layer?.feature?.properties?.networkProvider?.name || 'Unknown'}</p>
+          <p><strong>Network provider:</strong> ${networkProvidersNames.join(", ") || 'Unknown'}</p>
           <p><strong>Physical infrastructure provider:</strong> ${layer?.feature?.properties?.physicalInfrastructureProvider?.name || 'Unknown'}</p>
           <p><strong>Phase:</strong> ${layer?.feature?.properties?.phase?.name || 'Unknown'}</p>
         `;
@@ -454,7 +463,16 @@
 
       function getFeatureName(feature, field) {
         let fieldOptions = getJsonFromDict(feature);
-        if (feature?.properties[field]?.name !== undefined) {
+        if (field == 'networkProviders' && feature?.properties[field]) {
+          let names =  []
+          for(np of feature.properties[field]) {
+            if (np?.name) {
+              names.push(np.name)
+            }
+          }
+          names.sort()
+          return names.join(', ')
+        } else if (feature?.properties[field]?.name !== undefined) {
           return feature.properties[field].name
         } else if ((feature?.properties[field] !== undefined)) {
           return `${fieldOptions[field]}: ${feature?.properties[field] || 'no data'}`
@@ -471,7 +489,16 @@
       let spanLegend = {}
 
       function getFeatureID(feature, field) {
-        if (feature?.properties[field]?.id !== undefined) {
+        if (field == 'networkProviders' && feature?.properties[field]) {
+          let names =  []
+          for(np of feature.properties[field]) {
+            if (np?.name) {
+              names.push(np.name)
+            }
+          }
+          names.sort()
+          return names.join(', ')
+        } else if (feature?.properties[field]?.id !== undefined) {
           return feature.properties[field].id
         } else if ((feature?.properties[field] !== undefined)) {
           return feature.properties[field]
