@@ -7,3 +7,11 @@ class ProcessDataTask:
 
     def get_context(self):
         return {}
+
+
+
+class ProcessDataTaskException(Exception):
+    def __init__(self, template_name: str, template_vars: dict, original_exception: Exception):
+        self.template_name = template_name
+        self.template_vars = template_vars
+        self.original_exception = original_exception

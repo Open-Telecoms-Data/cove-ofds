@@ -12,7 +12,7 @@ from sentry_sdk import capture_exception
 
 import cove_ofds.jsonschema_validation_errors
 from libcoveweb2.models import SuppliedDataFile
-from libcoveweb2.process import ProcessDataTask
+from libcoveweb2.process import ProcessDataTask, ProcessDataTaskException
 
 # from libcove.lib.converters import convert_json, convert_spreadsheet
 from libcoveweb2.utils import get_file_type as _get_file_type
@@ -202,7 +202,14 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
 
         # Convert
         converter = GeoJSONToJSONConverter()
-        converter.process_data(nodes_data, spans_data)
+        try:
+            converter.process_data(nodes_data, spans_data)
+        except Exception as e:
+            raise ProcessDataTaskException(
+                'libcoveweb2/error.html'
+                ,{'msg':'We could not convert the input files you uploaded to JSON.'},
+                e
+            )
 
         # Save
         with open(self.data_filename, "w") as fp:

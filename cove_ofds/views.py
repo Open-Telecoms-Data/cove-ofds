@@ -3,7 +3,8 @@ import logging
 from decimal import Decimal
 
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseServerError
+from django.template import loader
 from django.shortcuts import render
 
 from cove_ofds.forms import NewGeoJSONUploadForm
@@ -25,6 +26,8 @@ from libcoveweb2.views import (
     SPREADSHEET_FORM_CLASSES,
     explore_data_context,
 )
+
+from libcoveweb2.process import  ProcessDataTaskException
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +86,7 @@ def new_geojson(request):
                 ):
                     form.add_error(field, "This does not appear to be a JSON file")
                 if not [
-                    e
+                        e
                     for e in settings.ALLOWED_GEOJSON_EXTENSIONS
                     if str(request.FILES[field].name).lower().endswith(e)
                 ]:
@@ -136,7 +139,12 @@ def explore_ofds(request, pk):
     # Process bit that should be a task in a worker
     process_data = {}
     for task in PROCESS_TASKS:
-        process_data = task.process(process_data)
+        try:
+            process_data = task.process(process_data)
+        except ProcessDataTaskException as e:
+            context.update(e.template_vars)
+            t = loader.get_template(e.template_name)
+            return HttpResponseServerError(t.render(context))
 
     # read results
     for task in PROCESS_TASKS:
