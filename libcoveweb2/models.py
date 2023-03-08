@@ -12,6 +12,7 @@ class SuppliedData(models.Model):
     format = models.TextField()
 
     created = models.DateTimeField(auto_now_add=True, null=True)
+    expired = models.DateTimeField(null=True)
 
     def data_dir(self):
         return os.path.join(settings.MEDIA_ROOT, str(self.id))
