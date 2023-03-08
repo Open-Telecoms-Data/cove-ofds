@@ -29,7 +29,7 @@ class SuppliedData(models.Model):
     def get_absolute_url(self):
         return reverse("explore", args=(self.pk,))
 
-    def save_file(self, f, meta={}):
+    def save_file(self, f, meta={}, source_method: str = "upload"):
         os.makedirs(self.upload_dir(), exist_ok=True)
 
         supplied_data_file = SuppliedDataFile()
@@ -39,6 +39,7 @@ class SuppliedData(models.Model):
         supplied_data_file.content_type = f.content_type
         supplied_data_file.charset = f.charset
         supplied_data_file.meta = meta
+        supplied_data_file.source_method = source_method
         supplied_data_file.save()
 
         with open(supplied_data_file.upload_dir_and_filename(), "wb+") as destination:
@@ -52,6 +53,7 @@ class SuppliedData(models.Model):
         content_type: str,
         charset: str = None,
         meta: dict = {},
+        source_method: str = "text",
     ):
 
         os.makedirs(self.upload_dir(), exist_ok=True)
@@ -63,6 +65,7 @@ class SuppliedData(models.Model):
         supplied_data_file.content_type = content_type
         supplied_data_file.charset = charset
         supplied_data_file.meta = meta
+        supplied_data_file.source_method = source_method
         supplied_data_file.save()
 
         with open(supplied_data_file.upload_dir_and_filename(), "w") as destination:
@@ -77,6 +80,7 @@ class SuppliedDataFile(models.Model):
     content_type = models.TextField(null=True)
     charset = models.TextField(null=True)
     meta = models.JSONField(null=True)
+    source_method = models.TextField(null=True)
 
     def upload_dir_and_filename(self):
         return os.path.join(
