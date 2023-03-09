@@ -1,6 +1,8 @@
 import os
+import urllib.parse
 import uuid
 
+import requests
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -71,16 +73,34 @@ class SuppliedData(models.Model):
         with open(supplied_data_file.upload_dir_and_filename(), "w") as destination:
             destination.write(contents)
 
+    def save_file_from_source_url(
+        self, url: str, meta: dict = {}, source_method: str = "url", content_type=None
+    ):
+
+        url_bits = urllib.parse.urlparse(url)
+        path_bits = url_bits.path.split("/") if url_bits.path else ["data"]
+        filename = path_bits.pop()
+
+        supplied_data_file = SuppliedDataFile()
+        supplied_data_file.supplied_data = self
+        supplied_data_file.filename = filename
+        supplied_data_file.source_url = url
+        supplied_data_file.content_type = content_type
+        supplied_data_file.meta = meta
+        supplied_data_file.source_method = source_method
+        supplied_data_file.save()
+
 
 class SuppliedDataFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     supplied_data = models.ForeignKey(SuppliedData, on_delete=models.CASCADE)
     filename = models.TextField()
-    size = models.PositiveBigIntegerField()
+    size = models.PositiveBigIntegerField(null=True)
     content_type = models.TextField(null=True)
     charset = models.TextField(null=True)
     meta = models.JSONField(null=True)
     source_method = models.TextField(null=True)
+    source_url = models.URLField(null=True)
 
     def upload_dir_and_filename(self):
         return os.path.join(
@@ -100,3 +120,25 @@ class SuppliedDataFile(models.Model):
 
     def does_exist_in_storage(self):
         return os.path.exists(self.upload_dir_and_filename())
+
+    def is_download_from_source_url_needed(self) -> bool:
+        return self.source_url and not os.path.exists(self.upload_dir_and_filename())
+
+    def download_from_source_url(self):
+        # Make dir
+        os.makedirs(self.supplied_data.upload_dir(), exist_ok=True)
+        # Upload
+        request_headers = {"User-Agent": "Cove (cove.opendataservice.coop)"}
+        with requests.get(self.source_url, stream=True, headers=request_headers) as r:
+            # Errors? TODO better return
+            r.raise_for_status()
+            # Save
+            with open(self.upload_dir_and_filename(), "wb") as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            # Update record
+            self.size = os.path.getsize(self.upload_dir_and_filename())
+            self.charset = r.encoding
+            if not self.content_type:
+                self.content_type = r.headers.get("content-type")
+            self.save()

@@ -28,4 +28,26 @@
         </div>
     </div>
 
+
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingSix" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
+          <h4 class="panel-title">
+            <a class="accordion-toggle">
+              <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>{% trans "URL" %}
+            </a>
+          </h4>
+        </div>
+        <div id="collapseSix" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSix">
+          <div class="panel-body">
+            <form method="POST" action="{% url 'new_geojson' %}" enctype="multipart/form-data">{% csrf_token %}
+                {% bootstrap_form forms.url_form %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">
+                        {% trans 'Submit' %}
+                    </button>
+                {% endbuttons %}
+            </form>
+          </div>
+        </div>
+    </div>
 {% endblock %}

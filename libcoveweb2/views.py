@@ -9,6 +9,7 @@ from libcoveweb2.forms import (
     NewCSVsUploadForm,
     NewJSONTextForm,
     NewJSONUploadForm,
+    NewJSONURLForm,
     NewSpreadsheetUploadForm,
 )
 from libcoveweb2.models import SuppliedData, SuppliedDataFile
@@ -16,6 +17,7 @@ from libcoveweb2.models import SuppliedData, SuppliedDataFile
 JSON_FORM_CLASSES = {
     "upload_form": NewJSONUploadForm,
     "text_form": NewJSONTextForm,
+    "url_form": NewJSONURLForm,
 }
 
 
@@ -30,6 +32,8 @@ def new_json(request):
     if request_data:
         if "paste" in request_data:
             form_name = "text_form"
+        elif "url" in request_data:
+            form_name = "url_form"
         else:
             form_name = "upload_form"
         forms[form_name] = JSON_FORM_CLASSES[form_name](request_data, request.FILES)
@@ -69,6 +73,10 @@ def new_json(request):
                         form.cleaned_data["paste"],
                         "application/json",
                         None,
+                    )
+                elif form_name == "url_form":
+                    supplied_data.save_file_from_source_url(
+                        form.cleaned_data["url"], content_type="application/json"
                     )
 
                 return HttpResponseRedirect(supplied_data.get_absolute_url())
