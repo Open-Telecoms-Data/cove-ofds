@@ -27,3 +27,14 @@ class NewGeoJSONUploadForm(forms.Form):
         ),
         required=False,
     )
+
+
+class NewGeoJSONURLForm(forms.Form):
+    nodes_file_url = forms.URLField(
+        label="Nodes URL",
+        required=False,
+    )
+    spans_file_url = forms.URLField(
+        label="Spans URL",
+        required=False,
+    )

@@ -19,6 +19,19 @@ from libcoveweb2.utils import get_file_type as _get_file_type
 from libcoveweb2.utils import group_data_list_by
 
 
+class DownloadDataTask(ProcessDataTask):
+    """If user gave us a URL, we download it now."""
+
+    def process(self, process_data: dict) -> dict:
+        for supplied_data_file in SuppliedDataFile.objects.filter(
+            supplied_data=self.supplied_data
+        ):
+            if supplied_data_file.is_download_from_source_url_needed():
+                supplied_data_file.download_from_source_url()
+
+        return process_data
+
+
 class WasJSONUploaded(ProcessDataTask):
     """Did user upload JSON?
     Then we don't actually have to do anything, but we want to save info about that JSON for later steps."""

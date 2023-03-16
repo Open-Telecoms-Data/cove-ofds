@@ -1,5 +1,5 @@
 import shutil
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -17,6 +17,11 @@ class Command(BaseCommand):
             - timedelta(days=getattr(settings, "DELETE_FILES_AFTER_DAYS", 7))
         )
         for supplied_data in old_data:
+            # Set in database
+            if not supplied_data.expired:
+                supplied_data.expired = datetime.now()
+                supplied_data.save()
+            # Remove files
             try:
                 shutil.rmtree(supplied_data.data_dir())
             except FileNotFoundError:

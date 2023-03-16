@@ -9,6 +9,7 @@ from libcoveweb2.forms import (
     NewCSVsUploadForm,
     NewJSONTextForm,
     NewJSONUploadForm,
+    NewJSONURLForm,
     NewSpreadsheetUploadForm,
 )
 from libcoveweb2.models import SuppliedData, SuppliedDataFile
@@ -16,6 +17,7 @@ from libcoveweb2.models import SuppliedData, SuppliedDataFile
 JSON_FORM_CLASSES = {
     "upload_form": NewJSONUploadForm,
     "text_form": NewJSONTextForm,
+    "url_form": NewJSONURLForm,
 }
 
 
@@ -30,6 +32,8 @@ def new_json(request):
     if request_data:
         if "paste" in request_data:
             form_name = "text_form"
+        elif "url" in request_data:
+            form_name = "url_form"
         else:
             form_name = "upload_form"
         forms[form_name] = JSON_FORM_CLASSES[form_name](request_data, request.FILES)
@@ -69,6 +73,10 @@ def new_json(request):
                         form.cleaned_data["paste"],
                         "application/json",
                         None,
+                    )
+                elif form_name == "url_form":
+                    supplied_data.save_file_from_source_url(
+                        form.cleaned_data["url"], content_type="application/json"
                     )
 
                 return HttpResponseRedirect(supplied_data.get_absolute_url())
@@ -187,33 +195,32 @@ def explore_data_context(request, pk):
             ),
         )
 
-    supplied_data_files = SuppliedDataFile.objects.filter(supplied_data=data)
-    for supplied_data_file in supplied_data_files:
-        if not supplied_data_file.does_exist_in_storage():
-            return (
-                {},
-                None,
-                render(
-                    request,
-                    "libcoveweb2/error.html",
-                    {
-                        "sub_title": _(
-                            "Sorry, the page you are looking for is not available"
-                        ),
-                        "link": "index",
-                        "link_text": _("Go to Home page"),
-                        "msg": _(
-                            "The data you were hoping to explore no longer exists.\n\nThis is because all "
-                            "data supplied to this website is automatically deleted after 7 days, and therefore "
-                            "the analysis of that data is no longer available."
-                        ),
-                    },
-                    status=404,
-                ),
-            )
+    if data.expired:
+        return (
+            {},
+            None,
+            render(
+                request,
+                "libcoveweb2/error.html",
+                {
+                    "sub_title": _(
+                        "Sorry, the page you are looking for is not available"
+                    ),
+                    "link": "index",
+                    "link_text": _("Go to Home page"),
+                    # TODO replace 7 below with value from settings
+                    "msg": _(
+                        "The data you were hoping to explore no longer exists.\n\nThis is because all "
+                        "data supplied to this website is automatically deleted after 7 days, and therefore "
+                        "the analysis of that data is no longer available."
+                    ),
+                },
+                status=404,
+            ),
+        )
 
     context = {
-        "supplied_data_files": supplied_data_files,
+        "supplied_data_files": SuppliedDataFile.objects.filter(supplied_data=data),
         "created_datetime": data.created.strftime("%A, %d %B %Y %I:%M%p %Z"),
         "created_date": data.created.strftime("%A, %d %B %Y"),
         "created_time": data.created.strftime("%I:%M%p %Z"),
