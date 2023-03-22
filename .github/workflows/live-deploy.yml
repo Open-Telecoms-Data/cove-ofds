@@ -4,6 +4,7 @@ on: [push]
 jobs:
   live-deploy:
     runs-on: ubuntu-latest
+    environment: openfibre-cove-live-deploy
     if: github.ref == 'refs/heads/live'
     steps:
     - name: Install SSH key
@@ -39,3 +40,4 @@ jobs:
         DOKKUSD_REMOTE_USER: ${{ secrets.DOKKUSD_LIVE_REMOTE_USER }}
         DOKKUSD_LETS_ENCRYPT: ${{ secrets.DOKKUSD_LIVE_LETS_ENCRYPT }}
         DOKKUSD_ENVIRONMENT_VARIABLES_JSON: ${{ secrets.DOKKUSD_LIVE_ENVIRONMENT_VARIABLES_JSON }}
+        DOKKUSD_PS_SCALE: ${{ secrets.DOKKUSD_PS_SCALE }}

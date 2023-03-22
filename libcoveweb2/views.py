@@ -4,7 +4,10 @@ from django.http import HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
+from django.views import View
 
+from libcoveweb2.background_worker import process_supplied_data
+from libcoveweb2.celery import CeleryInspector
 from libcoveweb2.forms import (
     NewCSVsUploadForm,
     NewJSONTextForm,
@@ -12,7 +15,8 @@ from libcoveweb2.forms import (
     NewJSONURLForm,
     NewSpreadsheetUploadForm,
 )
-from libcoveweb2.models import SuppliedData, SuppliedDataFile
+from libcoveweb2.models import SuppliedData
+from libcoveweb2.process import get_tasks
 
 JSON_FORM_CLASSES = {
     "upload_form": NewJSONUploadForm,
@@ -79,6 +83,7 @@ def new_json(request):
                         form.cleaned_data["url"], content_type="application/json"
                     )
 
+                process_supplied_data(supplied_data.id)
                 return HttpResponseRedirect(supplied_data.get_absolute_url())
 
     return render(request, "libcoveweb2/new_json.html", {"forms": forms})
@@ -123,6 +128,7 @@ def new_csvs(request):
                 if request.FILES.get(field):
                     supplied_data.save_file(request.FILES[field])
 
+            process_supplied_data(supplied_data.id)
             return HttpResponseRedirect(supplied_data.get_absolute_url())
 
     return render(request, "libcoveweb2/new_csvs.html", {"forms": forms})
@@ -163,70 +169,124 @@ def new_spreadsheet(request):
 
             supplied_data.save_file(request.FILES["file_upload"])
 
+            process_supplied_data(supplied_data.id)
             return HttpResponseRedirect(supplied_data.get_absolute_url())
 
     return render(request, "libcoveweb2/new_spreadsheet.html", {"forms": forms})
 
 
-def explore_data_context(request, pk):
-    try:
-        data = SuppliedData.objects.get(pk=pk)
-    except (
-        SuppliedData.DoesNotExist,
-        ValidationError,
-    ):  # Catches primary key does not exist and badly formed UUID
-        return (
-            {},
-            None,
-            render(
-                request,
-                "libcoveweb2/error.html",
-                {
-                    "sub_title": _(
-                        "Sorry, the page you are looking for is not available"
-                    ),
-                    "link": "index",
-                    "link_text": _("Go to Home page"),
-                    "msg": _(
-                        "We don't seem to be able to find the data you requested."
-                    ),
-                },
-                status=404,
-            ),
+class ExploreDataView(View):
+    """View for data explore page.
+
+    This is broken into variables/functions so that it can be extended by the cove app
+    and specific bits overwritten as needed.
+    """
+
+    error_template = "libcoveweb2/error.html"
+    explore_template = None
+    processing_template = "libcoveweb2/processing.html"
+
+    def get(self, request, pk):
+        """Main processing. Not intended to be overridden."""
+        # Does data exist at all?
+        try:
+            supplied_data: SuppliedData = SuppliedData.objects.get(pk=pk)
+        except (
+            SuppliedData.DoesNotExist,
+            ValidationError,
+        ):  # Catches primary key does not exist and badly formed UUID
+            return self.view_does_not_exist(request)
+
+        # Is data Expired?
+        if supplied_data.expired:
+            return self.view_has_expired(request, supplied_data)
+
+        # Is data still to be processed?
+        if not supplied_data.processed:
+            return self.view_being_processed(request, supplied_data)
+
+        # Get tasks
+        tasks = get_tasks(supplied_data)
+
+        # Is data processed but needs to be reprocessed?
+        for task in tasks:
+            if task.is_processing_applicable() and task.is_processing_needed():
+                supplied_data.processed = None
+                supplied_data.save()
+                process_supplied_data(supplied_data.id)
+                return self.view_being_processed(request, supplied_data)
+
+        # Data is there and we can show it!
+        context = self.default_context(supplied_data)
+
+        for task in tasks:
+            context.update(task.get_context())
+
+        return self.view_explore(request, context, supplied_data)
+
+    def view_does_not_exist(self, request):
+        """Called if the data does not exist at all. Return a view to show the user."""
+        return render(
+            request,
+            self.error_template,
+            {
+                "sub_title": _("Sorry, the page you are looking for is not available"),
+                "link": "index",
+                "link_text": _("Go to Home page"),
+                "msg": _("We don't seem to be able to find the data you requested."),
+            },
+            status=404,
         )
 
-    if data.expired:
-        return (
-            {},
-            None,
-            render(
-                request,
-                "libcoveweb2/error.html",
-                {
-                    "sub_title": _(
-                        "Sorry, the page you are looking for is not available"
-                    ),
-                    "link": "index",
-                    "link_text": _("Go to Home page"),
-                    # TODO replace 7 below with value from settings
-                    "msg": _(
-                        "The data you were hoping to explore no longer exists.\n\nThis is because all "
-                        "data supplied to this website is automatically deleted after 7 days, and therefore "
-                        "the analysis of that data is no longer available."
-                    ),
-                },
-                status=404,
-            ),
+    def view_has_expired(self, request, supplied_data):
+        """Called if the data has expired and has now been deleted. Return a view to show the user."""
+        return render(
+            request,
+            self.error_template,
+            {
+                "sub_title": _("Sorry, the page you are looking for is not available"),
+                "link": "index",
+                "link_text": _("Go to Home page"),
+                # TODO replace 7 below with value from settings
+                "msg": _(
+                    "The data you were hoping to explore no longer exists.\n\nThis is because all "
+                    "data supplied to this website is automatically deleted after 7 days, and therefore "
+                    "the analysis of that data is no longer available."
+                ),
+            },
+            status=404,
         )
 
-    context = {
-        "supplied_data_files": SuppliedDataFile.objects.filter(supplied_data=data),
-        "created_datetime": data.created.strftime("%A, %d %B %Y %I:%M%p %Z"),
-        "created_date": data.created.strftime("%A, %d %B %Y"),
-        "created_time": data.created.strftime("%I:%M%p %Z"),
-    }
+    def view_being_processed(self, request, supplied_data):
+        """Called if the data is currently being processed.  Return a view to show the user."""
+        context = {}
+        celery_inspector = CeleryInspector()
 
-    return (context, data, None)
+        if celery_inspector.is_supplied_data_being_processed(supplied_data.id):
+            context["state"] = "processing"
+            tasks = get_tasks(supplied_data)
+            count_tasks = 0
+            count_tasks_to_do = 0
+            for task in tasks:
+                if task.is_processing_applicable():
+                    count_tasks += 1
+                    if task.is_processing_needed():
+                        count_tasks_to_do += 1
+            context["count_tasks"] = count_tasks
+            context["count_tasks_to_do"] = count_tasks_to_do
+            context["count_tasks_done"] = count_tasks - count_tasks_to_do
+        else:
+            context["state"] = "waiting"
+
+        return render(request, self.processing_template, context)
+
+    def default_context(self, supplied_data):
+        """Called if the data is ready to show to the user. Return a dict of the context to pass to the template."""
+        return {}
+
+    def view_explore(self, request, context, supplied_data):
+        """Called if the data is ready to show to the user. Return a view to show the user."""
+        return render(request, self.explore_template, context)
 
 
 def handler500(request):

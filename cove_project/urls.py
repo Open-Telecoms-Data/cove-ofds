@@ -10,7 +10,7 @@ handler500 = "libcoveweb2.views.handler500"
 
 urlpatterns += [
     re_path(r"^$", cove_ofds.views.index, name="index"),
-    url(r"^data/(.+)$", cove_ofds.views.explore_ofds, name="explore"),
+    url(r"^data/(.+)$", cove_ofds.views.ExploreOFDSView.as_view(), name="explore"),
     re_path(r"^new_geojson$", cove_ofds.views.new_geojson, name="new_geojson"),
 ]
 

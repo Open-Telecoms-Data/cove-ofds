@@ -22,6 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = environ.Env(  # set default values and casting
     DB_NAME=(str, os.path.join(BASE_DIR, "db.sqlite3")),
     SENTRY_DSN=(str, ""),
+    CELERY_BROKER_URL=(str, ""),
+    REDIS_URL=(str, ""),
 )
 
 # We use the setting to choose whether to show the section about Sentry in the
@@ -174,3 +176,24 @@ ALLOWED_GEOJSON_CONTENT_TYPES = settings.ALLOWED_JSON_CONTENT_TYPES + [
     "application/geo+json"
 ]
 ALLOWED_GEOJSON_EXTENSIONS = settings.ALLOWED_JSON_EXTENSIONS + [".geojson"]
+
+PROCESS_TASKS = [
+    # Get data if not already on disk
+    ("cove_ofds.process", "DownloadDataTask"),
+    # Make sure uploads are in primary format
+    ("cove_ofds.process", "WasJSONUploaded"),
+    ("cove_ofds.process", "ConvertSpreadsheetIntoJSON"),
+    ("cove_ofds.process", "ConvertCSVsIntoJSON"),
+    ("cove_ofds.process", "ConvertGeoJSONIntoJSON"),
+    # Convert into output formats
+    ("cove_ofds.process", "ConvertJSONIntoGeoJSON"),
+    ("cove_ofds.process", "ConvertJSONIntoSpreadsheets"),
+    # Checks and stats
+    ("cove_ofds.process", "AdditionalFieldsChecksTask"),
+    ("cove_ofds.process", "PythonValidateTask"),
+    ("cove_ofds.process", "JsonSchemaValidateTask"),
+]
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL") or env("REDIS_URL")
+CELERY_TASK_EAGER_PROPAGATES = CELERY_BROKER_URL == "memory://"
+CELERY_TASK_ALWAYS_EAGER = CELERY_BROKER_URL == "memory://"

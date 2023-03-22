@@ -7,24 +7,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from cove_ofds.forms import NewGeoJSONUploadForm, NewGeoJSONURLForm
-from cove_ofds.process import (
-    AdditionalFieldsChecksTask,
-    ConvertCSVsIntoJSON,
-    ConvertGeoJSONIntoJSON,
-    ConvertJSONIntoGeoJSON,
-    ConvertJSONIntoSpreadsheets,
-    ConvertSpreadsheetIntoJSON,
-    DownloadDataTask,
-    JsonSchemaValidateTask,
-    PythonValidateTask,
-    WasJSONUploaded,
-)
-from libcoveweb2.models import SuppliedData
+from libcoveweb2.background_worker import process_supplied_data
+from libcoveweb2.models import SuppliedData, SuppliedDataFile
 from libcoveweb2.views import (
     CSVS_FORM_CLASSES,
     JSON_FORM_CLASSES,
     SPREADSHEET_FORM_CLASSES,
-    explore_data_context,
+    ExploreDataView,
 )
 
 logger = logging.getLogger(__name__)
@@ -136,45 +125,26 @@ def new_geojson(request):
                         content_type="application/json",
                     )
 
+            process_supplied_data(supplied_data.id)
             return HttpResponseRedirect(supplied_data.get_absolute_url())
     return render(request, "cove_ofds/new_geojson.html", {"forms": forms})
 
 
-def explore_ofds(request, pk):
-    context, db_data, error = explore_data_context(request, pk)
-    if error:
-        return error
+class ExploreOFDSView(ExploreDataView):
+    explore_template = "cove_ofds/explore.html"
 
-    PROCESS_TASKS = [
-        # Get data if not already on disk
-        DownloadDataTask(db_data),
-        # Make sure uploads are in primary format
-        WasJSONUploaded(db_data),
-        ConvertSpreadsheetIntoJSON(db_data),
-        ConvertCSVsIntoJSON(db_data),
-        ConvertGeoJSONIntoJSON(db_data),
-        # Convert into output formats
-        ConvertJSONIntoGeoJSON(db_data),
-        ConvertJSONIntoSpreadsheets(db_data),
-        # Checks and stats
-        AdditionalFieldsChecksTask(db_data),
-        PythonValidateTask(db_data),
-        JsonSchemaValidateTask(db_data),
-    ]
-
-    # Process bit that should be a task in a worker
-    process_data = {}
-    for task in PROCESS_TASKS:
-        process_data = task.process(process_data)
-
-    # read results
-    for task in PROCESS_TASKS:
-        context.update(task.get_context())
-
-    # Currently hard coded because the library only supports this version,
-    # but in future this should come from one of the process tasks
-    context["schema_version_used"] = "0.2"
-
-    template = "cove_ofds/explore.html"
-
-    return render(request, template, context)
+    def default_context(self, supplied_data):
+        return {
+            # Currently hard coded because the library only supports this version,
+            # but in future this should come from one of the process tasks
+            "schema_version_used": "0.2",
+            # Misc
+            "supplied_data_files": SuppliedDataFile.objects.filter(
+                supplied_data=supplied_data
+            ),
+            "created_datetime": supplied_data.created.strftime(
+                "%A, %d %B %Y %I:%M%p %Z"
+            ),
+            "created_date": supplied_data.created.strftime("%A, %d %B %Y"),
+            "created_time": supplied_data.created.strftime("%I:%M%p %Z"),
+        }

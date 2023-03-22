@@ -1,9 +1,4 @@
 {
-  "scripts": {
-    "dokku": {
-      "predeploy": "python manage.py migrate"
-    }
-  },
   "cron": [
     {
       "command": "python manage.py expire_files",
@@ -22,6 +17,9 @@
     "nginx": {
       "client_max_body_size": "10m"
     },
-    "keep_git_dir": true
+    "keep_git_dir": true,
+    "services": [
+      "redis"
+    ]
   }
 }
