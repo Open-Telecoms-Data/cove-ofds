@@ -60,7 +60,7 @@ Then, run `pip-compile requirements.in && pip-compile requirements_dev.in` this 
 Docker is used in production, so sometimes you may want to run locally with Docker to debug issues:
 
 ```
-docker-compose -f docker-compose.dev.yml down # (if running)
-docker-compose -f docker-compose.dev.yml build --no-cache
-docker-compose -f docker-compose.dev.yml up # (to restart)
+docker compose -f docker-compose.dev.yml down # (if running)
+docker compose -f docker-compose.dev.yml build --no-cache
+docker compose -f docker-compose.dev.yml up # (to restart)
 ```
