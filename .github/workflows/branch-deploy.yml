@@ -4,7 +4,6 @@ on: [push]
 jobs:
   branch-deploy:
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/live'
     steps:
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
