@@ -32,8 +32,9 @@ class CeleryInspector:
 
     def is_supplied_data_being_processed(self, id):
         data = self._inspector.active()
-        for worker, tasks in data.items():
-            for task in tasks:
-                if task.get("args", [])[0] == str(id):
-                    return True
+        if isinstance(data, dict):
+            for worker, tasks in data.items():
+                for task in tasks:
+                    if task.get("args", [])[0] == str(id):
+                        return True
         return False
