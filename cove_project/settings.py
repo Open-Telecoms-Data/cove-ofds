@@ -179,7 +179,7 @@ ALLOWED_GEOJSON_EXTENSIONS = settings.ALLOWED_JSON_EXTENSIONS + [".geojson"]
 
 PROCESS_TASKS = [
     # Get data if not already on disk
-    ("cove_ofds.process", "DownloadDataTask"),
+    ("libcoveweb2.process.common_tasks.download_data_task", "DownloadDataTask"),
     # Make sure uploads are in primary format
     ("cove_ofds.process", "WasJSONUploaded"),
     ("cove_ofds.process", "ConvertSpreadsheetIntoJSON"),

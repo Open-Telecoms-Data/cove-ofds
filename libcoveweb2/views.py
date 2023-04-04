@@ -16,7 +16,7 @@ from libcoveweb2.forms import (
     NewSpreadsheetUploadForm,
 )
 from libcoveweb2.models import SuppliedData
-from libcoveweb2.process import get_tasks
+from libcoveweb2.process.utils import get_tasks
 
 JSON_FORM_CLASSES = {
     "upload_form": NewJSONUploadForm,

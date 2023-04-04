@@ -12,40 +12,11 @@ from sentry_sdk import capture_exception
 
 import cove_ofds.jsonschema_validation_errors
 from libcoveweb2.models import SuppliedDataFile
-from libcoveweb2.process import ProcessDataTask
+from libcoveweb2.process.base import ProcessDataTask
 
 # from libcove.lib.converters import convert_json, convert_spreadsheet
 from libcoveweb2.utils import get_file_type as _get_file_type
 from libcoveweb2.utils import group_data_list_by
-
-
-class DownloadDataTask(ProcessDataTask):
-    """If user gave us a URL, we download it now."""
-
-    def is_processing_applicable(self) -> bool:
-        for supplied_data_file in SuppliedDataFile.objects.filter(
-            supplied_data=self.supplied_data
-        ):
-            if supplied_data_file.source_url:
-                return True
-        return False
-
-    def is_processing_needed(self) -> bool:
-        for supplied_data_file in SuppliedDataFile.objects.filter(
-            supplied_data=self.supplied_data
-        ):
-            if supplied_data_file.is_download_from_source_url_needed():
-                return True
-        return False
-
-    def process(self, process_data: dict) -> dict:
-        for supplied_data_file in SuppliedDataFile.objects.filter(
-            supplied_data=self.supplied_data
-        ):
-            if supplied_data_file.is_download_from_source_url_needed():
-                supplied_data_file.download_from_source_url()
-
-        return process_data
 
 
 class WasJSONUploaded(ProcessDataTask):
