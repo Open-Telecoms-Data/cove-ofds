@@ -25,4 +25,7 @@ jobs:
     - name: Install requirements_dev.txt
       run: pip install -r requirements_dev.txt
     - name: Test
-      run: DJANGO_SETTINGS_MODULE=cove_project.settings python -m pytest cove_ofds/
+      run: python -m pytest cove_ofds/
+      env:
+        DJANGO_SETTINGS_MODULE: cove_project.settings
+        CELERY_BROKER_URL: memory://

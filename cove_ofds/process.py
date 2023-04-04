@@ -22,6 +22,22 @@ from libcoveweb2.utils import group_data_list_by
 class DownloadDataTask(ProcessDataTask):
     """If user gave us a URL, we download it now."""
 
+    def is_processing_applicable(self) -> bool:
+        for supplied_data_file in SuppliedDataFile.objects.filter(
+            supplied_data=self.supplied_data
+        ):
+            if supplied_data_file.source_url:
+                return True
+        return False
+
+    def is_processing_needed(self) -> bool:
+        for supplied_data_file in SuppliedDataFile.objects.filter(
+            supplied_data=self.supplied_data
+        ):
+            if supplied_data_file.is_download_from_source_url_needed():
+                return True
+        return False
+
     def process(self, process_data: dict) -> dict:
         for supplied_data_file in SuppliedDataFile.objects.filter(
             supplied_data=self.supplied_data
@@ -35,6 +51,9 @@ class DownloadDataTask(ProcessDataTask):
 class WasJSONUploaded(ProcessDataTask):
     """Did user upload JSON?
     Then we don't actually have to do anything, but we want to save info about that JSON for later steps."""
+
+    def is_processing_applicable(self) -> bool:
+        return True
 
     def process(self, process_data: dict) -> dict:
         if self.supplied_data.format != "json":
@@ -56,15 +75,37 @@ class WasJSONUploaded(ProcessDataTask):
         return {"original_format": "json"}
 
 
+CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME = "unflatten"
+
+
 class ConvertSpreadsheetIntoJSON(ProcessDataTask):
     """If User uploaded Spreadsheet, convert to our primary format, JSON."""
+
+    def __init__(self, supplied_data):
+        super().__init__(supplied_data)
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(),
+            CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME,
+            "unflattened.json",
+        )
+
+    def is_processing_applicable(self) -> bool:
+        return self.supplied_data.format == "spreadsheet"
+
+    def is_processing_needed(self) -> bool:
+        return self.supplied_data.format == "spreadsheet" and not os.path.exists(
+            self.data_filename
+        )
 
     def process(self, process_data: dict) -> dict:
         if self.supplied_data.format != "spreadsheet":
             return process_data
 
+        process_data["json_data_filename"] = self.data_filename
+
         # check already done
-        # TODO
+        if os.path.exists(self.data_filename):
+            return process_data
 
         supplied_data_json_files = SuppliedDataFile.objects.filter(
             supplied_data=self.supplied_data
@@ -74,7 +115,9 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         else:
             raise Exception("Can't find Spreadsheet original data!")
 
-        output_dir = os.path.join(self.supplied_data.data_dir(), "unflatten")
+        output_dir = os.path.join(
+            self.supplied_data.data_dir(), CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME
+        )
 
         os.makedirs(output_dir, exist_ok=True)
 
@@ -89,10 +132,6 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
 
         flattentool.unflatten(input_filename, **unflatten_kwargs)
 
-        process_data["json_data_filename"] = os.path.join(
-            self.supplied_data.data_dir(), "unflatten", "unflattened.json"
-        )
-
         return process_data
 
     def get_context(self):
@@ -101,32 +140,55 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         if self.supplied_data.format == "spreadsheet":
             context["original_format"] = "spreadsheet"
             # Download data
-            filename = os.path.join(
-                self.supplied_data.data_dir(), "unflatten", "unflattened.json"
-            )
-            if os.path.exists(filename):
+            if os.path.exists(self.data_filename):
                 context["can_download_json"] = True
                 context["download_json_url"] = os.path.join(
-                    self.supplied_data.data_url(), "unflatten", "unflattened.json"
+                    self.supplied_data.data_url(),
+                    CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME,
+                    "unflattened.json",
                 )
-                context["download_json_size"] = os.stat(filename).st_size
+                context["download_json_size"] = os.stat(self.data_filename).st_size
             else:
                 context["can_download_json"] = False
         # Return
         return context
 
 
+CONVERT_CSVS_INTO_JSON_DIR_NAME = "unflatten"
+
+
 class ConvertCSVsIntoJSON(ProcessDataTask):
     """If User uploaded CSVs, convert to our primary format, JSON."""
+
+    def __init__(self, supplied_data):
+        super().__init__(supplied_data)
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(),
+            CONVERT_CSVS_INTO_JSON_DIR_NAME,
+            "unflattened.json",
+        )
+
+    def is_processing_applicable(self) -> bool:
+        return self.supplied_data.format == "csvs"
+
+    def is_processing_needed(self) -> bool:
+        return self.supplied_data.format == "csvs" and not os.path.exists(
+            self.data_filename
+        )
 
     def process(self, process_data: dict) -> dict:
         if self.supplied_data.format != "csvs":
             return process_data
 
-        # check already done
-        # TODO
+        process_data["json_data_filename"] = self.data_filename
 
-        output_dir = os.path.join(self.supplied_data.data_dir(), "unflatten")
+        # check already done
+        if os.path.exists(self.data_filename):
+            return process_data
+
+        output_dir = os.path.join(
+            self.supplied_data.data_dir(), CONVERT_CSVS_INTO_JSON_DIR_NAME
+        )
 
         os.makedirs(output_dir, exist_ok=True)
 
@@ -141,10 +203,6 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
 
         flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
 
-        process_data["json_data_filename"] = os.path.join(
-            self.supplied_data.data_dir(), "unflatten", "unflattened.json"
-        )
-
         return process_data
 
     def get_context(self):
@@ -153,15 +211,14 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
         if self.supplied_data.format == "csvs":
             context["original_format"] = "csvs"
             # Download data
-            filename = os.path.join(
-                self.supplied_data.data_dir(), "unflatten", "unflattened.json"
-            )
-            if os.path.exists(filename):
+            if os.path.exists(self.data_filename):
                 context["can_download_json"] = True
                 context["download_json_url"] = os.path.join(
-                    self.supplied_data.data_url(), "unflatten", "unflattened.json"
+                    self.supplied_data.data_url(),
+                    CONVERT_CSVS_INTO_JSON_DIR_NAME,
+                    "unflattened.json",
                 )
-                context["download_json_size"] = os.stat(filename).st_size
+                context["download_json_size"] = os.stat(self.data_filename).st_size
             else:
                 context["can_download_json"] = False
         # Return
@@ -175,6 +232,14 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
         super().__init__(supplied_data)
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(), "data_from_geojson.json"
+        )
+
+    def is_processing_applicable(self) -> bool:
+        return self.supplied_data.format == "geojson"
+
+    def is_processing_needed(self) -> bool:
+        return self.supplied_data.format == "geojson" and not os.path.exists(
+            self.data_filename
         )
 
     def process(self, process_data: dict) -> dict:
@@ -287,6 +352,12 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
             self.supplied_data.data_dir(), "geojson.meta.json"
         )
 
+    def is_processing_applicable(self) -> bool:
+        return True
+
+    def is_processing_needed(self) -> bool:
+        return not os.path.exists(self.nodes_file_name)
+
     def process(self, process_data: dict) -> dict:
         # TODO if original format is geojson, don't bother? or do bother?
         #  because maybe we'll need the meta files for the map?
@@ -358,19 +429,41 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
         return context
 
 
+CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME = "flatten"
+
+
 class ConvertJSONIntoSpreadsheets(ProcessDataTask):
     """Convert primary format (JSON) to spreadsheets"""
 
     def __init__(self, supplied_data):
         super().__init__(supplied_data)
         self.csvs_zip_filename = os.path.join(
-            self.supplied_data.data_dir(), "flatten", "flattened.csvs.zip"
+            self.supplied_data.data_dir(),
+            CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
+            "flattened.csvs.zip",
         )
-        self.output_dir = os.path.join(self.supplied_data.data_dir(), "flatten", "data")
+        self.output_dir = os.path.join(
+            self.supplied_data.data_dir(),
+            CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
+            "data",
+        )
+        self.xlsx_filename = os.path.join(
+            self.supplied_data.data_dir(),
+            CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
+            "data.xlsx",
+        )
+
+    def is_processing_applicable(self) -> bool:
+        return True
+
+    def is_processing_needed(self) -> bool:
+        return not os.path.exists(self.xlsx_filename)
 
     def process(self, process_data: dict) -> dict:
 
-        # TODO don't run if already done
+        # don't run if already done
+        if os.path.exists(self.xlsx_filename):
+            return process_data
 
         os.makedirs(self.output_dir, exist_ok=True)
 
@@ -411,25 +504,28 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
     def get_context(self):
         context = {}
         # XLSX
-        xlsx_filename = os.path.join(
-            self.supplied_data.data_dir(), "flatten", "data.xlsx"
-        )
-        if os.path.exists(xlsx_filename):
+        if os.path.exists(self.xlsx_filename):
             context["can_download_xlsx"] = True
             context["download_xlsx_url"] = os.path.join(
-                self.supplied_data.data_url(), "flatten", "data.xlsx"
+                self.supplied_data.data_url(),
+                CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
+                "data.xlsx",
             )
-            context["download_xlsx_size"] = os.stat(xlsx_filename).st_size
+            context["download_xlsx_size"] = os.stat(self.xlsx_filename).st_size
         else:
             context["can_download_xlsx"] = False
         # ODS
         ods_filename = os.path.join(
-            self.supplied_data.data_dir(), "flatten", "data.ods"
+            self.supplied_data.data_dir(),
+            CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
+            "data.ods",
         )
         if os.path.exists(ods_filename):
             context["can_download_ods"] = True
             context["download_ods_url"] = os.path.join(
-                self.supplied_data.data_url(), "flatten", "data.ods"
+                self.supplied_data.data_url(),
+                CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
+                "data.ods",
             )
             context["download_ods_size"] = os.stat(ods_filename).st_size
         else:
@@ -438,7 +534,9 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         if os.path.exists(self.csvs_zip_filename):
             context["can_download_csvs"] = True
             context["download_csvs_zip_url"] = os.path.join(
-                self.supplied_data.data_url(), "flatten", "flattened.csvs.zip"
+                self.supplied_data.data_url(),
+                CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
+                "flattened.csvs.zip",
             )
             context["download_csvs_zip_size"] = os.stat(self.csvs_zip_filename).st_size
             context["download_csv_individual_files"] = [
@@ -464,6 +562,12 @@ class PythonValidateTask(ProcessDataTask):
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(), "python_validate.json"
         )
+
+    def is_processing_applicable(self) -> bool:
+        return True
+
+    def is_processing_needed(self) -> bool:
+        return not os.path.exists(self.data_filename)
 
     def process(self, process_data: dict) -> dict:
         if os.path.exists(self.data_filename):
@@ -603,6 +707,12 @@ class JsonSchemaValidateTask(ProcessDataTask):
             self.supplied_data.data_dir(), "jsonschema_validate.json"
         )
 
+    def is_processing_applicable(self) -> bool:
+        return True
+
+    def is_processing_needed(self) -> bool:
+        return not os.path.exists(self.data_filename)
+
     def process(self, process_data: dict) -> dict:
         if os.path.exists(self.data_filename):
             return process_data
@@ -657,6 +767,12 @@ class AdditionalFieldsChecksTask(ProcessDataTask):
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(), "additional_fields_2.json"
         )
+
+    def is_processing_applicable(self) -> bool:
+        return True
+
+    def is_processing_needed(self) -> bool:
+        return not os.path.exists(self.data_filename)
 
     def process(self, process_data: dict) -> dict:
         if os.path.exists(self.data_filename):

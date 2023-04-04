@@ -4,6 +4,7 @@ on: [push]
 jobs:
   branch-deploy:
     runs-on: ubuntu-latest
+    environment: openfibre-cove-branch-deploy
     steps:
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
@@ -40,3 +41,4 @@ jobs:
         DOKKUSD_HTTP_AUTH_PASSWORD: ${{ secrets.DOKKUSD_BRANCH_HTTP_AUTH_PASSWORD }}
         DOKKUSD_LETS_ENCRYPT: ${{ secrets.DOKKUSD_BRANCH_LETS_ENCRYPT }}
         DOKKUSD_ENVIRONMENT_VARIABLES_JSON: ${{ secrets.DOKKUSD_BRANCH_ENVIRONMENT_VARIABLES_JSON }}
+        DOKKUSD_PS_SCALE: ${{ secrets.DOKKUSD_PS_SCALE }}
