@@ -217,7 +217,7 @@ class ExploreDataView(View):
                 return self.view_being_processed(request, supplied_data)
 
         # Data is there and we can show it!
-        context = self.default_context(supplied_data)
+        context = self.default_explore_context(supplied_data)
 
         for task in tasks:
             context.update(task.get_context())
@@ -280,7 +280,7 @@ class ExploreDataView(View):
 
         return render(request, self.processing_template, context)
 
-    def default_context(self, supplied_data):
+    def default_explore_context(self, supplied_data):
         """Called if the data is ready to show to the user. Return a dict of the context to pass to the template."""
         return {}
 

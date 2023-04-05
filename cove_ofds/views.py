@@ -133,7 +133,7 @@ def new_geojson(request):
 class ExploreOFDSView(ExploreDataView):
     explore_template = "cove_ofds/explore.html"
 
-    def default_context(self, supplied_data):
+    def default_explore_context(self, supplied_data):
         return {
             # Currently hard coded because the library only supports this version,
             # but in future this should come from one of the process tasks
