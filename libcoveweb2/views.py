@@ -8,171 +8,81 @@ from django.views import View
 
 from libcoveweb2.background_worker import process_supplied_data
 from libcoveweb2.celery import CeleryInspector
-from libcoveweb2.forms import (
-    NewCSVsUploadForm,
-    NewJSONTextForm,
-    NewJSONUploadForm,
-    NewJSONURLForm,
-    NewSpreadsheetUploadForm,
-)
 from libcoveweb2.models import SuppliedData
 from libcoveweb2.process.utils import get_tasks
 
-JSON_FORM_CLASSES = {
-    "upload_form": NewJSONUploadForm,
-    "text_form": NewJSONTextForm,
-    "url_form": NewJSONURLForm,
-}
 
+class InputDataView(View):
+    form_classes = None
+    input_template = None
+    allowed_content_types = None
+    content_type_incorrect_message = "This file is not the correct type."
+    allowed_file_extensions = None
+    file_extension_incorrect_message = "This file is not the correct type."
+    supplied_data_format = None
 
-def new_json(request):
+    def get_active_form_key(self, forms, request_data):
+        return None
 
-    forms = {
-        form_name: form_class() for form_name, form_class in JSON_FORM_CLASSES.items()
-    }
-    request_data = None
-    if request.POST:
-        request_data = request.POST
-    if request_data:
-        if "paste" in request_data:
-            form_name = "text_form"
-        elif "url" in request_data:
-            form_name = "url_form"
-        else:
-            form_name = "upload_form"
-        forms[form_name] = JSON_FORM_CLASSES[form_name](request_data, request.FILES)
-        form = forms[form_name]
-        if form.is_valid():
-            # Extra Validation
-            if form_name == "upload_form":
-                if (
-                    not request.FILES["file_upload"].content_type
-                    in settings.ALLOWED_JSON_CONTENT_TYPES
-                ):
-                    form.add_error(
-                        "file_upload", "This does not appear to be a JSON file"
+    def get_file_field_names_in_form(self, form):
+        return form.file_field_names
+
+    def save_file_content_to_supplied_data(
+        self, form_name, form, request, supplied_data
+    ):
+        pass
+
+    def get(self, request):
+        forms = {
+            form_name: form_class()
+            for form_name, form_class in self.form_classes.items()
+        }
+        return render(request, self.input_template, {"forms": forms})
+
+    def post(self, request):
+        forms = {
+            form_name: form_class()
+            for form_name, form_class in self.form_classes.items()
+        }
+        request_data = None
+        if request.POST:
+            request_data = request.POST
+        if request_data:
+            form_name = self.get_active_form_key(forms, request_data)
+            if form_name:
+                forms[form_name] = self.form_classes[form_name](
+                    request_data, request.FILES
+                )
+                form = forms[form_name]
+                # Extra validation
+                self.validate_content_type_and_file_extensions(form_name, form, request)
+
+                # If fine, save
+                if form.is_valid():
+                    supplied_data = SuppliedData()
+                    supplied_data.format = self.supplied_data_format
+                    supplied_data.save()
+                    self.save_file_content_to_supplied_data(
+                        form_name, form, request, supplied_data
                     )
-                if not [
-                    e
-                    for e in settings.ALLOWED_JSON_EXTENSIONS
-                    if str(request.FILES["file_upload"].name).lower().endswith(e)
-                ]:
-                    form.add_error(
-                        "file_upload", "This does not appear to be a JSON file"
-                    )
-            elif form_name == "text_form":
-                pass  # TODO
+                    process_supplied_data(supplied_data.id)
+                    return HttpResponseRedirect(supplied_data.get_absolute_url())
 
-            # Process
-            if form.is_valid():
-                supplied_data = SuppliedData()
-                supplied_data.format = "json"
-                supplied_data.save()
+        return render(request, self.input_template, {"forms": forms})
 
-                if form_name == "upload_form":
-                    supplied_data.save_file(request.FILES["file_upload"])
-                elif form_name == "text_form":
-                    supplied_data.save_file_contents(
-                        "input.json",
-                        form.cleaned_data["paste"],
-                        "application/json",
-                        None,
-                    )
-                elif form_name == "url_form":
-                    supplied_data.save_file_from_source_url(
-                        form.cleaned_data["url"], content_type="application/json"
-                    )
-
-                process_supplied_data(supplied_data.id)
-                return HttpResponseRedirect(supplied_data.get_absolute_url())
-
-    return render(request, "libcoveweb2/new_json.html", {"forms": forms})
-
-
-CSVS_FORM_CLASSES = {
-    "upload_form": NewCSVsUploadForm,
-}
-
-
-def new_csvs(request):
-
-    forms = {
-        "upload_form": NewCSVsUploadForm(request.POST, request.FILES)
-        if request.POST
-        else NewCSVsUploadForm()
-    }
-    form = forms["upload_form"]
-    if form.is_valid():
-        # Extra Validation
-        for field in form.file_field_names:
+    def validate_content_type_and_file_extensions(self, form_name, form, request):
+        for field in self.get_file_field_names_in_form(form):
             if request.FILES.get(field):
-                if (
-                    not request.FILES[field].content_type
-                    in settings.ALLOWED_CSV_CONTENT_TYPES
+                if self.allowed_content_types and (
+                    not request.FILES[field].content_type in self.allowed_content_types
                 ):
-                    form.add_error(field, "This does not appear to be a CSV file")
-                if not [
+                    form.add_error(field, self.content_type_incorrect_message)
+                if self.allowed_file_extensions and not [
                     e
-                    for e in settings.ALLOWED_CSV_EXTENSIONS
+                    for e in self.allowed_file_extensions
                     if str(request.FILES[field].name).lower().endswith(e)
                 ]:
-                    form.add_error(field, "This does not appear to be a CSV file")
-
-        # Process
-        if form.is_valid():
-            supplied_data = SuppliedData()
-            supplied_data.format = "csvs"
-            supplied_data.save()
-
-            for field in form.file_field_names:
-                if request.FILES.get(field):
-                    supplied_data.save_file(request.FILES[field])
-
-            process_supplied_data(supplied_data.id)
-            return HttpResponseRedirect(supplied_data.get_absolute_url())
-
-    return render(request, "libcoveweb2/new_csvs.html", {"forms": forms})
-
-
-SPREADSHEET_FORM_CLASSES = {
-    "upload_form": NewSpreadsheetUploadForm,
-}
-
-
-def new_spreadsheet(request):
-
-    forms = {
-        "upload_form": NewSpreadsheetUploadForm(request.POST, request.FILES)
-        if request.POST
-        else NewSpreadsheetUploadForm()
-    }
-    form = forms["upload_form"]
-    if form.is_valid():
-        # Extra Validation
-        if (
-            not request.FILES["file_upload"].content_type
-            in settings.ALLOWED_SPREADSHEET_CONTENT_TYPES
-        ):
-            form.add_error("file_upload", "This does not appear to be a spreadsheet")
-        if not [
-            e
-            for e in settings.ALLOWED_SPREADSHEET_EXTENSIONS
-            if str(request.FILES["file_upload"].name).lower().endswith(e)
-        ]:
-            form.add_error("file_upload", "This does not appear to be a spreadsheet")
-
-        # Process
-        if form.is_valid():
-            supplied_data = SuppliedData()
-            supplied_data.format = "spreadsheet"
-            supplied_data.save()
-
-            supplied_data.save_file(request.FILES["file_upload"])
-
-            process_supplied_data(supplied_data.id)
-            return HttpResponseRedirect(supplied_data.get_absolute_url())
-
-    return render(request, "libcoveweb2/new_spreadsheet.html", {"forms": forms})
+                    form.add_error(field, self.file_extension_incorrect_message)
 
 
 class ExploreDataView(View):

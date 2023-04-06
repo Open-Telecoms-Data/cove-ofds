@@ -6,15 +6,18 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from cove_ofds.forms import NewGeoJSONUploadForm, NewGeoJSONURLForm
+from cove_ofds.forms import (
+    NewCSVsUploadForm,
+    NewGeoJSONUploadForm,
+    NewGeoJSONURLForm,
+    NewJSONTextForm,
+    NewJSONUploadForm,
+    NewJSONURLForm,
+    NewSpreadsheetUploadForm,
+)
 from libcoveweb2.background_worker import process_supplied_data
 from libcoveweb2.models import SuppliedData, SuppliedDataFile
-from libcoveweb2.views import (
-    CSVS_FORM_CLASSES,
-    JSON_FORM_CLASSES,
-    SPREADSHEET_FORM_CLASSES,
-    ExploreDataView,
-)
+from libcoveweb2.views import ExploreDataView, InputDataView
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +57,98 @@ def index(request):
     }
 
     return render(request, "cove_ofds/index.html", {"forms": forms})
+
+
+JSON_FORM_CLASSES = {
+    "upload_form": NewJSONUploadForm,
+    "text_form": NewJSONTextForm,
+    "url_form": NewJSONURLForm,
+}
+
+
+class NewJSONInput(InputDataView):
+    form_classes = JSON_FORM_CLASSES
+    input_template = "cove_ofds/new_json.html"
+    allowed_content_types = settings.ALLOWED_JSON_CONTENT_TYPES
+    content_type_incorrect_message = "This does not appear to be a JSON file."
+    allowed_file_extensions = settings.ALLOWED_JSON_EXTENSIONS
+    file_extension_incorrect_message = "This does not appear to be a JSON file."
+    supplied_data_format = "json"
+
+    def get_active_form_key(self, forms, request_data):
+        if "paste" in request_data:
+            return "text_form"
+        elif "url" in request_data:
+            return "url_form"
+        else:
+            return "upload_form"
+
+    def save_file_content_to_supplied_data(
+        self, form_name, form, request, supplied_data
+    ):
+        if form_name == "upload_form":
+            supplied_data.save_file(request.FILES["file_upload"])
+        elif form_name == "text_form":
+            supplied_data.save_file_contents(
+                "input.json",
+                form.cleaned_data["paste"],
+                "application/json",
+                None,
+            )
+        elif form_name == "url_form":
+            supplied_data.save_file_from_source_url(
+                form.cleaned_data["url"], content_type="application/json"
+            )
+
+
+CSVS_FORM_CLASSES = {
+    "upload_form": NewCSVsUploadForm,
+}
+
+
+class NewCSVInput(InputDataView):
+    form_classes = CSVS_FORM_CLASSES
+    input_template = "cove_ofds/new_csvs.html"
+    allowed_content_types = settings.ALLOWED_CSV_CONTENT_TYPES
+    content_type_incorrect_message = "This does not appear to be a CSV file."
+    allowed_file_extensions = settings.ALLOWED_CSV_EXTENSIONS
+    file_extension_incorrect_message = "This does not appear to be a CSV file."
+    supplied_data_format = "csvs"
+
+    def get_active_form_key(self, forms, request_data):
+        return "upload_form"
+
+    def save_file_content_to_supplied_data(
+        self, form_name, form, request, supplied_data
+    ):
+        if form_name == "upload_form":
+            for field in form.file_field_names:
+                if request.FILES.get(field):
+                    supplied_data.save_file(request.FILES[field])
+
+
+SPREADSHEET_FORM_CLASSES = {
+    "upload_form": NewSpreadsheetUploadForm,
+}
+
+
+class NewSpreadsheetInput(InputDataView):
+    form_classes = SPREADSHEET_FORM_CLASSES
+    input_template = "cove_ofds/new_spreadsheet.html"
+    allowed_content_types = settings.ALLOWED_SPREADSHEET_CONTENT_TYPES
+    content_type_incorrect_message = "This does not appear to be a spreadsheet."
+    allowed_file_extensions = settings.ALLOWED_SPREADSHEET_EXTENSIONS
+    file_extension_incorrect_message = "This does not appear to be a spreadsheet."
+    supplied_data_format = "csvs"
+
+    def get_active_form_key(self, forms, request_data):
+        return "upload_form"
+
+    def save_file_content_to_supplied_data(
+        self, form_name, form, request, supplied_data
+    ):
+        if form_name == "upload_form":
+            supplied_data.save_file(request.FILES["file_upload"])
 
 
 def new_geojson(request):
