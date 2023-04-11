@@ -16,6 +16,7 @@ class SuppliedData(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     expired = models.DateTimeField(null=True)
     processed = models.DateTimeField(null=True)
+    error = models.TextField(null=True)
 
     def data_dir(self):
         return os.path.join(settings.MEDIA_ROOT, str(self.id))

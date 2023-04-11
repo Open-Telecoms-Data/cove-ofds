@@ -1,9 +1,12 @@
 import importlib
 import logging
+import sys
+import traceback
 from datetime import datetime
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from sentry_sdk import capture_exception
 
 from libcoveweb2.models import SuppliedData
 
@@ -38,10 +41,19 @@ def process_data_worker(id: str):
     tasks = get_tasks(supplied_data)
 
     # ------ Run tasks!
-    process_data = {}
-    for task in tasks:
-        if task.is_processing_applicable():
-            process_data = task.process(process_data)
+    try:
+        process_data = {}
+        for task in tasks:
+            if task.is_processing_applicable():
+                process_data = task.process(process_data)
+    except Exception as e:
+        # To our database
+        supplied_data.error = str(e)
+        # To logs
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        logger.error(traceback.print_exception(exc_type, exc_value, exc_traceback))
+        # To Sentry
+        capture_exception(e)
 
     # ------ Save result
     supplied_data.processed = datetime.now()

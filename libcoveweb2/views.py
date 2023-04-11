@@ -107,6 +107,10 @@ class ExploreDataView(View):
         ):  # Catches primary key does not exist and badly formed UUID
             return self.view_does_not_exist(request)
 
+        # Is data in error
+        if supplied_data.error:
+            return self.view_data_has_error(request, supplied_data)
+
         # Is data Expired?
         if supplied_data.expired:
             return self.view_has_expired(request, supplied_data)
@@ -146,6 +150,20 @@ class ExploreDataView(View):
                 "msg": _("We don't seem to be able to find the data you requested."),
             },
             status=404,
+        )
+
+    def view_data_has_error(self, request, supplied_data):
+        """Called if the supplied data has any error set."""
+        return render(
+            request,
+            self.error_template,
+            {
+                "sub_title": _("Sorry, there was an error."),
+                "link": "index",
+                "link_text": _("Go to Home page"),
+                "msg": _("There was an error."),
+            },
+            status=500,
         )
 
     def view_has_expired(self, request, supplied_data):
