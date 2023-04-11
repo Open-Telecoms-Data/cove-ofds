@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from django.urls import re_path
 
 import cove_ofds.views
+import libcoveweb2.views
 from libcoveweb2.urls import urlpatterns
 
 handler500 = "libcoveweb2.views.handler500"
@@ -18,7 +19,12 @@ urlpatterns += [
         name="new_spreadsheet",
     ),
     re_path(r"^new_geojson$", cove_ofds.views.new_geojson, name="new_geojson"),
-    url(r"^data/(.+)$", cove_ofds.views.ExploreOFDSView.as_view(), name="explore"),
+    url(r"^data/([\w\-]+)$", cove_ofds.views.ExploreOFDSView.as_view(), name="explore"),
+    url(
+        r"^data/([\w\-]+)/processing_status_api$",
+        libcoveweb2.views.ExploreDataProcessingStatusAPIView.as_view(),
+        name="explore_processing_status_api$",
+    ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

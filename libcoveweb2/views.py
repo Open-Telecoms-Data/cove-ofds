@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponseRedirect, HttpResponseServerError, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
@@ -131,12 +131,7 @@ class ExploreDataView(View):
                 return self.view_being_processed(request, supplied_data)
 
         # Data is there and we can show it!
-        context = self.default_explore_context(supplied_data)
-
-        for task in tasks:
-            context.update(task.get_context())
-
-        return self.view_explore(request, context, supplied_data)
+        return self.view_explore(request, tasks, supplied_data)
 
     def view_does_not_exist(self, request):
         """Called if the data does not exist at all. Return a view to show the user."""
@@ -185,8 +180,8 @@ class ExploreDataView(View):
             status=404,
         )
 
-    def view_being_processed(self, request, supplied_data):
-        """Called if the data is currently being processed.  Return a view to show the user."""
+    def get_being_processed_context(self, request, supplied_data) -> dict:
+        """Return python dict of context to use for being processed view."""
         context = {}
         celery_inspector = CeleryInspector()
 
@@ -205,16 +200,53 @@ class ExploreDataView(View):
             context["count_tasks_done"] = count_tasks - count_tasks_to_do
         else:
             context["state"] = "waiting"
+        return context
 
-        return render(request, self.processing_template, context)
+    def view_being_processed(self, request, supplied_data):
+        """Called if the data is currently being processed.  Return a view to show the user."""
+        return render(
+            request,
+            self.processing_template,
+            self.get_being_processed_context(request, supplied_data),
+        )
 
-    def default_explore_context(self, supplied_data):
+    def default_explore_context(self, supplied_data) -> dict:
         """Called if the data is ready to show to the user. Return a dict of the context to pass to the template."""
         return {}
 
-    def view_explore(self, request, context, supplied_data):
+    def get_explore_context(self, request, tasks, supplied_data) -> dict:
+        """Return python dict of context to use for explore view."""
+        context = self.default_explore_context(supplied_data)
+        for task in tasks:
+            context.update(task.get_context())
+        return context
+
+    def view_explore(self, request, tasks, supplied_data):
         """Called if the data is ready to show to the user. Return a view to show the user."""
-        return render(request, self.explore_template, context)
+        return render(
+            request,
+            self.explore_template,
+            self.get_explore_context(request, tasks, supplied_data),
+        )
+
+
+class ExploreDataProcessingStatusAPIView(ExploreDataView):
+    def view_does_not_exist(self, request):
+        return JsonResponse({"error": "Does not exist"}, status=404)
+
+    def view_data_has_error(self, request, supplied_data):
+        return JsonResponse({"error": "Data has error"}, status=500)
+
+    def view_has_expired(self, request, supplied_data):
+        return JsonResponse({"error": "Data has expired"}, status=500)
+
+    def view_being_processed(self, request, supplied_data):
+        return JsonResponse(
+            self.get_being_processed_context(request, supplied_data), status=200
+        )
+
+    def view_explore(self, request, context, supplied_data):
+        return JsonResponse({"state": "ready"}, status=200)
 
 
 def handler500(request):
