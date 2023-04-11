@@ -15,8 +15,7 @@ from libcoveweb2.models import SuppliedDataFile
 from libcoveweb2.process.base import ProcessDataTask
 
 # from libcove.lib.converters import convert_json, convert_spreadsheet
-from libcoveweb2.utils import get_file_type as _get_file_type
-from libcoveweb2.utils import group_data_list_by
+from libcoveweb2.utils import get_file_type_for_flatten_tool, group_data_list_by
 
 
 class WasJSONUploaded(ProcessDataTask):
@@ -81,10 +80,11 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         supplied_data_json_files = SuppliedDataFile.objects.filter(
             supplied_data=self.supplied_data
         )
-        if supplied_data_json_files.count() == 1:
-            input_filename = supplied_data_json_files.first().upload_dir_and_filename()
-        else:
+        if supplied_data_json_files.count() != 1:
             raise Exception("Can't find Spreadsheet original data!")
+
+        supplied_data_json_file = supplied_data_json_files.first()
+        input_filename = supplied_data_json_file.upload_dir_and_filename()
 
         output_dir = os.path.join(
             self.supplied_data.data_dir(), CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME
@@ -97,7 +97,7 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         unflatten_kwargs = {
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
-            "input_format": _get_file_type(input_filename),
+            "input_format": get_file_type_for_flatten_tool(supplied_data_json_file),
             "schema": schema.data_schema_url,
         }
 
