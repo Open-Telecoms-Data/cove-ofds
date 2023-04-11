@@ -3,7 +3,6 @@ from django.urls import include, re_path
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    # TODO move terms.html template into libcoveweb2
     re_path(
         r"^terms/$",
         TemplateView.as_view(template_name="libcoveweb2/terms.html"),
