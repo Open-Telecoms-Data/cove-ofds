@@ -25,6 +25,12 @@ class SuppliedData(models.Model):
     def data_dir(self):
         return os.path.join(settings.MEDIA_ROOT, str(self.id))
 
+    def storage_dir(self):
+        """For use with Django storage classes. Returns directory any data about the SuppliedData should be stored in.
+        Example use: default_storage.exists(os.path.join(supplied_data.storage_dir(), "some_filename.json"))
+        """
+        return str(self.id)
+
     def data_url(self):
         return os.path.join(settings.MEDIA_URL, str(self.id))
 

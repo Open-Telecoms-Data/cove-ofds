@@ -12,6 +12,7 @@ from sentry_sdk import capture_exception
 
 import cove_ofds.jsonschema_validation_errors
 from libcoveweb2.process.base import ProcessDataTask
+from libcoveweb2.process.common_tasks.task_with_state import TaskWithState
 
 # from libcove.lib.converters import convert_json, convert_spreadsheet
 from libcoveweb2.utils import get_file_type_for_flatten_tool, group_data_list_by
@@ -519,22 +520,11 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         return context
 
 
-class PythonValidateTask(ProcessDataTask):
-    def __init__(self, supplied_data, supplied_data_files):
-        super().__init__(supplied_data, supplied_data_files)
-        self.data_filename = os.path.join(
-            self.supplied_data.data_dir(), "python_validate.json"
-        )
+class PythonValidateTask(TaskWithState):
 
-    def is_processing_applicable(self) -> bool:
-        return True
+    state_filename: str = "python_validate.py"
 
-    def is_processing_needed(self) -> bool:
-        return not os.path.exists(self.data_filename)
-
-    def process(self, process_data: dict) -> dict:
-        if os.path.exists(self.data_filename):
-            return process_data
+    def process_get_state(self, process_data: dict):
 
         with open(process_data["json_data_filename"]) as fp:
             data = json.load(fp)
@@ -648,37 +638,14 @@ class PythonValidateTask(ProcessDataTask):
         else:
             context["additional_checks_level"] = "n/a"
 
-        with open(self.data_filename, "w") as fp:
-            json.dump(context, fp, indent=4)
-
-        return process_data
-
-    def get_context(self):
-        context = {}
-        # data
-        if os.path.exists(self.data_filename):
-            with open(self.data_filename) as fp:
-                context.update(json.load(fp))
-        # done!
-        return context
+        return context, process_data
 
 
-class JsonSchemaValidateTask(ProcessDataTask):
-    def __init__(self, supplied_data, supplied_data_files):
-        super().__init__(supplied_data, supplied_data_files)
-        self.data_filename = os.path.join(
-            self.supplied_data.data_dir(), "jsonschema_validate.json"
-        )
+class JsonSchemaValidateTask(TaskWithState):
 
-    def is_processing_applicable(self) -> bool:
-        return True
+    state_filename: str = "jsonschema_validate.py"
 
-    def is_processing_needed(self) -> bool:
-        return not os.path.exists(self.data_filename)
-
-    def process(self, process_data: dict) -> dict:
-        if os.path.exists(self.data_filename):
-            return process_data
+    def process_get_state(self, process_data: dict):
 
         with open(process_data["json_data_filename"]) as fp:
             data = json.load(fp)
@@ -709,37 +676,14 @@ class JsonSchemaValidateTask(ProcessDataTask):
         # and we are done
         context["validation_errors"] = validation_errors
 
-        with open(self.data_filename, "w") as fp:
-            json.dump(context, fp, indent=4)
-
-        return process_data
-
-    def get_context(self):
-        context = {}
-        # data
-        if os.path.exists(self.data_filename):
-            with open(self.data_filename) as fp:
-                context.update(json.load(fp))
-        # done!
-        return context
+        return context, process_data
 
 
-class AdditionalFieldsChecksTask(ProcessDataTask):
-    def __init__(self, supplied_data, supplied_data_files):
-        super().__init__(supplied_data, supplied_data_files)
-        self.data_filename = os.path.join(
-            self.supplied_data.data_dir(), "additional_fields_2.json"
-        )
+class AdditionalFieldsChecksTask(TaskWithState):
 
-    def is_processing_applicable(self) -> bool:
-        return True
+    state_filename: str = "additional_fields_2.py"
 
-    def is_processing_needed(self) -> bool:
-        return not os.path.exists(self.data_filename)
-
-    def process(self, process_data: dict) -> dict:
-        if os.path.exists(self.data_filename):
-            return process_data
+    def process_get_state(self, process_data: dict):
 
         with open(process_data["json_data_filename"]) as fp:
             data = json.load(fp)
@@ -751,16 +695,4 @@ class AdditionalFieldsChecksTask(ProcessDataTask):
         context = {"additional_fields": output}
         context["any_additional_fields_exist"] = len(output) > 0
 
-        with open(self.data_filename, "w") as fp:
-            json.dump(context, fp, indent=4)
-
-        return process_data
-
-    def get_context(self):
-        context = {}
-        # data
-        if os.path.exists(self.data_filename):
-            with open(self.data_filename) as fp:
-                context.update(json.load(fp))
-        # done!
-        return context
+        return context, process_data
