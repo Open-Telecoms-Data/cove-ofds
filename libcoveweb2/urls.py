@@ -2,15 +2,7 @@ from django.contrib import admin
 from django.urls import include, re_path
 from django.views.generic import TemplateView
 
-import libcoveweb2.views
-
 urlpatterns = [
-    re_path(r"^new_json$", libcoveweb2.views.new_json, name="new_json"),
-    re_path(r"^new_csvs$", libcoveweb2.views.new_csvs, name="new_csvs"),
-    re_path(
-        r"^new_spreadsheet$", libcoveweb2.views.new_spreadsheet, name="new_spreadsheet"
-    ),
-    # TODO move terms.html template into libcoveweb2
     re_path(
         r"^terms/$",
         TemplateView.as_view(template_name="libcoveweb2/terms.html"),

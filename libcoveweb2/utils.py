@@ -1,3 +1,8 @@
+from django.conf import settings
+
+from libcoveweb2.models import SuppliedDataFile
+
+
 def group_data_list_by(data_list, get_key_function):
     out = {}
     for item in data_list:
@@ -8,24 +13,25 @@ def group_data_list_by(data_list, get_key_function):
     return out
 
 
-def get_file_type(file_name):
-    """Takes an filename (type string), and returns a string saying what type it is."""
-    # Older versions of this could take DJango objects to.
-    # Tho we don't really want to support that, put in a check for that.
-    if not isinstance(file_name, str) and hasattr(file_name, "path"):
-        file_name = file_name.path
+def get_file_type_for_flatten_tool(supplied_data_file: SuppliedDataFile):
+    """Takes a SuppliedDataFile object, and returns a string saying what type it is.
+    The string is intended for feeding into the input_format option of flatten tool."""
     # First, just check the extension on the file name
-    if file_name.lower().endswith(".json"):
-        return "json"
-    if file_name.lower().endswith(".xlsx"):
-        return "xlsx"
-    if file_name.lower().endswith(".ods"):
-        return "ods"
-    if file_name.lower().endswith(".csv"):
-        return "csv"
+    for extension in settings.ALLOWED_JSON_EXTENSIONS:
+        if supplied_data_file.filename.lower().endswith(extension):
+            return "json"
+    for extension in settings.ALLOWED_SPREADSHEET_EXCEL_EXTENSIONS:
+        if supplied_data_file.filename.lower().endswith(extension):
+            return "xlsx"
+    for extension in settings.ALLOWED_SPREADSHEET_OPENDOCUMENT_EXTENSIONS:
+        if supplied_data_file.filename.lower().endswith(extension):
+            return "ods"
+    for extension in settings.ALLOWED_CSV_EXTENSIONS:
+        if supplied_data_file.filename.lower().endswith(extension):
+            return "csv"
     # Try and load the first bit of the file to see if it's JSON?
     try:
-        with open(file_name, "rb") as fp:
+        with open(supplied_data_file.upload_dir_and_filename(), "rb") as fp:
             first_byte = fp.read(1)
             if first_byte in [b"{", b"["]:
                 return "json"

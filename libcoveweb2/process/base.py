@@ -1,20 +1,11 @@
-import importlib
-import logging
-from datetime import datetime
-
-from django.conf import settings
-from django.core.exceptions import ValidationError
-
 from libcoveweb2.models import SuppliedData
-
-logger = logging.getLogger(__name__)
 
 
 class ProcessDataTask:
     """Base class for a task to apply to some user supplied data."""
 
-    def __init__(self, supplied_data):
-        self.supplied_data = supplied_data
+    def __init__(self, supplied_data: SuppliedData):
+        self.supplied_data: SuppliedData = supplied_data
 
     def is_processing_applicable(self) -> bool:
         """Should return True if this task may ever need to do anything far this supplied data.
@@ -49,41 +40,3 @@ class ProcessDataTask:
         This is called on a user request on the web, so no long processing work should be done here.
         Instead, do long processing work in process() and cache the results."""
         return {}
-
-
-def get_tasks(supplied_data: SuppliedData):
-    """Get a list of instantiated task classes far a piece of supplied data, ready to use."""
-    return [
-        getattr(importlib.import_module(m), c)(supplied_data)
-        for m, c in settings.PROCESS_TASKS
-    ]
-
-
-def process_data_worker(id: str):
-    """Processes all relevant tasks for a bit of supplied data. Works in same thread as calling code.
-    Pass id as string, not data abject."""
-    logger.info("Processing supplied data id " + str(id))
-
-    # ------ Get data, check we can work on it
-    try:
-        supplied_data: SuppliedData = SuppliedData.objects.get(pk=id)
-    except (
-        SuppliedData.DoesNotExist,
-        ValidationError,
-    ):  # Catches primary key does not exist and badly formed UUID
-        return
-    if supplied_data.expired or supplied_data.processed:
-        return
-
-    # ------ Get our tasks
-    tasks = get_tasks(supplied_data)
-
-    # ------ Run tasks!
-    process_data = {}
-    for task in tasks:
-        if task.is_processing_applicable():
-            process_data = task.process(process_data)
-
-    # ------ Save result
-    supplied_data.processed = datetime.now()
-    supplied_data.save()

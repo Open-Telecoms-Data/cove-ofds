@@ -1,7 +1,7 @@
 import logging
 
 from libcoveweb2.celery import app
-from libcoveweb2.process import process_data_worker
+from libcoveweb2.process.utils import process_data_worker
 
 logger = logging.getLogger(__name__)
 
