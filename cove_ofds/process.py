@@ -11,7 +11,6 @@ from libcoveofds.schema import OFDSSchema
 from sentry_sdk import capture_exception
 
 import cove_ofds.jsonschema_validation_errors
-from libcoveweb2.models import SuppliedDataFile
 from libcoveweb2.process.base import ProcessDataTask
 
 # from libcove.lib.converters import convert_json, convert_spreadsheet
@@ -29,13 +28,13 @@ class WasJSONUploaded(ProcessDataTask):
         if self.supplied_data.format != "json":
             return process_data
 
-        supplied_data_json_files = SuppliedDataFile.objects.filter(
-            supplied_data=self.supplied_data, content_type="application/json"
-        )
-        if supplied_data_json_files.count() == 1:
-            process_data[
-                "json_data_filename"
-            ] = supplied_data_json_files.first().upload_dir_and_filename()
+        supplied_data_json_files = [
+            i for i in self.supplied_data_files if i.content_type == "application/json"
+        ]
+        if len(supplied_data_json_files) == 1:
+            process_data["json_data_filename"] = supplied_data_json_files[
+                0
+            ].upload_dir_and_filename()
         else:
             raise Exception("Can't find JSON original data!")
 
@@ -51,8 +50,8 @@ CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME = "unflatten"
 class ConvertSpreadsheetIntoJSON(ProcessDataTask):
     """If User uploaded Spreadsheet, convert to our primary format, JSON."""
 
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(),
             CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME,
@@ -77,14 +76,10 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         if os.path.exists(self.data_filename):
             return process_data
 
-        supplied_data_json_files = SuppliedDataFile.objects.filter(
-            supplied_data=self.supplied_data
-        )
-        if supplied_data_json_files.count() != 1:
+        if len(self.supplied_data_files) != 1:
             raise Exception("Can't find Spreadsheet original data!")
 
-        supplied_data_json_file = supplied_data_json_files.first()
-        input_filename = supplied_data_json_file.upload_dir_and_filename()
+        input_filename = self.supplied_data_files[0].upload_dir_and_filename()
 
         output_dir = os.path.join(
             self.supplied_data.data_dir(), CONVERT_SPREADSHEET_INTO_JSON_DIR_NAME
@@ -97,7 +92,7 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
         unflatten_kwargs = {
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
-            "input_format": get_file_type_for_flatten_tool(supplied_data_json_file),
+            "input_format": get_file_type_for_flatten_tool(self.supplied_data_files[0]),
             "schema": schema.data_schema_url,
         }
 
@@ -131,8 +126,8 @@ CONVERT_CSVS_INTO_JSON_DIR_NAME = "unflatten"
 class ConvertCSVsIntoJSON(ProcessDataTask):
     """If User uploaded CSVs, convert to our primary format, JSON."""
 
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(),
             CONVERT_CSVS_INTO_JSON_DIR_NAME,
@@ -199,8 +194,8 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
 class ConvertGeoJSONIntoJSON(ProcessDataTask):
     """If User uploaded GeoJSON, convert to our primary format, JSON."""
 
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(), "data_from_geojson.json"
         )
@@ -223,14 +218,11 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
             return process_data
 
         # Get files
-        supplied_data_json_files = SuppliedDataFile.objects.filter(
-            supplied_data=self.supplied_data
-        )
         nodes_data_json_files = [
-            f for f in supplied_data_json_files if f.meta.get("geojson") == "nodes"
+            f for f in self.supplied_data_files if f.meta.get("geojson") == "nodes"
         ]
         spans_data_json_files = [
-            f for f in supplied_data_json_files if f.meta.get("geojson") == "spans"
+            f for f in self.supplied_data_files if f.meta.get("geojson") == "spans"
         ]
 
         if len(nodes_data_json_files) != 1 and len(spans_data_json_files) != 1:
@@ -311,8 +303,8 @@ class ConvertJSONIntoGeoJSON(ProcessDataTask):
         "/features/properties/capacity": "Capacity",
     }
 
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.nodes_file_name = os.path.join(
             self.supplied_data.data_dir(), "nodes.geo.json"
         )
@@ -406,8 +398,8 @@ CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME = "flatten"
 class ConvertJSONIntoSpreadsheets(ProcessDataTask):
     """Convert primary format (JSON) to spreadsheets"""
 
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.csvs_zip_filename = os.path.join(
             self.supplied_data.data_dir(),
             CONVERT_JSON_INTO_SPREADSHEETS_DIR_NAME,
@@ -528,8 +520,8 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
 
 
 class PythonValidateTask(ProcessDataTask):
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(), "python_validate.json"
         )
@@ -672,8 +664,8 @@ class PythonValidateTask(ProcessDataTask):
 
 
 class JsonSchemaValidateTask(ProcessDataTask):
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(), "jsonschema_validate.json"
         )
@@ -733,8 +725,8 @@ class JsonSchemaValidateTask(ProcessDataTask):
 
 
 class AdditionalFieldsChecksTask(ProcessDataTask):
-    def __init__(self, supplied_data):
-        super().__init__(supplied_data)
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
         self.data_filename = os.path.join(
             self.supplied_data.data_dir(), "additional_fields_2.json"
         )
