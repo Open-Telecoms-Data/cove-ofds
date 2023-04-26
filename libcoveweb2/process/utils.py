@@ -8,15 +8,16 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from sentry_sdk import capture_exception
 
-from libcoveweb2.models import SuppliedData
+from libcoveweb2.models import SuppliedData, SuppliedDataFile
 
 logger = logging.getLogger(__name__)
 
 
 def get_tasks(supplied_data: SuppliedData):
     """Get a list of instantiated task classes far a piece of supplied data, ready to use."""
+    supplied_data_files = SuppliedDataFile.objects.filter(supplied_data=supplied_data)
     return [
-        getattr(importlib.import_module(m), c)(supplied_data)
+        getattr(importlib.import_module(m), c)(supplied_data, supplied_data_files)
         for m, c in settings.PROCESS_TASKS
     ]
 

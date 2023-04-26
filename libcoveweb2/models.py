@@ -18,8 +18,18 @@ class SuppliedData(models.Model):
     processed = models.DateTimeField(null=True)
     error = models.TextField(null=True)
 
+    """meta is for any extra information that specific cove implementations need.
+    This lets them store any info without needing changes to core libraries."""
+    meta = models.JSONField(null=False, default=dict)
+
     def data_dir(self):
         return os.path.join(settings.MEDIA_ROOT, str(self.id))
+
+    def storage_dir(self):
+        """For use with Django storage classes. Returns directory any data about the SuppliedData should be stored in.
+        Example use: default_storage.exists(os.path.join(supplied_data.storage_dir(), "some_filename.json"))
+        """
+        return str(self.id)
 
     def data_url(self):
         return os.path.join(settings.MEDIA_URL, str(self.id))
@@ -100,7 +110,9 @@ class SuppliedDataFile(models.Model):
     size = models.PositiveBigIntegerField(null=True)
     content_type = models.TextField(null=True)
     charset = models.TextField(null=True)
-    meta = models.JSONField(null=True)
+    """meta is for any extra information that specific cove implementations need.
+    This lets them store any info without needing changes to core libraries."""
+    meta = models.JSONField(null=False, default=dict)
     source_method = models.TextField(null=True)
     source_url = models.URLField(null=True)
 

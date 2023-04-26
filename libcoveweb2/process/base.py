@@ -1,11 +1,16 @@
-from libcoveweb2.models import SuppliedData
+from typing import List
+
+from libcoveweb2.models import SuppliedData, SuppliedDataFile
 
 
 class ProcessDataTask:
     """Base class for a task to apply to some user supplied data."""
 
-    def __init__(self, supplied_data: SuppliedData):
+    def __init__(
+        self, supplied_data: SuppliedData, supplied_data_files: List[SuppliedDataFile]
+    ):
         self.supplied_data: SuppliedData = supplied_data
+        self.supplied_data_files: List[SuppliedDataFile] = supplied_data_files
 
     def is_processing_applicable(self) -> bool:
         """Should return True if this task may ever need to do anything far this supplied data.
