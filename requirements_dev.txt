@@ -134,7 +134,7 @@ kombu==5.2.4
     # via
     #   -r requirements.txt
     #   celery
-libcoveofds==0.7.0
+libcoveofds @ git+https://github.com/Open-Telecoms-Data/lib-cove-ofds.git@test-schema-for-pr-260
     # via -r requirements.txt
 libsass==0.21.0
     # via -r requirements_dev.in

@@ -1,6 +1,6 @@
 sentry-sdk
 Django>3.2,<3.3
-libcoveofds>=0.7.0
+git+https://github.com/Open-Telecoms-Data/lib-cove-ofds.git@test-schema-for-pr-260#egg=libcoveofds
 gunicorn
 flattentool
 django-bootstrap3
