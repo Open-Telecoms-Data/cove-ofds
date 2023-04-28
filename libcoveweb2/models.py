@@ -56,6 +56,7 @@ class SuppliedData(models.Model):
         supplied_data_file.source_method = source_method
         supplied_data_file.save()
 
+        os.makedirs(supplied_data_file.upload_dir())
         with open(supplied_data_file.upload_dir_and_filename(), "wb+") as destination:
             for chunk in f.chunks():
                 destination.write(chunk)
@@ -82,6 +83,7 @@ class SuppliedData(models.Model):
         supplied_data_file.source_method = source_method
         supplied_data_file.save()
 
+        os.makedirs(supplied_data_file.upload_dir())
         with open(supplied_data_file.upload_dir_and_filename(), "w") as destination:
             destination.write(contents)
 
@@ -116,9 +118,12 @@ class SuppliedDataFile(models.Model):
     source_method = models.TextField(null=True)
     source_url = models.URLField(null=True)
 
+    def upload_dir(self):
+        return os.path.join(self.supplied_data.upload_dir(), str(self.id))
+
     def upload_dir_and_filename(self):
         return os.path.join(
-            self.supplied_data.upload_dir(), str(self.id) + "-" + self.filename
+            self.supplied_data.upload_dir(), str(self.id), self.filename
         )
 
     def upload_url(self):
@@ -126,11 +131,9 @@ class SuppliedDataFile(models.Model):
             settings.MEDIA_URL,
             str(self.supplied_data.id),
             "supplied_data",
-            self.upload_filename(),
+            str(self.id),
+            self.filename,
         )
-
-    def upload_filename(self):
-        return str(self.id) + "-" + self.filename
 
     def does_exist_in_storage(self):
         return os.path.exists(self.upload_dir_and_filename())
@@ -151,6 +154,7 @@ class SuppliedDataFile(models.Model):
             # Errors? TODO better return
             r.raise_for_status()
             # Save
+            os.makedirs(self.upload_dir())
             with open(self.upload_dir_and_filename(), "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
