@@ -139,7 +139,7 @@ class NewSpreadsheetInput(InputDataView):
     content_type_incorrect_message = "This does not appear to be a spreadsheet."
     allowed_file_extensions = settings.ALLOWED_SPREADSHEET_EXTENSIONS
     file_extension_incorrect_message = "This does not appear to be a spreadsheet."
-    supplied_data_format = "csvs"
+    supplied_data_format = "spreadsheet"
 
     def get_active_form_key(self, forms, request_data):
         return "upload_form"
