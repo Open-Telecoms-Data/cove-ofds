@@ -6,7 +6,7 @@
 #
 amqp==5.1.1
     # via kombu
-asgiref==3.5.2
+asgiref==3.7.2
     # via django
 async-timeout==4.0.2
     # via redis
@@ -46,7 +46,7 @@ dealer==2.1.0
     # via -r requirements.in
 defusedxml==0.7.1
     # via odfpy
-django==3.2.16
+django==4.2.2
     # via
     #   -r requirements.in
     #   django-bootstrap3
@@ -95,7 +95,6 @@ pyrsistent==0.18.1
 pytz==2022.4
     # via
     #   celery
-    #   django
     #   flattentool
 redis==4.5.2
     # via celery
@@ -117,8 +116,11 @@ sqlparse==0.4.3
     # via django
 transaction==3.0.1
     # via zodb
+typing-extensions==4.6.3
+    # via asgiref
 urllib3==1.26.12
     # via
+    #   -r requirements.in
     #   requests
     #   sentry-sdk
 vine==5.0.0

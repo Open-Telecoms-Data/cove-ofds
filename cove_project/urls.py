@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.conf.urls import url
 from django.conf.urls.static import static
 from django.urls import re_path
 
@@ -19,8 +18,8 @@ urlpatterns += [
         name="new_spreadsheet",
     ),
     re_path(r"^new_geojson$", cove_ofds.views.new_geojson, name="new_geojson"),
-    url(r"^data/([\w\-]+)$", cove_ofds.views.ExploreOFDSView.as_view(), name="explore"),
-    url(
+    re_path(r"^data/([\w\-]+)$", cove_ofds.views.ExploreOFDSView.as_view(), name="explore"),
+    re_path(
         r"^data/([\w\-]+)/processing_status_api$",
         libcoveweb2.views.ExploreDataProcessingStatusAPIView.as_view(),
         name="explore_processing_status_api$",

@@ -139,6 +139,9 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "cove_ofds", "locale"),)
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8000"]
+
 # Misc
 
 LOGGING = settings.LOGGING

@@ -8,7 +8,7 @@ amqp==5.1.1
     # via
     #   -r requirements.txt
     #   kombu
-asgiref==3.5.2
+asgiref==3.7.2
     # via
     #   -r requirements.txt
     #   django
@@ -83,7 +83,7 @@ defusedxml==0.7.1
     # via
     #   -r requirements.txt
     #   odfpy
-django==3.2.16
+django==4.2.2
     # via
     #   -r requirements.txt
     #   django-bootstrap3
@@ -207,7 +207,6 @@ pytz==2022.4
     # via
     #   -r requirements.txt
     #   celery
-    #   django
     #   flattentool
 redis==4.5.2
     # via
@@ -257,8 +256,11 @@ transaction==3.0.1
     #   zodb
 transifex-client==0.14.4
     # via -r requirements_dev.in
-typing-extensions==4.3.0
-    # via black
+typing-extensions==4.6.3
+    # via
+    #   -r requirements.txt
+    #   asgiref
+    #   black
 urllib3==1.26.12
     # via
     #   -r requirements.txt
