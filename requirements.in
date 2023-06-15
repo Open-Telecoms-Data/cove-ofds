@@ -1,6 +1,6 @@
 sentry-sdk
 Django>3.2,<3.3
-libcoveofds>=0.7.0
+libcoveofds>=0.8.0
 gunicorn
 flattentool
 django-bootstrap3
@@ -8,3 +8,5 @@ django-environ
 requests
 dealer
 celery[redis]
+# Version 2 is very new at time of writing (June 2023) & causes some issues with requirements_dev.in so for now use old version
+urllib3<2
