@@ -125,7 +125,6 @@ jsonref==0.2
     # via
     #   -r requirements.txt
     #   flattentool
-    #   libcoveofds
 jsonschema==4.17.0
     # via
     #   -r requirements.txt
@@ -134,7 +133,7 @@ kombu==5.2.4
     # via
     #   -r requirements.txt
     #   celery
-libcoveofds==0.7.0
+libcoveofds==0.8.0
     # via -r requirements.txt
 libsass==0.21.0
     # via -r requirements_dev.in
@@ -216,7 +215,6 @@ redis==4.5.2
 requests==2.28.1
     # via
     #   -r requirements.txt
-    #   libcoveofds
     #   transifex-client
 rfc3987==1.3.8
     # via

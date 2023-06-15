@@ -4,7 +4,11 @@ import zipfile
 
 import flattentool
 from libcoveofds.additionalfields import AdditionalFields
-from libcoveofds.geojson import GeoJSONToJSONConverter, JSONToGeoJSONConverter
+from libcoveofds.geojson import (
+    GeoJSONAssumeFeatureType,
+    GeoJSONToJSONConverter,
+    JSONToGeoJSONConverter,
+)
 from libcoveofds.jsonschemavalidate import JSONSchemaValidator
 from libcoveofds.python_validate import PythonValidate
 from libcoveofds.schema import OFDSSchema
@@ -94,7 +98,7 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
             "input_format": get_file_type_for_flatten_tool(self.supplied_data_files[0]),
-            "schema": schema.data_schema_url,
+            "schema": schema.package_schema_url,
         }
 
         flattentool.unflatten(input_filename, **unflatten_kwargs)
@@ -165,7 +169,7 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
             "input_format": "csv",
-            "schema": schema.data_schema_url,
+            "schema": schema.package_schema_url,
         }
 
         flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
@@ -244,7 +248,12 @@ class ConvertGeoJSONIntoJSON(ProcessDataTask):
 
         # Convert
         converter = GeoJSONToJSONConverter()
-        converter.process_data(nodes_data, spans_data)
+        converter.process_data(
+            nodes_data, assumed_feature_type=GeoJSONAssumeFeatureType.NODE
+        )
+        converter.process_data(
+            spans_data, assumed_feature_type=GeoJSONAssumeFeatureType.SPAN
+        )
 
         # Save
         with open(self.data_filename, "w") as fp:
@@ -436,7 +445,7 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         flatten_kwargs = {
             "output_name": self.output_dir,
             "root_list_path": "networks",
-            "schema": schema.data_schema_url,
+            "schema": schema.package_schema_url,
             "truncation_length": 9,
             "main_sheet_name": "networks",
         }
