@@ -56,8 +56,10 @@ django-environ==0.9.0
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
-flattentool==0.18.0
+flattentool==0.22.0
     # via -r requirements.in
+geojson==3.0.1
+    # via flattentool
 gunicorn==20.1.0
     # via -r requirements.in
 idna==3.4
@@ -76,6 +78,8 @@ libcoveofds==0.8.0
     # via -r requirements.in
 lxml==4.9.2
     # via flattentool
+numpy==1.25.0
+    # via shapely
 odfpy==1.4.1
     # via flattentool
 openpyxl==3.0.10
@@ -105,6 +109,8 @@ schema==0.7.5
     # via flattentool
 sentry-sdk==1.9.10
     # via -r requirements.in
+shapely==2.0.1
+    # via flattentool
 six==1.16.0
     # via
     #   click-repl

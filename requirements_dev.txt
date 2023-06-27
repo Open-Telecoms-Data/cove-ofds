@@ -97,8 +97,12 @@ et-xmlfile==1.1.0
     #   openpyxl
 flake8==5.0.4
     # via -r requirements_dev.in
-flattentool==0.18.0
+flattentool==0.22.0
     # via -r requirements.txt
+geojson==3.0.1
+    # via
+    #   -r requirements.txt
+    #   flattentool
 gitdb==4.0.9
     # via gitpython
 gitpython==3.1.27
@@ -145,6 +149,10 @@ mccabe==0.7.0
     # via flake8
 mypy-extensions==0.4.3
     # via black
+numpy==1.25.0
+    # via
+    #   -r requirements.txt
+    #   shapely
 odfpy==1.4.1
     # via
     #   -r requirements.txt
@@ -228,6 +236,10 @@ selenium==3.141.0
     # via -r requirements_dev.in
 sentry-sdk==1.9.10
     # via -r requirements.txt
+shapely==2.0.1
+    # via
+    #   -r requirements.txt
+    #   flattentool
 six==1.16.0
     # via
     #   -r requirements.txt
