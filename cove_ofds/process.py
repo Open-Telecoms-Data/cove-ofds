@@ -99,6 +99,7 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
             "root_list_path": "networks",
             "input_format": get_file_type_for_flatten_tool(self.supplied_data_files[0]),
             "schema": schema.package_schema_url,
+            "convert_wkt": True,
         }
 
         flattentool.unflatten(input_filename, **unflatten_kwargs)
@@ -170,6 +171,7 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
             "root_list_path": "networks",
             "input_format": "csv",
             "schema": schema.package_schema_url,
+            "convert_wkt": True,
         }
 
         flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
@@ -448,6 +450,7 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
             "schema": schema.package_schema_url,
             "truncation_length": 9,
             "main_sheet_name": "networks",
+            "convert_wkt": True,
         }
 
         try:
