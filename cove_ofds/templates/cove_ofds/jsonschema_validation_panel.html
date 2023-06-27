@@ -194,6 +194,18 @@
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteduuid col_instance=True error_table_id="Incorrectlyformatteduuid" %}
 {% endif %}
 
+{% if 'Additionalproperties' in validation_errors %}
+    <h4 class="validation-title">
+      {% trans 'Additional properties within Geometry object' %}
+      {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Additionalproperties|length error_table_id="Additionalproperties" %}
+    </h4>
+    <p>
+        Additional properties are not permitted within Geometry objects. You must remove any additional properties.
+        For more information, see <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#geometry" target="_blank">Geometry</a>.
+    </p>
+    {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Additionalproperties error_table_id="Additionalproperties" col_extra_additional_properties=True %}
+{% endif %}
+
 
 {% if 'unknown' in validation_errors %}
     <h4 class="validation-title">
