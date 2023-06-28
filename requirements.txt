@@ -74,7 +74,7 @@ jsonschema==4.17.0
     # via libcoveofds
 kombu==5.2.4
     # via celery
-libcoveofds==0.8.0
+libcoveofds==0.8.3
     # via -r requirements.in
 lxml==4.9.2
     # via flattentool
