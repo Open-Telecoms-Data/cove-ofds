@@ -135,6 +135,19 @@ class SuppliedDataFile(models.Model):
             self.filename,
         )
 
+    def storage_name(self):
+        """For use with Django storage classes.
+        Returns full name in storage
+        Example use:
+        default_storage.open(os.path.join(supplied_data_file.storage_name())
+        """
+        return os.path.join(
+            str(self.supplied_data.id),
+            "supplied_data",
+            str(self.id),
+            self.filename,
+        )
+
     def does_exist_in_storage(self):
         return os.path.exists(self.upload_dir_and_filename())
 

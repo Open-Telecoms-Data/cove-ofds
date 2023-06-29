@@ -1,8 +1,11 @@
 import json
 import os.path
+import shutil
+import tempfile
 import zipfile
 
 import flattentool
+from django.core.files.storage import default_storage
 from libcoveofds.additionalfields import AdditionalFields
 from libcoveofds.geojson import (
     GeoJSONAssumeFeatureType,
@@ -158,23 +161,49 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
         if os.path.exists(self.data_filename):
             return process_data
 
-        output_dir = os.path.join(
-            self.supplied_data.data_dir(), CONVERT_CSVS_INTO_JSON_DIR_NAME
-        )
+        with tempfile.TemporaryDirectory() as tmp_dir_name:
+            # Copy all files from storage to temp directory for processing
+            os.makedirs(os.path.join(tmp_dir_name, "input"))
+            for supplied_data_file in self.supplied_data_files:
+                with default_storage.open(supplied_data_file.storage_name()) as fp_read:
+                    with open(
+                        os.path.join(
+                            tmp_dir_name, "input", supplied_data_file.filename
+                        ),
+                        "wb",
+                    ) as fp_write:
+                        shutil.copyfileobj(fp_read, fp_write)
 
-        os.makedirs(output_dir, exist_ok=True)
+            # process
+            tmp_output_dir = os.path.join(tmp_dir_name, "output")
+            os.makedirs(tmp_output_dir)
 
-        schema = OFDSSchema
+            schema = OFDSSchema
 
-        unflatten_kwargs = {
-            "output_name": os.path.join(output_dir, "unflattened.json"),
-            "root_list_path": "networks",
-            "input_format": "csv",
-            "schema": schema.package_schema_url,
-            "convert_wkt": True,
-        }
+            unflatten_kwargs = {
+                "output_name": os.path.join(tmp_output_dir, "unflattened.json"),
+                "root_list_path": "networks",
+                "input_format": "csv",
+                "schema": schema.network_schema_url,
+                "convert_wkt": True,
+            }
 
-        flattentool.unflatten(self.supplied_data.upload_dir(), **unflatten_kwargs)
+            flattentool.unflatten(
+                os.path.join(tmp_dir_name, "input"), **unflatten_kwargs
+            )
+
+            # Copy result back to storage
+            with open(
+                os.path.join(tmp_dir_name, "output", "unflattened.json"), "rb"
+            ) as fp_read:
+                default_storage.save(
+                    os.path.join(
+                        self.supplied_data.storage_dir(),
+                        CONVERT_CSVS_INTO_JSON_DIR_NAME,
+                        "unflattened.json",
+                    ),
+                    fp_read,
+                )
 
         return process_data
 
