@@ -98,7 +98,7 @@ class ConvertSpreadsheetIntoJSON(ProcessDataTask):
             "output_name": os.path.join(output_dir, "unflattened.json"),
             "root_list_path": "networks",
             "input_format": get_file_type_for_flatten_tool(self.supplied_data_files[0]),
-            "schema": schema.package_schema_url,
+            "schema": schema.network_schema_url,
             "convert_wkt": True,
         }
 
@@ -447,7 +447,7 @@ class ConvertJSONIntoSpreadsheets(ProcessDataTask):
         flatten_kwargs = {
             "output_name": self.output_dir,
             "root_list_path": "networks",
-            "schema": schema.package_schema_url,
+            "schema": schema.network_schema_url,
             "truncation_length": 9,
             "main_sheet_name": "networks",
             "convert_wkt": True,

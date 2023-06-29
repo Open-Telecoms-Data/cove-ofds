@@ -56,6 +56,9 @@ def add_type_to_json_schema_validation_error(data: dict) -> dict:
     elif data["validator"] == "minProperties":
         data["cove_type"] = "Emptyobject"
 
+    elif data["validator"] == "additionalProperties":
+        data["cove_type"] = "Additionalproperties"
+
     elif data["validator"] == "format" and data["validator_value"] == "date":
         data["cove_type"] = "Incorrectlyformatteddate"
 

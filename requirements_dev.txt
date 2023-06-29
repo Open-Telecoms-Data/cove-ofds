@@ -137,7 +137,7 @@ kombu==5.2.4
     # via
     #   -r requirements.txt
     #   celery
-libcoveofds==0.8.0
+libcoveofds==0.8.3
     # via -r requirements.txt
 libsass==0.21.0
     # via -r requirements_dev.in
