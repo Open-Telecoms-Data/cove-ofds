@@ -5,6 +5,9 @@ from decimal import Decimal
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from libcoveweb2.background_worker import process_supplied_data
+from libcoveweb2.models import SuppliedData, SuppliedDataFile
+from libcoveweb2.views import ExploreDataView, InputDataView
 
 from cove_ofds.forms import (
     NewCSVsUploadForm,
@@ -15,9 +18,6 @@ from cove_ofds.forms import (
     NewJSONURLForm,
     NewSpreadsheetUploadForm,
 )
-from libcoveweb2.background_worker import process_supplied_data
-from libcoveweb2.models import SuppliedData, SuppliedDataFile
-from libcoveweb2.views import ExploreDataView, InputDataView
 
 logger = logging.getLogger(__name__)
 

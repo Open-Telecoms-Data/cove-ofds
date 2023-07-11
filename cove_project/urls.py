@@ -1,10 +1,10 @@
+import libcoveweb2.views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
+from libcoveweb2.urls import urlpatterns
 
 import cove_ofds.views
-import libcoveweb2.views
-from libcoveweb2.urls import urlpatterns
 
 handler500 = "libcoveweb2.views.handler500"
 
