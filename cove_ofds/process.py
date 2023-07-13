@@ -15,14 +15,14 @@ from libcoveofds.geojson import (
 from libcoveofds.jsonschemavalidate import JSONSchemaValidator
 from libcoveofds.python_validate import PythonValidate
 from libcoveofds.schema import OFDSSchema
-from sentry_sdk import capture_exception
-
-import cove_ofds.jsonschema_validation_errors
 from libcoveweb2.process.base import ProcessDataTask
 from libcoveweb2.process.common_tasks.task_with_state import TaskWithState
 
 # from libcove.lib.converters import convert_json, convert_spreadsheet
 from libcoveweb2.utils import get_file_type_for_flatten_tool, group_data_list_by
+from sentry_sdk import capture_exception
+
+import cove_ofds.jsonschema_validation_errors
 
 
 class WasJSONUploaded(ProcessDataTask):

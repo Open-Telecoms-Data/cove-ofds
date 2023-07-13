@@ -1,11 +1,10 @@
 import os
 
 import pytest
+from libcoveweb2.tests.lib_functional import browser, server_url  # noqa
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from libcoveweb2.tests.lib_functional import browser, server_url  # noqa
 
 
 @pytest.mark.parametrize(
