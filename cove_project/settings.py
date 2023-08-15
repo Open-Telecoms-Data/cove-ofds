@@ -154,7 +154,7 @@ COVE_CONFIG = {
     "id_name": "id",
     "convert_titles": False,
     "input_methods": ["upload", "url", "text"],
-    "support_email": "data@open-contracting.org",
+    "support_email": "openfibre@opendataservices.coop",
 }
 
 DELETE_FILES_AFTER_DAYS = settings.DELETE_FILES_AFTER_DAYS
