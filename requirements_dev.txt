@@ -144,7 +144,11 @@ kombu==5.2.4
     # via
     #   -r requirements.txt
     #   celery
-libcoveofds==0.8.3
+libcove2==0.1.0
+    # via
+    #   -r requirements.txt
+    #   libcoveofds
+libcoveofds==0.9.0
     # via -r requirements.txt
 libcoveweb2==0.2.0
     # via -r requirements.txt
@@ -232,6 +236,7 @@ redis==4.5.2
 requests==2.28.1
     # via
     #   -r requirements.txt
+    #   libcove2
     #   libcoveweb2
     #   transifex-client
 rfc3987==1.3.8
