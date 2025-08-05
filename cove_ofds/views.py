@@ -230,9 +230,8 @@ class ExploreOFDSView(ExploreDataView):
 
     def default_explore_context(self, supplied_data):
         return {
-            # Currently hard coded because the library only supports this version,
-            # but in future this should come from one of the process tasks
-            "schema_version_used": "0.2",
+            # This defaults to 0.2 but will be overriden if the task has set this explicitly
+            "ofds_schema_version": "0.2",
             # Misc
             "supplied_data_files": SuppliedDataFile.objects.filter(
                 supplied_data=supplied_data

@@ -716,6 +716,7 @@ class JsonSchemaValidateTask(TaskWithState):
 
         # and we are done
         context["validation_errors"] = validation_errors
+        context["ofds_schema_version"] = schema.get_schema_version()
 
         return context, process_data
 
