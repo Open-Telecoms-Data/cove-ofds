@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   branch-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: openfibre-cove-branch-deploy
     steps:
     - name: Install SSH key
