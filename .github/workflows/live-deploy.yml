@@ -13,21 +13,15 @@ jobs:
         key: ${{ secrets.DOKKUSD_LIVE_SSH_PRIVATE_KEY }}
         name: id_rsa # optional
         known_hosts: ${{ secrets.DOKKUSD_LIVE_SSH_KEYSCAN }}
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
       with:
         submodules: recursive
         fetch-depth: 0
     - name: Setup python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
-        python-version: 3.7
+        python-version: 3.12
         architecture: x64
-    - uses: actions/cache@v1
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}-${{ matrix.python-version }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
     - run: pip install dokkusd
     - uses: oNaiPs/secrets-to-env-action@v1
       with:

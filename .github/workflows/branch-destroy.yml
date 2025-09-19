@@ -13,16 +13,10 @@ jobs:
         name: id_rsa # optional
         known_hosts: ${{ secrets.DOKKUSD_BRANCH_SSH_KEYSCAN }}
     - name: Setup python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
-        python-version: 3.7
+        python-version: 3.12
         architecture: x64
-    - uses: actions/cache@v1
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}-${{ matrix.python-version }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
     - run: pip install dokkusd
     - run: python -m dokkusd.cli destroy --appname ${{ secrets.DOKKUSD_BRANCH_APP_NAME_PREFIX }}-${{ github.event.ref }}
       env:
