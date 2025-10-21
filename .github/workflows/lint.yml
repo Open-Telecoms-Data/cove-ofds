@@ -10,7 +10,7 @@ jobs:
       uses: actions/setup-python@v6
       with:
         # Match live server, version set in Dockerfile
-        python-version: 3.9
+        python-version: 3.11
         architecture: x64
     - run: pip install -r requirements_dev.txt
     - run: isort --check-only cove_project/ cove_ofds/
