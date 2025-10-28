@@ -4,7 +4,7 @@
 
     git clone https://github.com/Open-Telecoms-Data/cove-ofds.git openfibre-cove-ofds
     cd openfibre-cove-ofds
-    virtualenv .ve --python=/usr/bin/python3.9
+    virtualenv .ve --python=/usr/bin/python3.11
     source .ve/bin/activate
     pip install -r requirements_dev.txt
     python manage.py migrate
