@@ -14,7 +14,7 @@ backports-datetime-fromisoformat==1.0.0
     # via flattentool
 billiard==3.6.4.0
     # via celery
-btrees==4.10.1
+btrees==6.3
     # via zodb
 celery[redis]==5.2.7
     # via libcoveweb2
