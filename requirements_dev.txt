@@ -27,7 +27,7 @@ billiard==3.6.4.0
     #   celery
 black==22.8.0
     # via -r requirements_dev.in
-btrees==4.10.1
+btrees==6.3
     # via
     #   -r requirements.txt
     #   zodb
