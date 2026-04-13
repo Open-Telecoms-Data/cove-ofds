@@ -2,6 +2,8 @@
 
 ## Dev installation
 
+Note: these instructions are out of date as redis and a worker are also required to be run. It's easiest just to run with Docker (see below).
+
     git clone https://github.com/Open-Telecoms-Data/cove-ofds.git openfibre-cove-ofds
     cd openfibre-cove-ofds
     virtualenv .ve --python=/usr/bin/python3.11
