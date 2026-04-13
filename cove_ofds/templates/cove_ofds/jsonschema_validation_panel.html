@@ -189,19 +189,19 @@
     </h4>
     <p>
         You must ensure that each uuid is formatted according to <a href="https://datatracker.ietf.org/doc/html/rfc4122" target="_blank">RFC4122</a>.
-        For more information, see <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/guidance/publication.html#how-to-generate-universally-unique-identifiers" target="_blank">how to generate universally unique identifiers</a>.
+        For more information, see <a href="https://standard.ofds.info/en/0.4/guidance/publication/#how-to-generate-universally-unique-identifiers" target="_blank">how to generate universally unique identifiers</a>.
     </p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Incorrectlyformatteduuid col_instance=True error_table_id="Incorrectlyformatteduuid" %}
 {% endif %}
 
 {% if 'Additionalproperties' in validation_errors %}
     <h4 class="validation-title">
-      {% trans 'Additional properties within Geometry object' %}
+      {% trans 'Additional properties within geometry objects' %}
       {% include 'cove_ofds/jsonschema_validation_table_error_counter.html' with count=validation_errors.Additionalproperties|length error_table_id="Additionalproperties" %}
     </h4>
     <p>
-        Additional properties are not permitted within Geometry objects. You must remove any additional properties.
-        For more information, see <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#geometry" target="_blank">Geometry</a>.
+        Additional properties are not permitted within geometry objects. You must remove any additional properties.
+        For more information, see <a href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#pointgeometry" target="_blank">PointGeometry</a> and <a href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#linestringgeometry" target="_blank">LineStringGeometry</a>.
     </p>
     {% include "cove_ofds/jsonschema_validation_table.html" with validation_errors_for_table=validation_errors.Additionalproperties error_table_id="Additionalproperties" col_extra_additional_properties=True %}
 {% endif %}

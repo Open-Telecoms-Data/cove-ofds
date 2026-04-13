@@ -7,7 +7,7 @@ from libcoveweb2.tests.lib_functional import browser, server_url  # noqa
     [
         (
             "Open Fibre Data Standard Documentation",
-            "https://open-fibre-data-standard.readthedocs.io/en/latest/",
+            "https://standard.ofds.info/en/latest/",
         ),
     ],
 )
