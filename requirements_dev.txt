@@ -100,7 +100,7 @@ et-xmlfile==1.1.0
     #   openpyxl
 flake8==5.0.4
     # via -r requirements_dev.in
-flattentool==0.22.0
+flattentool[geo] @ git+https://github.com/OpenDataServices/flatten-tool.git@7b157b883df69ccb1770c765051e6bbf5feebe88
     # via -r requirements.txt
 geojson==3.0.1
     # via

@@ -59,7 +59,7 @@ django-environ==0.9.0
     #   libcoveweb2
 et-xmlfile==1.1.0
     # via openpyxl
-flattentool==0.22.0
+flattentool[geo] @ git+https://github.com/OpenDataServices/flatten-tool.git@7b157b883df69ccb1770c765051e6bbf5feebe88
     # via -r requirements.in
 geojson==3.0.1
     # via flattentool
