@@ -3,7 +3,7 @@ Django>3.2,<3.3
 libcoveofds @ git+https://github.com/Open-Telecoms-Data/lib-cove-ofds.git@03f08a78f2bf857ff024ce665fa582f23fd30037
 libcoveweb2>=0.2.0
 gunicorn
-flattentool[geo] @ git+https://github.com/OpenDataServices/flatten-tool.git@7b157b883df69ccb1770c765051e6bbf5feebe88
+flattentool[geo] @ git+https://github.com/OpenDataServices/flatten-tool.git@95b4733aa55d25e33456114e0ec41d1a1a86d405
 django-bootstrap3
 django-environ
 dealer
