@@ -32,7 +32,7 @@ services:
       - openfibre-cove-redis-dev
 
   openfibre-cove-redis-dev:
-    image: redis:7
+    image: redis:8
 
 networks:
   default:

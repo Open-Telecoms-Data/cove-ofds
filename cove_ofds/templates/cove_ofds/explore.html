@@ -15,7 +15,7 @@
               </h4>
             </div>
             <div id="validationTable" class="collapse in panel-body">
-                <p>{% trans 'Your data was checked against schema version' %}: {{  schema_version_used  }}</p>
+                <p>{% trans 'Your data was checked against schema version' %}: {{  ofds_schema_version  }}</p>
             </div>
           </div>
     </div>
@@ -79,45 +79,6 @@
                                             <li>
                                                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
                                                 <a href="{{download_json_url}}">{% trans 'JSON' %} ({{ download_json_size|filesizeformat }})</a>
-                                            </li>
-                                        </ul>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-md-6">
-
-                        <div class="panel {% if original_format == 'geojson' %}panel-info{% else %}panel-success{% endif %}">
-                            <div id="download-geojson-panel" class="panel-heading pointer" role="region"
-                                 aria-expanded="true" aria-controls="dataConversion" data-toggle="collapse"
-                                 data-target="#downloadDataGeoJSON">
-                                <h4 class="panel-title">
-                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'GeoJSON' %} {% if original_format == 'geojson' %}{% trans '(original)' %}{% endif %}
-                                </h4>
-                            </div>
-                            <div id="downloadDataGeoJSON" class="collapse in panel-body">
-                                {% if original_format == 'geojson' %}
-                                    <ul class="list-unstyled">
-                                        {% for supplied_data_file in supplied_data_files %}
-                                        <li>
-                                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                            <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{ supplied_data_file.size|filesizeformat }})</a>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    {% if can_download_geojson %}
-                                        <p>{% trans 'Your data was successfully converted to GeoJSON format.' %}</p>
-                                        <ul class="list-unstyled">
-                                            <li>
-                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                                <a href="{{download_geojson_nodes_url}}">nodes.geojson ({{ download_geojson_nodes_size|filesizeformat }})</a>
-                                            </li>
-                                            <li>
-                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                                                <a href="{{download_geojson_spans_url}}">spans.geojson ({{ download_geojson_spans_size|filesizeformat }})</a>
                                             </li>
                                         </ul>
                                     {% endif %}
@@ -333,7 +294,7 @@
                 <p>{% trans 'Your data cannot be visualised on a map because there were errors loading it. You should check your mapping and data pipeline for errors.' %}</p>
               </div>
             {% else %}
-              <p>{% trans 'The GeoJSON version of your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you should check that your coordinates are in longitude, latitude order. You may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>            
+              <p>{% trans 'Your data is visualised on the map below. You should check that nodes and spans appear in the correct location. If not, you should check that your coordinates are in longitude, latitude order. You may need to ' %}<a href="https://open-fibre-data-standard.readthedocs.io/en/0.1-dev/guidance/publication.html#how-to-transform-coordinates-to-the-correct-coordinate-reference-system">{% trans 'transform your coordinates to the correct coordinate reference system' %}</a>.</p>
               {% if any_nodes_with_geometry %}
               <div class="form-group">
                 <label for="nodeFieldSelect">Colour nodes by:</label>
