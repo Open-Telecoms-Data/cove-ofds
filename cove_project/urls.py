@@ -17,7 +17,6 @@ urlpatterns += [
         cove_ofds.views.NewSpreadsheetInput.as_view(),
         name="new_spreadsheet",
     ),
-    re_path(r"^new_geojson$", cove_ofds.views.new_geojson, name="new_geojson"),
     re_path(
         r"^data/([\w\-]+)$", cove_ofds.views.ExploreOFDSView.as_view(), name="explore"
     ),

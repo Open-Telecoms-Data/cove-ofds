@@ -7,11 +7,7 @@ import zipfile
 import flattentool
 from django.core.files.storage import default_storage
 from libcoveofds.additionalfields import AdditionalFields
-from libcoveofds.geojson import (
-    GeoJSONAssumeFeatureType,
-    GeoJSONToJSONConverter,
-    JSONToGeoJSONConverter,
-)
+from libcoveofds.geojson import JSONToGeoJSONConverter
 from libcoveofds.jsonschemavalidate import JSONSchemaValidator
 from libcoveofds.python_validate import PythonValidate
 from libcoveofds.schema import OFDSSchema
@@ -219,92 +215,6 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
                     self.supplied_data.data_url(),
                     CONVERT_CSVS_INTO_JSON_DIR_NAME,
                     "unflattened.json",
-                )
-                context["download_json_size"] = os.stat(self.data_filename).st_size
-            else:
-                context["can_download_json"] = False
-        # Return
-        return context
-
-
-class ConvertGeoJSONIntoJSON(ProcessDataTask):
-    """If User uploaded GeoJSON, convert to our primary format, JSON."""
-
-    def __init__(self, supplied_data, supplied_data_files):
-        super().__init__(supplied_data, supplied_data_files)
-        self.data_filename = os.path.join(
-            self.supplied_data.data_dir(), "data_from_geojson.json"
-        )
-
-    def is_processing_applicable(self) -> bool:
-        return self.supplied_data.format == "geojson"
-
-    def is_processing_needed(self) -> bool:
-        return self.supplied_data.format == "geojson" and not os.path.exists(
-            self.data_filename
-        )
-
-    def process(self, process_data: dict) -> dict:
-        if self.supplied_data.format != "geojson":
-            return process_data
-
-        # check already done
-        if os.path.exists(self.data_filename):
-            process_data["json_data_filename"] = self.data_filename
-            return process_data
-
-        # Get files
-        nodes_data_json_files = [
-            f for f in self.supplied_data_files if f.meta.get("geojson") == "nodes"
-        ]
-        spans_data_json_files = [
-            f for f in self.supplied_data_files if f.meta.get("geojson") == "spans"
-        ]
-
-        if len(nodes_data_json_files) != 1 and len(spans_data_json_files) != 1:
-            raise Exception("Can't find JSON original data!")
-
-        # Get data from files
-        # (Or insert dummy data, if no file was uploaded)
-        if nodes_data_json_files:
-            with open(nodes_data_json_files[0].upload_dir_and_filename()) as fp:
-                nodes_data = json.load(fp)
-        else:
-            nodes_data = {"type": "FeatureCollection", "features": []}
-        if spans_data_json_files:
-            with open(spans_data_json_files[0].upload_dir_and_filename()) as fp:
-                spans_data = json.load(fp)
-        else:
-            spans_data = {"type": "FeatureCollection", "features": []}
-
-        # Convert
-        converter = GeoJSONToJSONConverter()
-        converter.process_data(
-            nodes_data, assumed_feature_type=GeoJSONAssumeFeatureType.NODE
-        )
-        converter.process_data(
-            spans_data, assumed_feature_type=GeoJSONAssumeFeatureType.SPAN
-        )
-
-        # Save
-        with open(self.data_filename, "w") as fp:
-            json.dump(converter.get_json(), fp, indent=4)
-
-        # Info
-        process_data["json_data_filename"] = self.data_filename
-        return process_data
-
-    def get_context(self):
-        # Info
-        context = {}
-        # original format
-        if self.supplied_data.format == "geojson":
-            context["original_format"] = "geojson"
-            # Download data
-            if os.path.exists(self.data_filename):
-                context["can_download_json"] = True
-                context["download_json_url"] = os.path.join(
-                    self.supplied_data.data_url(), "data_from_geojson.json"
                 )
                 context["download_json_size"] = os.stat(self.data_filename).st_size
             else:
@@ -716,6 +626,7 @@ class JsonSchemaValidateTask(TaskWithState):
 
         # and we are done
         context["validation_errors"] = validation_errors
+        context["ofds_schema_version"] = schema.get_schema_version()
 
         return context, process_data
 
