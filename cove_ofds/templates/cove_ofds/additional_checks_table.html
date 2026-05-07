@@ -9,8 +9,8 @@
     <p>
         {% trans 'Your data contains spans with node references that cannot be resolved. <code>Span.start</code> and <code>Span.end</code> must match the <code>.id</code> of exactly one node in the <code>/nodes</code> array.'  %}
         For more information, see
-        <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/Span,start"><code>Span.start</code></a> and
-        <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/Span,end"><code>Span.end</code></a>.
+        <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/Span,start"><code>Span.start</code></a> and
+        <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/Span,end"><code>Span.end</code></a>.
     </p>
     <table class="table">
         <thead>
@@ -66,7 +66,7 @@
     </h4>
     <p>
         {% trans 'Your data contains nodes with incorrect location types. <code>/nodes/location/type</code> must be <code>Point</code>.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/Geometry,type"><code>Geometry.type</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/PointGeometry,type"><code>PointGeometry.type</code></a>.
     </p>
     <table class="table">
         <thead>
@@ -106,7 +106,7 @@
     </h4>
     <p>
         {% trans 'Your data contains nodes with incorrectly formatted location coordinates. <code>/nodes/location/coordinates</code> must be a single position, i.e. an array of numbers.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/Geometry,coordinates"><code>Geometry.coordinates</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/PointGeometry,coordinates"><code>PointGeometry.coordinates</code></a>.
     </p>
     <table class="table">
         <thead>
@@ -146,7 +146,7 @@
     </h4>
     <p>
         {% trans 'Your data contains spans with incorrect route types. <code>/spans/route/type</code> must be <code>LineString</code>.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/Geometry,type"><code>Geometry.type</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/LineStringGeometry,type"><code>LineStringGeometry.type</code></a>.
     </p>
     <table class="table">
         <thead>
@@ -186,7 +186,7 @@
     </h4>
     <p>
         {% trans 'Your data contains spans with incorrectly formatted route coordinates. <code>/spans/route/coordinates</code> must be an array of positions, i.e. an array of arrays of numbers.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/Geometry,coordinates"><code>Geometry.coordinates</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/LineStringGeometry,coordinates"><code>LineStringGeometry.coordinates</code></a>.
     </p>
     <table class="table">
         <thead>
@@ -226,7 +226,7 @@
     </h4>
     <p>
         {% trans 'Your data contains phase references that cannot be resolved. The <code>.id</code> of each phase reference must match the <code>.id</code> of exactly one phase in the <code>/phases</code> array.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/PhaseReference,id"><code>PhaseReference.id</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/PhaseReference,id"><code>PhaseReference.id</code></a>.
     </p>
     {% if 'node_phase_reference_id_not_found' in additional_checks %}
         <table class="table">
@@ -330,7 +330,7 @@
     </h4>
     <p>
         {% trans 'Your data contains phase references with inconsistent names. The <code>.name</code> of each phase reference must match the <code>.name</code> of the phase it references.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/PhaseReference,name"><code>PhaseReference.name</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/PhaseReference,name"><code>PhaseReference.name</code></a>.
     </p>
     {% if 'node_phase_reference_name_does_not_match' in additional_checks %}
         <table class="table">
@@ -444,7 +444,7 @@
     </h4>
     <p>
         {% trans 'Your data contains organisation references that cannot be resolved. The <code>.id</code> of each organisation reference must match the <code>.id</code> of exactly one organisation in the <code>/organisations</code> array.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/OrganisationReference,id"><code>OrganisationReference.id</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/OrganisationReference,id"><code>OrganisationReference.id</code></a>.
     </p>
     {% if 'node_organisation_reference_id_not_found' in additional_checks %}
         <table class="table">
@@ -547,7 +547,7 @@
     </h4>
     <p>
         {% trans 'Your data contains organisation references with inconsistent names. The <code>.name</code> of each organisation reference must match the <code>.name</code> of the organisation it references.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/OrganisationReference,name"><code>OrganisationReference.name</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/OrganisationReference,name"><code>OrganisationReference.name</code></a>.
     </p>
     {% if 'node_organisation_reference_name_does_not_match' in additional_checks %}
         <table class="table">
@@ -669,7 +669,7 @@
     </h4>
     <p>
         {% trans 'Your data contains nodes with international connections that do not specify a country. <code>.country</code> must be set for each international connection in <code>/nodes/internationalConnections</code>.'  %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/schema.html#network-schema.json,/definitions/Node,internationalConnections"><code>Node.internationalConnections</code></a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/data_formats/json/network_schema/#json,network-schema.json,/$defs/Node,internationalConnections"><code>Node.internationalConnections</code></a>.
     </p>
     <table class="table">
         <thead>
@@ -739,7 +739,7 @@
     </h4>
     <p>
         {% trans 'Your data contains non-unique identifiers.' %}
-        For more information, see <a target="_blank" href="https://open-fibre-data-standard.readthedocs.io/en/latests/reference/identifiers.html#local-identifiers">identifiers</a>.
+        For more information, see <a target="_blank" href="https://standard.ofds.info/en/0.4/reference/identifiers/#local-identifiers">identifiers</a>.
     </p>
     {% if 'duplicate_node_id' in additional_checks %}
         <table class="table">

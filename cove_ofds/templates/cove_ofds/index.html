@@ -6,8 +6,8 @@
 
 
     <p>
-      Use the form below to submit your data and check that it conforms to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/" target="_blank">Open Fibre Data Standard</a> (OFDS). You can submit data in either JSON, CSV or spreadsheet format.
-        For more information, see the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/index.html" target="_blank">publication format reference</a>.
+      Use the form below to submit your data and check that it conforms to the <a href="https://standard.ofds.info/en/latest/" target="_blank">Open Fibre Data Standard</a> (OFDS). You can submit data in either JSON, CSV or spreadsheet format.
+        For more information, see the <a href="https://standard.ofds.info/en/0.4/reference/data_formats/" target="_blank">data formats reference</a>.
     </p>
     <p>
       After submitting your data, you can download it in alternative formats, get feedback on its quality and visualise it on a map. Data is stored for 90 days at a randomly generated URL. You can share the URL with others to support discussion of data quality.
@@ -48,7 +48,7 @@
                   <div class="panel-body">
 
                     <p>
-                      <strong>Accepted formats:</strong> a UTF-8 encoded JSON file that conforms to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/json.html#small-files-and-api-responses-option" target="_blank">JSON small files and API responses publication format</a>.
+                      <strong>Accepted formats:</strong> a UTF-8 encoded JSON file that conforms to the <a href="https://standard.ofds.info/en/0.4/reference/data_formats/json/containers/#small-files-and-api-responses-container" target="_blank">JSON small files and API responses container</a>.
                     </p>
 
                     <form method="POST" action="{% url 'new_json' %}" enctype="multipart/form-data">{% csrf_token %}
@@ -124,7 +124,7 @@
                   <div class="panel-body">
 
                     <p>
-                      <strong>Accepted formats:</strong> UTF-8 encoded CSV files that conform to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/csv.html" target="_blank">CSV publication format</a>.
+                      <strong>Accepted formats:</strong> UTF-8 encoded CSV files that conform to the <a href="https://standard.ofds.info/en/0.4/reference/data_formats/csv/" target="_blank">CSV publication format</a>.
                     </p>
 
                     <form method="POST" action="{% url 'new_csvs' %}" enctype="multipart/form-data">{% csrf_token %}
@@ -154,7 +154,7 @@
                   <div class="panel-body">
 
                     <p>
-                      <strong>Accepted formats:</strong> a UTF-8, Windows-1252 or ISO-8859-1 encoded .xlsx or .ods file with sheets that conform to the <a href="https://open-fibre-data-standard.readthedocs.io/en/latest/reference/publication_formats/csv.html" target="_blank">CSV publication format</a>.
+                      <strong>Accepted formats:</strong> a UTF-8, Windows-1252 or ISO-8859-1 encoded .xlsx or .ods file with sheets that conform to the <a href="https://standard.ofds.info/en/0.4/reference/data_formats/csv/" target="_blank">CSV publication format</a>.
                     </p>
 
                     <form method="POST" action="{% url 'new_spreadsheet' %}" enctype="multipart/form-data">{% csrf_token %}
