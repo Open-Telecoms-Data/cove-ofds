@@ -44,12 +44,12 @@ dealer==2.1.0
     # via -r requirements.in
 defusedxml==0.7.1
     # via odfpy
-django==3.2.25
+django==5.2.18
     # via
     #   -r requirements.in
     #   django-bootstrap3
     #   libcoveweb2
-django-bootstrap3==23.6
+django-bootstrap3==26.2
     # via
     #   -r requirements.in
     #   libcoveweb2
@@ -106,9 +106,7 @@ pycparser==3.0
 python-dateutil==2.9.0.post0
     # via celery
 pytz==2026.5
-    # via
-    #   django
-    #   flattentool
+    # via flattentool
 redis==6.4.0
     # via kombu
 referencing==0.37.0

@@ -77,12 +77,12 @@ defusedxml==0.7.1
     # via
     #   -r requirements.txt
     #   odfpy
-django==3.2.25
+django==5.2.18
     # via
     #   -r requirements.txt
     #   django-bootstrap3
     #   libcoveweb2
-django-bootstrap3==23.6
+django-bootstrap3==26.2
     # via
     #   -r requirements.txt
     #   libcoveweb2
@@ -223,7 +223,6 @@ python-dateutil==2.9.0.post0
 pytz==2026.5
     # via
     #   -r requirements.txt
-    #   django
     #   flattentool
 redis==6.4.0
     # via
