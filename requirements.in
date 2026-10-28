@@ -1,5 +1,5 @@
 sentry-sdk
-Django>3.2,<3.3
+Django>5.2,<5.3
 libcoveofds
 libcoveweb2>=0.2.0
 gunicorn
