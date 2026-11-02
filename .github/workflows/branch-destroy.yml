@@ -15,7 +15,7 @@ jobs:
     - name: Setup python
       uses: actions/setup-python@v6
       with:
-        python-version: 3.12
+        python-version: 3.15
         architecture: x64
     - run: pip install dokkusd
     - run: python -m dokkusd.cli destroy --appname ${{ secrets.DOKKUSD_BRANCH_APP_NAME_PREFIX }}-${{ github.event.ref }}
