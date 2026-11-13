@@ -183,6 +183,11 @@ ALLOWED_SPREADSHEET_EXTENSIONS = settings.ALLOWED_SPREADSHEET_EXTENSIONS
 ALLOWED_CSV_CONTENT_TYPES = settings.ALLOWED_CSV_CONTENT_TYPES
 ALLOWED_CSV_EXTENSIONS = settings.ALLOWED_CSV_EXTENSIONS
 
+ALLOWED_GPKG_CONTENT_TYPES = settings.ALLOWED_JSON_CONTENT_TYPES + [
+    "application/geopackage+sqlite3"
+]
+ALLOWED_GPKG_EXTENSIONS = settings.ALLOWED_JSON_EXTENSIONS + [".gpkg"]
+
 PROCESS_TASKS = [
     # Get data if not already on disk
     ("libcoveweb2.process.common_tasks.download_data_task", "DownloadDataTask"),
@@ -190,7 +195,9 @@ PROCESS_TASKS = [
     ("cove_ofds.process", "WasJSONUploaded"),
     ("cove_ofds.process", "ConvertSpreadsheetIntoJSON"),
     ("cove_ofds.process", "ConvertCSVsIntoJSON"),
+    ("cove_ofds.process", "ConvertGPKGIntoJSON"),
     # Convert into output formats
+    ("cove_ofds.process", "ConvertJSONIntoGPKG"),
     ("cove_ofds.process", "ConvertJSONIntoGeoJSON"),
     ("cove_ofds.process", "ConvertJSONIntoSpreadsheets"),
     # Checks and stats

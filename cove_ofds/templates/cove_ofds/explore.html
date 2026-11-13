@@ -87,6 +87,41 @@
                         </div>
 
                     </div>
+                    <div class="col-md-6">
+
+                        <div class="panel {% if original_format == 'gpkg' %}panel-info{% else %}panel-success{% endif %}">
+                            <div id="download-gpkg-panel" class="panel-heading pointer" role="region"
+                                 aria-expanded="true" aria-controls="dataConversion" data-toggle="collapse"
+                                 data-target="#downloadDataGPKG">
+                                <h4 class="panel-title">
+                                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'GeoPackage (GPKG)' %} {% if original_format == 'gpkg' %}{% trans '(original)' %}{% endif %}
+                                </h4>
+                            </div>
+                            <div id="downloadDataGPKG" class="collapse in panel-body">
+                                {% if original_format == 'gpkg' %}
+                                    <ul class="list-unstyled">
+                                        {% for supplied_data_file in supplied_data_files %}
+                                        <li>
+                                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                            <a href="{{ supplied_data_file.upload_url  }}">{{ supplied_data_file.filename }} ({{ supplied_data_file.size|filesizeformat }})</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {% if can_download_gpkg %}
+                                        <p>{% trans 'Your data was successfully converted to GeoPackage (GPKG) format.' %}</p>
+                                        <ul class="list-unstyled">
+                                            <li>
+                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                <a href="{{download_gpkg_url}}">data_from_json.gpkg ({{ download_gpkg_size|filesizeformat }})</a>
+                                            </li>
+                                        </ul>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
                 
                 <div class="row">

@@ -17,6 +17,7 @@ urlpatterns += [
         cove_ofds.views.NewSpreadsheetInput.as_view(),
         name="new_spreadsheet",
     ),
+    re_path(r"^new_gpkg$", cove_ofds.views.NewGPKGInput.as_view(), name="new_gpkg"),
     re_path(
         r"^data/([\w\-]+)$", cove_ofds.views.ExploreOFDSView.as_view(), name="explore"
     ),

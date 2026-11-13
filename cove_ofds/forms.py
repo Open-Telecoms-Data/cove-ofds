@@ -155,3 +155,23 @@ class NewCSVsUploadForm(forms.Form):
         ),
         required=False,
     )
+
+
+class NewGPKGUploadForm(forms.Form):
+    file_field_names = ["file_upload"]
+    file_upload = forms.FileField(
+        widget=forms.FileInput(
+            attrs={
+                "accept": ",".join(
+                    settings.ALLOWED_GPKG_CONTENT_TYPES
+                    + settings.ALLOWED_GPKG_EXTENSIONS
+                )
+            }
+        ),
+        label="",
+    )
+
+
+class NewGPKGURLForm(forms.Form):
+    file_field_names = []
+    url = forms.URLField(label="URL")

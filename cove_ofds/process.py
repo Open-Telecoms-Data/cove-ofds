@@ -8,6 +8,8 @@ import flattentool
 from django.core.files.storage import default_storage
 from libcoveofds.additionalfields import AdditionalFields
 from libcoveofds.geojson import JSONToGeoJSONConverter
+from libcoveofds.gpkg.from_json import JSONToGPKGConverter
+from libcoveofds.gpkg.to_json import GPKGToJSONConverter
 from libcoveofds.jsonschemavalidate import JSONSchemaValidator
 from libcoveofds.python_validate import PythonValidate
 from libcoveofds.schema import OFDSSchema
@@ -23,7 +25,8 @@ import cove_ofds.jsonschema_validation_errors
 
 class WasJSONUploaded(ProcessDataTask):
     """Did user upload JSON?
-    Then we don't actually have to do anything, but we want to save info about that JSON for later steps."""
+    Then we don't actually have to do anything, but we want to save info about that JSON for later steps.
+    """
 
     def is_processing_applicable(self) -> bool:
         return True
@@ -215,6 +218,112 @@ class ConvertCSVsIntoJSON(ProcessDataTask):
                     self.supplied_data.data_url(),
                     CONVERT_CSVS_INTO_JSON_DIR_NAME,
                     "unflattened.json",
+                )
+                context["download_json_size"] = os.stat(self.data_filename).st_size
+            else:
+                context["can_download_json"] = False
+        # Return
+        return context
+
+
+class ConvertJSONIntoGPKG(ProcessDataTask):
+    """Convert primary format (JSON) to GPKG"""
+
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(), "data_from_json.gpkg"
+        )
+
+    def is_processing_applicable(self) -> bool:
+        return True
+
+    def is_processing_needed(self) -> bool:
+        return not os.path.exists(self.data_filename)
+
+    def process(self, process_data: dict) -> dict:
+        if os.path.exists(self.data_filename):
+            return process_data
+
+        try:
+            converter = JSONToGPKGConverter()
+            converter.process_json(process_data, self.data_filename)
+
+            with open(self.data_filename, "w") as fp:
+                json.dump(converter.get_nodes_geojson(), fp, indent=4)
+
+        except Exception as err:
+            capture_exception(err)
+            # TODO log and show to user. https://github.com/Open-Telecoms-Data/cove-ofds/issues/24
+
+        return process_data
+
+    def get_context(self):
+        context = {}
+        # GeoJSON
+        if os.path.exists(self.data_filename):
+            context["can_download_gpkg"] = True
+            context["download_gpkg_url"] = os.path.join(
+                self.supplied_data.data_url(), "data_from_json.gpkg"
+            )
+            context["download_gpkg_size"] = os.stat(self.data_filename).st_size
+        else:
+            context["can_download_gpkg"] = False
+        # done!
+        return context
+
+
+class ConvertGPKGIntoJSON(ProcessDataTask):
+    """If User uploaded GPKG, convert to our primary format, JSON."""
+
+    def __init__(self, supplied_data, supplied_data_files):
+        super().__init__(supplied_data, supplied_data_files)
+        self.data_filename = os.path.join(
+            self.supplied_data.data_dir(), "data_from_gpkg.json"
+        )
+
+    def is_processing_applicable(self) -> bool:
+        return self.supplied_data.format == "gpkg"
+
+    def is_processing_needed(self) -> bool:
+        return self.supplied_data.format == "gpkg" and not os.path.exists(
+            self.data_filename
+        )
+
+    def process(self, process_data: dict) -> dict:
+        if self.supplied_data.format != "gpkg":
+            return process_data
+
+        # check already done
+        if os.path.exists(self.data_filename):
+            process_data["json_data_filename"] = self.data_filename
+            return process_data
+
+        input_filename = self.supplied_data_files[0].upload_dir_and_filename()
+
+        # Convert
+        converter = GPKGToJSONConverter()
+        converter.process_gpkg_filename(input_filename)
+
+        # Save
+        with open(self.data_filename, "w") as fp:
+            json.dump(converter.get_json(), fp, indent=4)
+
+        # Info
+        process_data["json_data_filename"] = self.data_filename
+        return process_data
+
+    def get_context(self):
+        # Info
+        context = {}
+        # original format
+        if self.supplied_data.format == "gpkg":
+            context["original_format"] = "gpkg"
+            # Download data
+            if os.path.exists(self.data_filename):
+                context["can_download_json"] = True
+                context["download_json_url"] = os.path.join(
+                    self.supplied_data.data_url(), "data_from_gpkg.json"
                 )
                 context["download_json_size"] = os.stat(self.data_filename).st_size
             else:

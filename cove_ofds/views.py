@@ -9,6 +9,8 @@ from libcoveweb2.views import ExploreDataView, InputDataView
 
 from cove_ofds.forms import (
     NewCSVsUploadForm,
+    NewGPKGUploadForm,
+    NewGPKGURLForm,
     NewJSONTextForm,
     NewJSONUploadForm,
     NewJSONURLForm,
@@ -25,6 +27,12 @@ class DecimalEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+GPKG_FORM_CLASSES = {
+    "upload_form": NewGPKGUploadForm,
+    "url_form": NewGPKGURLForm,
+}
+
+
 def index(request):
 
     forms = {
@@ -35,6 +43,10 @@ def index(request):
         "csvs": {
             form_name: form_class()
             for form_name, form_class in CSVS_FORM_CLASSES.items()
+        },
+        "gpkg": {
+            form_name: form_class()
+            for form_name, form_class in GPKG_FORM_CLASSES.items()
         },
         "spreadsheet": {
             form_name: form_class()
@@ -135,6 +147,45 @@ class NewSpreadsheetInput(InputDataView):
     ):
         if form_name == "upload_form":
             supplied_data.save_file(request.FILES["file_upload"])
+
+
+class NewGPKGInput(InputDataView):
+    form_classes = GPKG_FORM_CLASSES
+    input_template = "cove_ofds/new_gpkg.html"
+    allowed_content_types = settings.ALLOWED_GPKG_CONTENT_TYPES
+    content_type_incorrect_message = (
+        "This does not appear to be a GeoPackage (GPKG) file."
+    )
+    allowed_file_extensions = settings.ALLOWED_GPKG_EXTENSIONS
+    file_extension_incorrect_message = (
+        "This does not appear to be a GeoPackage (GPKG) file."
+    )
+    supplied_data_format = "gpkg"
+
+    def get_active_form_key(self, forms, request_data):
+        if "paste" in request_data:
+            return "text_form"
+        elif "url" in request_data:
+            return "url_form"
+        else:
+            return "upload_form"
+
+    def save_file_content_to_supplied_data(
+        self, form_name, form, request, supplied_data
+    ):
+        if form_name == "upload_form":
+            supplied_data.save_file(request.FILES["file_upload"])
+        elif form_name == "text_form":
+            supplied_data.save_file_contents(
+                "input.json",
+                form.cleaned_data["paste"],
+                "application/json",
+                None,
+            )
+        elif form_name == "url_form":
+            supplied_data.save_file_from_source_url(
+                form.cleaned_data["url"], content_type="application/geopackage+sqlite3"
+            )
 
 
 class ExploreOFDSView(ExploreDataView):
