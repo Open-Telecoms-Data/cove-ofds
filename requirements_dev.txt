@@ -140,7 +140,7 @@ libcove2==0.2.1
     # via
     #   -r requirements.txt
     #   libcoveofds
-libcoveofds==0.10.0
+libcoveofds @ git+https://github.com/Open-Telecoms-Data/lib-cove-ofds.git@c9b32673ae97eee39f7422e09158549c26afdb04
     # via -r requirements.txt
 libcoveweb2==0.4.0
     # via -r requirements.txt
