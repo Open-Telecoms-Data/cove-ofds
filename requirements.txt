@@ -81,7 +81,7 @@ kombu[redis]==5.7.0
     # via celery
 libcove2==0.2.1
     # via libcoveofds
-libcoveofds==0.10.0
+libcoveofds @ git+https://github.com/Open-Telecoms-Data/lib-cove-ofds.git@5b7ebbcc4585c7047d87dea6cd29fa8751458dda
     # via -r requirements.in
 libcoveweb2==0.4.0
     # via -r requirements.in
